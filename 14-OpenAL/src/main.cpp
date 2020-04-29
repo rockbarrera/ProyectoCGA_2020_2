@@ -83,6 +83,10 @@ Shader shaderViewDepth;
 Shader shaderDepth;
 
 std::shared_ptr<Camera> camera(new ThirdPersonCamera());
+std::shared_ptr<FirstPersonCamera> cameraFPS(new FirstPersonCamera()); //Cámara en primera persona
+
+int stateCamera = 1; //1 para la TPS y 2 para la FPS
+
 float distanceFromTarget = 7.0;
 
 Sphere skyboxSphere(20, 20);
@@ -143,6 +147,7 @@ int velModel = 1;
 float rotDartHead = 0.0, rotDartLeftArm = 0.0, rotDartLeftHand = 0.0, rotDartRightArm = 0.0, rotDartRightHand = 0.0, rotDartLeftLeg = 0.0, rotDartRightLeg = 0.0;
 int modelSelected = 2;
 bool enableCountSelected = true;
+bool enableCountSelectedGamePad = true;
 
 // Variables to animations keyframes
 bool saveFrame = false, availableSave = true;
@@ -256,6 +261,7 @@ void initParticleBuffers();
 void init(int width, int height, std::string strTitle, bool bFullScreen);
 void destroy();
 bool processInput(bool continueApplication = true);
+void gamePad(); //Para operaciones específicas con el gamePad
 void prepareScene();
 void prepareDepthScene();
 void renderScene(bool renderParticles = true);
@@ -525,6 +531,8 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	camera->setPosition(glm::vec3(0.0, 0.0, 10.0));
 	camera->setDistanceFromTarget(distanceFromTarget);
 	camera->setSensitivity(1.0);
+
+	cameraFPS->setPosition(glm::vec3(0.0, 3.0, 4.0));
 
 	// Definimos el tamanio de la imagen
 	int imageWidth, imageHeight;
@@ -1171,18 +1179,40 @@ bool processInput(bool continueApplication) {
 	if (exitApp || glfwWindowShouldClose(window) != 0) {
 		return false;
 	}
-
-	//para poner el gamepad
-	int pad = 1;
-	present = glfwJoystickPresent(GLFW_JOYSTICK_1);
 	
+	//Seleccionar cámara TPS ó FPS
+	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
+		stateCamera = 1;
+	}
+	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+		stateCamera = 2;
+	}
+	//Fin de selección de cámara TPS ó FPS
 
-	if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-		camera->mouseMoveCamera(offsetX, 0.0, deltaTime);
-	if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
-		camera->mouseMoveCamera(0.0, offsetY, deltaTime);
-	offsetX = 0;
-	offsetY = 0;
+	if (stateCamera == 2) {
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+			cameraFPS->moveFrontCamera(true, deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+			cameraFPS->moveFrontCamera(false, deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+			cameraFPS->moveRightCamera(false, deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+			cameraFPS->moveRightCamera(true, deltaTime);
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+			cameraFPS->mouseMoveCamera(offsetX, offsetY, deltaTime);
+		offsetX = 0;
+		offsetY = 0;
+	}
+	else if (stateCamera == 1) {
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+			camera->mouseMoveCamera(offsetX, 0.0, deltaTime);
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+			camera->mouseMoveCamera(0.0, offsetY, deltaTime);
+		offsetX = 0;
+		offsetY = 0;
+	}
+
+	
 
 	// Seleccionar modelo
 	if (enableCountSelected && glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS){
@@ -1274,20 +1304,34 @@ bool processInput(bool continueApplication) {
 	else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		modelMatrixDart = glm::translate(modelMatrixDart, glm::vec3(0.02, 0.0, 0.0));
 
-	if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
-		modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(1.0f), glm::vec3(0, 1, 0));
-		animationIndex = 0;
-	}else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
-		modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-1.0f), glm::vec3(0, 1, 0));
-		animationIndex = 0;
-	}if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){
-		modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, 0.02));
-		animationIndex = 0;
-	}else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
-		modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, -0.02));
-		animationIndex = 0;
+	if (stateCamera == 1) {
+		if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+			modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(1.0f), glm::vec3(0, 1, 0));
+			animationIndex = 0;
+		}
+		else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+			modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-1.0f), glm::vec3(0, 1, 0));
+			animationIndex = 0;
+		}if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+			modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, 0.02));
+			animationIndex = 0;
+		}
+		else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+			modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, -0.02));
+			animationIndex = 0;
+		}
 	}
+	
+	gamePad();
+	
+	glfwPollEvents();
+	return continueApplication;
+}
 
+void gamePad() {
+	//para poner el gamepad
+	int pad = 1;
+	present = glfwJoystickPresent(GLFW_JOYSTICK_1);
 
 	//std::cout << "Estado del gamepad: " << present << std::endl;
 	//------------------------------------------Inicia GamePad
@@ -1305,26 +1349,38 @@ bool processInput(bool continueApplication) {
 		std::cout << "Right stick Y Axis: " << axes[3] << std::endl;
 		std::cout << "Left trigger/L2: " << axes[4] << std::endl;
 		std::cout << "Right trigger/R2: " << axes[5] << std::endl;*/
-	
-		//----------------------Para el movimiento traslación y rotación del personaje con el gamepad
-		switch (modelSelected) {
-		case 2:
-			modelMatrixMayow = glm::translate(modelMatrixMayow,
-												glm::vec3(0, 0, 0.02 * velModel *axes[1]));
-			modelMatrixMayow = glm::rotate(modelMatrixMayow,
-												glm::radians(-0.1f * axes[0]),
-												glm::vec3(0, 1, 0));
-			animationIndex = 0;
-			break;
-		}
 
+		//----------------------Para el movimiento traslación y rotación del personaje con el gamepad
+		if (stateCamera == 1) { //Cámara TPS
+
+			switch (modelSelected) { 
+			case 2:
+
+				modelMatrixMayow = glm::translate(modelMatrixMayow,
+					glm::vec3(0, 0, 0.02 * velModel * axes[1]));
+				modelMatrixMayow = glm::rotate(modelMatrixMayow,
+					glm::radians(-0.3f * axes[0]),
+					glm::vec3(0, 1, 0));
+				animationIndex = 0;
+				camera->mouseMoveCamera(axes[2], axes[3], deltaTime);
+
+				break;
+			}
+		}
+		else if (stateCamera == 2) { //Cámara FPS
+			cameraFPS->moveFrontCamera(true, axes[1] * 0.05);
+			cameraFPS->moveRightCamera(true, axes[0] * 0.05);
+			cameraFPS->mouseMoveCamera(axes[2], axes[3], deltaTime);
+			offsetX = 0;
+			offsetY = 0;
+		}
 		//------------------------------------ Fin de rotación y traslación de los modelos
 
 		//------------------------------------------------------------------Botones del mando
 		int buttonCount;
 		const unsigned char* buttons;
 		buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
-		
+
 		/*Botón A*/
 		if (GLFW_PRESS == buttons[0])
 		{
@@ -1337,7 +1393,7 @@ bool processInput(bool continueApplication) {
 			//std::cout << "A button is released" << std::endl;
 			velModel = 1; //Disminuir la velocidad
 		}
-		
+
 		/*Botón B*/
 		if (GLFW_PRESS == buttons[1])
 		{
@@ -1348,7 +1404,7 @@ bool processInput(bool continueApplication) {
 		{
 			//std::cout << "B button is released" << std::endl;
 		}
-		
+
 		/*Botón X*/
 		if (GLFW_PRESS == buttons[2])
 		{
@@ -1359,7 +1415,7 @@ bool processInput(bool continueApplication) {
 		{
 			//std::cout << "B button is released" << std::endl;
 		}
-		
+
 		/*Botón Y*/
 		if (GLFW_PRESS == buttons[3])
 		{
@@ -1370,7 +1426,7 @@ bool processInput(bool continueApplication) {
 		{
 			//std::cout << "B button is released" << std::endl;
 		}
-		
+
 		/*Boton LB*/
 		if (GLFW_PRESS == buttons[4])
 		{
@@ -1381,7 +1437,7 @@ bool processInput(bool continueApplication) {
 		{
 			//std::cout << "LB button is released" << std::endl;
 		}
-		
+
 		/*Botón RB*/
 		if (GLFW_PRESS == buttons[5])
 		{
@@ -1394,14 +1450,18 @@ bool processInput(bool continueApplication) {
 		}
 
 		/*Boton Select*/
-		if (GLFW_PRESS == buttons[6])
+		if (enableCountSelectedGamePad && GLFW_PRESS == buttons[6])
 		{
 			std::cout << "Select button presed" << std::endl;
-			//camera->moveFrontCamera(true, deltaTime);
+			enableCountSelectedGamePad = false; //Controlar la selección de la cámara
+			stateCamera++;
+			if (stateCamera > 2) stateCamera = 1;
+
 		}
-		if (GLFW_RELEASE == buttons[6])
+		else if (GLFW_RELEASE == buttons[6])
 		{
 			//std::cout << "Select button is released" << std::endl;
+			enableCountSelectedGamePad = true;
 		}
 
 		/*Boton Start*/
@@ -1467,9 +1527,6 @@ bool processInput(bool continueApplication) {
 
 	}
 	//--------------------Fin gamepad
-
-	glfwPollEvents();
-	return continueApplication;
 }
 
 void applicationLoop() {
@@ -1547,7 +1604,14 @@ void applicationLoop() {
 		camera->setCameraTarget(target);
 		camera->setAngleTarget(angleTarget);
 		camera->updateCamera();
-		view = camera->getViewMatrix();
+
+		if (stateCamera == 1) { //La matriz de vista varía dependiendo de la selección de la cámara
+			view = camera->getViewMatrix();
+		}
+
+		if (stateCamera == 2) {
+			view = cameraFPS->getViewMatrix();
+		}
 
 		shadowBox->update(screenWidth, screenHeight);
 		glm::vec3 centerBox = shadowBox->getCenter();
