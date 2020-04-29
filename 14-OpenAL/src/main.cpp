@@ -6,6 +6,7 @@
 //std includes
 #include <string>
 #include <iostream>
+#include <stdlib.h>
 
 // contains new std::shuffle definition
 #include <algorithm>
@@ -26,6 +27,7 @@
 #include "Headers/Box.h"
 #include "Headers/FirstPersonCamera.h"
 #include "Headers/ThirdPersonCamera.h"
+
 
 //GLM include
 #define GLM_FORCE_RADIANS
@@ -58,6 +60,9 @@ int screenWidth;
 int screenHeight;
 
 const unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
+
+//Inclusión del joystick
+int present;
 
 GLFWwindow *window;
 
@@ -134,6 +139,7 @@ glm::mat4 modelMatrixMayow = glm::mat4(1.0f);
 glm::mat4 modelMatrixFountain = glm::mat4(1.0f);
 
 int animationIndex = 1;
+int velModel = 1;
 float rotDartHead = 0.0, rotDartLeftArm = 0.0, rotDartLeftHand = 0.0, rotDartRightArm = 0.0, rotDartRightHand = 0.0, rotDartLeftLeg = 0.0, rotDartRightLeg = 0.0;
 int modelSelected = 2;
 bool enableCountSelected = true;
@@ -1160,10 +1166,16 @@ void mouseButtonCallback(GLFWwindow *window, int button, int state, int mod) {
 	}
 }
 
+
 bool processInput(bool continueApplication) {
 	if (exitApp || glfwWindowShouldClose(window) != 0) {
 		return false;
 	}
+
+	//para poner el gamepad
+	int pad = 1;
+	present = glfwJoystickPresent(GLFW_JOYSTICK_1);
+	
 
 	if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 		camera->mouseMoveCamera(offsetX, 0.0, deltaTime);
@@ -1275,6 +1287,186 @@ bool processInput(bool continueApplication) {
 		modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, -0.02));
 		animationIndex = 0;
 	}
+
+
+	//std::cout << "Estado del gamepad: " << present << std::endl;
+	//------------------------------------------Inicia GamePad
+	if (pad = present)
+	{
+		int axesCount;
+		const float* axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
+		//std::cout << "Ejes disponibles: " << axesCount << std::endl;
+
+
+		/*std::cout << std::endl;
+		std::cout << "Left stick X Axis: " << axes[0] << std::endl;
+		std::cout << "Left stick Y Axis: " << axes[1] << std::endl;
+		std::cout << "Right stick X Axis: " << axes[2] << std::endl;
+		std::cout << "Right stick Y Axis: " << axes[3] << std::endl;
+		std::cout << "Left trigger/L2: " << axes[4] << std::endl;
+		std::cout << "Right trigger/R2: " << axes[5] << std::endl;*/
+	
+		//----------------------Para el movimiento traslación y rotación del personaje con el gamepad
+		switch (modelSelected) {
+		case 2:
+			modelMatrixMayow = glm::translate(modelMatrixMayow,
+												glm::vec3(0, 0, 0.02 * velModel *axes[1]));
+			modelMatrixMayow = glm::rotate(modelMatrixMayow,
+												glm::radians(-0.1f * axes[0]),
+												glm::vec3(0, 1, 0));
+			animationIndex = 0;
+			break;
+		}
+
+		//------------------------------------ Fin de rotación y traslación de los modelos
+
+		//------------------------------------------------------------------Botones del mando
+		int buttonCount;
+		const unsigned char* buttons;
+		buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
+		
+		/*Botón A*/
+		if (GLFW_PRESS == buttons[0])
+		{
+			//std::cout << "A button presed" << std::endl;
+			//camera->moveFrontCamera(true, deltaTime);
+			velModel = 2; //Aumentar la velocidad
+		}
+		if (GLFW_RELEASE == buttons[0])
+		{
+			//std::cout << "A button is released" << std::endl;
+			velModel = 1; //Disminuir la velocidad
+		}
+		
+		/*Botón B*/
+		if (GLFW_PRESS == buttons[1])
+		{
+			std::cout << "B button presed" << std::endl;
+			//camera->moveFrontCamera(true, deltaTime);
+		}
+		if (GLFW_RELEASE == buttons[1])
+		{
+			//std::cout << "B button is released" << std::endl;
+		}
+		
+		/*Botón X*/
+		if (GLFW_PRESS == buttons[2])
+		{
+			std::cout << "X button presed" << std::endl;
+			//camera->moveFrontCamera(true, deltaTime);
+		}
+		if (GLFW_RELEASE == buttons[2])
+		{
+			//std::cout << "B button is released" << std::endl;
+		}
+		
+		/*Botón Y*/
+		if (GLFW_PRESS == buttons[3])
+		{
+			std::cout << "Y button presed" << std::endl;
+			//camera->moveFrontCamera(true, deltaTime);
+		}
+		if (GLFW_RELEASE == buttons[3])
+		{
+			//std::cout << "B button is released" << std::endl;
+		}
+		
+		/*Boton LB*/
+		if (GLFW_PRESS == buttons[4])
+		{
+			std::cout << "LB button presed" << std::endl;
+			//camera->moveFrontCamera(true, deltaTime);
+		}
+		if (GLFW_RELEASE == buttons[4])
+		{
+			//std::cout << "LB button is released" << std::endl;
+		}
+		
+		/*Botón RB*/
+		if (GLFW_PRESS == buttons[5])
+		{
+			std::cout << "RB button presed" << std::endl;
+			//camera->moveFrontCamera(true, deltaTime);
+		}
+		if (GLFW_RELEASE == buttons[5])
+		{
+			//std::cout << "RB button is released" << std::endl;
+		}
+
+		/*Boton Select*/
+		if (GLFW_PRESS == buttons[6])
+		{
+			std::cout << "Select button presed" << std::endl;
+			//camera->moveFrontCamera(true, deltaTime);
+		}
+		if (GLFW_RELEASE == buttons[6])
+		{
+			//std::cout << "Select button is released" << std::endl;
+		}
+
+		/*Boton Start*/
+		if (GLFW_PRESS == buttons[7])
+		{
+			std::cout << "Start button presed" << std::endl;
+			//camera->moveFrontCamera(true, deltaTime);
+		}
+		if (GLFW_RELEASE == buttons[7])
+		{
+			//std::cout << "Start button is released" << std::endl;
+		}
+
+		/*Boton Arriba*/
+		if (GLFW_PRESS == buttons[10])
+		{
+			std::cout << "Up button presed" << std::endl;
+			//camera->moveFrontCamera(true, deltaTime);
+		}
+		if (GLFW_RELEASE == buttons[10])
+		{
+			//std::cout << "Up button is released" << std::endl;
+		}
+
+		/*Boton Derecha*/
+		if (GLFW_PRESS == buttons[11])
+		{
+			std::cout << "Rigth button presed" << std::endl;
+			//camera->moveFrontCamera(true, deltaTime);
+		}
+		if (GLFW_RELEASE == buttons[11])
+		{
+			//std::cout << "Up button is released" << std::endl;
+		}
+
+		/*Boton Abajo*/
+		if (GLFW_PRESS == buttons[12])
+		{
+			std::cout << "Down button presed" << std::endl;
+			//camera->moveFrontCamera(true, deltaTime);
+		}
+		if (GLFW_RELEASE == buttons[12])
+		{
+			//std::cout << "Down button is released" << std::endl;
+		}
+
+		/*Boton Izquierda*/
+		if (GLFW_PRESS == buttons[13])
+		{
+			std::cout << "Left button presed" << std::endl;
+			//camera->moveFrontCamera(true, deltaTime);
+		}
+		if (GLFW_RELEASE == buttons[13])
+		{
+			//std::cout << "Left button is released" << std::endl;
+		}
+		//------------------------------------------------------Fin botones del mando
+
+		const char* name = glfwGetJoystickName(GLFW_JOYSTICK_1);
+		//std::cout << "Nombre del joystick: " << name << std::endl;
+		//std::cout << "Botones disponibles: " << buttonCount << std::endl;
+		//system("cls");
+
+	}
+	//--------------------Fin gamepad
 
 	glfwPollEvents();
 	return continueApplication;
