@@ -457,6 +457,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	glfwSetMouseButtonCallback(window, mouseButtonCallback);
 	glfwSetScrollCallback(window, scrollCallback);
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+	
 
 	// Init glew
 	glewExperimental = GL_TRUE;
@@ -1386,12 +1387,14 @@ void gamePad() {
 		{
 			//std::cout << "A button presed" << std::endl;
 			//camera->moveFrontCamera(true, deltaTime);
-			velModel = 2; //Aumentar la velocidad
+			if (stateCamera == 1)
+				velModel = 2; //Aumentar la velocidad
 		}
 		if (GLFW_RELEASE == buttons[0])
 		{
 			//std::cout << "A button is released" << std::endl;
-			velModel = 1; //Disminuir la velocidad
+			if (stateCamera == 1)
+				velModel = 1; //Disminuir la velocidad
 		}
 
 		/*Botón B*/
@@ -1471,6 +1474,44 @@ void gamePad() {
 			//camera->moveFrontCamera(true, deltaTime);
 		}
 		if (GLFW_RELEASE == buttons[7])
+		{
+			//std::cout << "Start button is released" << std::endl;
+		}
+
+		/*Boton joystick izquierdo*/
+		if (GLFW_PRESS == buttons[8])
+		{
+			std::cout << "Left Joystick button presed" << std::endl;
+			//camera->moveFrontCamera(true, deltaTime);
+			switch (stateCamera) //Camara TPS
+			{
+			case 1:
+				if(distanceFromTarget > 1.0) //Para topar la cámara
+					distanceFromTarget -= 0.1;
+				camera->setDistanceFromTarget(distanceFromTarget);
+				break;
+			}
+		}
+		else if (GLFW_RELEASE == buttons[8])
+		{
+			//std::cout << "Start button is released" << std::endl;
+
+		}
+
+		/*Boton joystick derecho*/
+		if (GLFW_PRESS == buttons[9])
+		{
+			std::cout << "Rigth Joystick button presed" << std::endl;
+			//camera->moveFrontCamera(true, deltaTime);
+			switch (stateCamera)  //Camara TPS
+			{
+			case 1:
+				distanceFromTarget += 0.1;
+				camera->setDistanceFromTarget(distanceFromTarget);
+				break;
+			}
+		}
+		else if (GLFW_RELEASE == buttons[9])
 		{
 			//std::cout << "Start button is released" << std::endl;
 		}
