@@ -63,6 +63,11 @@ const unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
 
 //Inclusión del joystick
 int present;
+int buttonCount;
+const unsigned char* buttons;
+int axesCount;
+const float* axes;
+const char* name;
 
 GLFWwindow *window;
 
@@ -1331,18 +1336,16 @@ bool processInput(bool continueApplication) {
 
 void gamePad() {
 	//para poner el gamepad
-	int pad = 1;
 	present = glfwJoystickPresent(GLFW_JOYSTICK_1);
-
+	axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
+	buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
+	name = glfwGetJoystickName(GLFW_JOYSTICK_1);
+	//std::cout << "Nombre del joystick: " << name << std::endl;
 	//std::cout << "Estado del gamepad: " << present << std::endl;
 	//------------------------------------------Inicia GamePad
-	if (pad = present)
+	if (present = 1)
 	{
-		int axesCount;
-		const float* axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
 		//std::cout << "Ejes disponibles: " << axesCount << std::endl;
-
-
 		/*std::cout << std::endl;
 		std::cout << "Left stick X Axis: " << axes[0] << std::endl;
 		std::cout << "Left stick Y Axis: " << axes[1] << std::endl;
@@ -1378,9 +1381,7 @@ void gamePad() {
 		//------------------------------------ Fin de rotación y traslación de los modelos
 
 		//------------------------------------------------------------------Botones del mando
-		int buttonCount;
-		const unsigned char* buttons;
-		buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
+		
 
 		/*Botón A*/
 		if (GLFW_PRESS == buttons[0])
@@ -1561,8 +1562,7 @@ void gamePad() {
 		}
 		//------------------------------------------------------Fin botones del mando
 
-		const char* name = glfwGetJoystickName(GLFW_JOYSTICK_1);
-		//std::cout << "Nombre del joystick: " << name << std::endl;
+		
 		//std::cout << "Botones disponibles: " << buttonCount << std::endl;
 		//system("cls");
 
