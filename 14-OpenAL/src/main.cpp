@@ -203,10 +203,18 @@ std::vector<float> lamp2Orientation = {21.37 + 90, -65.0 + 90};
 //Geiser positions
 std::vector<glm::vec3> geiserPositions = { glm::vec3(20.0f, 0.0f, 30.0f),
 										   glm::vec3(20.0f, 0.0f, -30.0f),
-										   glm::vec3(0.0f, 0.0f, -10.0f),
-										   glm::vec3(12.0f, 0.0f, -22.0f),
-										   glm::vec3(-12.0f, 0.0f, -34.0f),
-										   glm::vec3(-25.0f, 0.0f, 28.0f)
+										   glm::vec3(-15.0f, 0.0f, -26.0f),
+										   glm::vec3(41.0f, 0.0f, -28.0f),
+										   glm::vec3(-23.0f, 0.0f, -61.0f),
+										   glm::vec3(-25.0f, 0.0f, 28.0f),
+										   glm::vec3(62.0f, 0.0f, 24.0f),
+										   glm::vec3(80.0f, 0.0f, -28.0f),
+										   glm::vec3(-55.0f, 0.0f, 11.0f),
+										   glm::vec3(-35.71f, 0.0f, 18.33f),
+										   glm::vec3(67.89f, 0.0f, 95.45f),
+										   glm::vec3(32.46f, 0.0f, 70.32f),
+										   glm::vec3(-65.12f, 0.0f, -27.0f),
+										   glm::vec3(-84.12f, 0.0f, -78.0f)
 };
 
 // Blending model unsorted
@@ -1365,6 +1373,7 @@ void gamePad() {
 	axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
 	buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
 	name = glfwGetJoystickName(GLFW_JOYSTICK_1);
+	glm::vec3 posCam;
 	//std::cout << "Nombre del joystick: " << name << std::endl;
 	//std::cout << "Estado del gamepad: " << present << std::endl;
 	//------------------------------------------Inicia GamePad
@@ -1388,7 +1397,7 @@ void gamePad() {
 				modelMatrixMayow = glm::translate(modelMatrixMayow,
 					glm::vec3(0, 0, 0.02 * velModel * axes[1]));
 				modelMatrixMayow = glm::rotate(modelMatrixMayow,
-					glm::radians(-0.3f * axes[0]),
+					glm::radians(-0.8f * axes[0]),
 					glm::vec3(0, 1, 0));
 				animationIndex = 0;
 				camera->mouseMoveCamera(axes[2], axes[3], deltaTime);
@@ -1399,7 +1408,7 @@ void gamePad() {
 		else if (stateCamera == 2) { //Cámara FPS
 			cameraFPS->moveFrontCamera(true, axes[1] * 0.05);
 			cameraFPS->moveRightCamera(true, axes[0] * 0.05);
-			cameraFPS->mouseMoveCamera(axes[2], axes[3], deltaTime);
+			cameraFPS->mouseMoveCamera(axes[2]*2.0, axes[3]*2.0, deltaTime);
 			offsetX = 0;
 			offsetY = 0;
 		}
@@ -1426,8 +1435,7 @@ void gamePad() {
 		/*Botón B*/
 		if (GLFW_PRESS == buttons[1])
 		{
-			std::cout << "B button presed" << std::endl;
-			//camera->moveFrontCamera(true, deltaTime);
+			std::cout << "B button presed: " + std::to_string(cameraFPS->getPosition().x) + ", " + std::to_string(cameraFPS->getPosition().z) << std::endl;
 		}
 		if (GLFW_RELEASE == buttons[1])
 		{
