@@ -112,6 +112,9 @@ Model modelLampPost2;
 Model modelGrass;
 // Fountain
 Model modelFountain;
+
+//Geiser
+Model modelGeiser;
 // Model animate instance
 // Mayow
 Model mayowModelAnimate;
@@ -131,12 +134,19 @@ GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
 GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
 GL_TEXTURE_CUBE_MAP_NEGATIVE_Z };
 
-std::string fileNames[6] = { "../Textures/mp_bloodvalley/blood-valley_ft.tga",
+/*std::string fileNames[6] = { "../Textures/mp_bloodvalley/blood-valley_ft.tga",
 		"../Textures/mp_bloodvalley/blood-valley_bk.tga",
 		"../Textures/mp_bloodvalley/blood-valley_up.tga",
 		"../Textures/mp_bloodvalley/blood-valley_dn.tga",
 		"../Textures/mp_bloodvalley/blood-valley_rt.tga",
-		"../Textures/mp_bloodvalley/blood-valley_lf.tga" };
+		"../Textures/mp_bloodvalley/blood-valley_lf.tga" };*/
+
+std::string fileNames[6] = { "../Textures/mp_hexagon/hexagon_ft.tga",
+		"../Textures/mp_hexagon/hexagon_bk.tga",
+		"../Textures/mp_hexagon/hexagon_up.tga",
+		"../Textures/mp_hexagon/hexagon_dn.tga",
+		"../Textures/mp_hexagon/hexagon_rt.tga",
+		"../Textures/mp_hexagon/hexagon_lf.tga" };
 
 bool exitApp = false;
 int lastMousePosX, offsetX = 0;
@@ -146,6 +156,7 @@ int lastMousePosY, offsetY = 0;
 glm::mat4 modelMatrixDart = glm::mat4(1.0f);
 glm::mat4 modelMatrixMayow = glm::mat4(1.0f);
 glm::mat4 modelMatrixFountain = glm::mat4(1.0f);
+glm::mat4 modelMatrixGeiser = glm::mat4(1.0f);
 
 int animationIndex = 1;
 int velModel = 1;
@@ -188,6 +199,15 @@ std::vector<float> lamp1Orientation = { -17.0, -82.67, 23.70 };
 std::vector<glm::vec3> lamp2Position = { glm::vec3(-36.52, 0, -23.24),
 		glm::vec3(-52.73, 0, -3.90) };
 std::vector<float> lamp2Orientation = {21.37 + 90, -65.0 + 90};
+
+//Geiser positions
+std::vector<glm::vec3> geiserPositions = { glm::vec3(20.0f, 0.0f, 30.0f),
+										   glm::vec3(20.0f, 0.0f, -30.0f),
+										   glm::vec3(0.0f, 0.0f, -10.0f),
+										   glm::vec3(12.0f, 0.0f, -22.0f),
+										   glm::vec3(-12.0f, 0.0f, -34.0f),
+										   glm::vec3(-25.0f, 0.0f, 28.0f)
+};
 
 // Blending model unsorted
 std::map<std::string, glm::vec3> blendingUnsorted = {
@@ -529,6 +549,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	//Fountain
 	modelFountain.loadModel("../models/fountain/fountain.obj");
 	modelFountain.setShader(&shaderMulLighting);
+
+	//Geiser
+	modelGeiser.loadModel("../models/Geiser/geiser.obj");
+	modelGeiser.setShader(&shaderMulLighting);
 
 	//Mayow
 	mayowModelAnimate.loadModel("../models/mayow/personaje2.fbx");
@@ -1093,6 +1117,7 @@ void destroy() {
 	modelLampPost2.destroy();
 	modelGrass.destroy();
 	modelFountain.destroy();
+	modelGeiser.destroy();
 
 	// Custom objects animate
 	mayowModelAnimate.destroy();
@@ -1586,6 +1611,9 @@ void applicationLoop() {
 	modelMatrixFountain = glm::translate(modelMatrixFountain, glm::vec3(5.0, 0.0, -40.0));
 	modelMatrixFountain[3][1] = terrain.getHeightTerrain(modelMatrixFountain[3][0] , modelMatrixFountain[3][2]) + 0.2;
 	modelMatrixFountain = glm::scale(modelMatrixFountain, glm::vec3(10.0f, 10.0f, 10.0f));
+
+	modelMatrixGeiser = glm::translate(modelMatrixGeiser, glm::vec3(20.0f, 0.0f, 30.0f));
+	modelMatrixGeiser[3][1] = terrain.getHeightTerrain(modelMatrixGeiser[3][0], modelMatrixGeiser[3][2]);
 
 	// Variables to interpolation key frames
 	fileName = "../animaciones/animation_dart_joints.txt";
@@ -2303,6 +2331,16 @@ void renderScene(bool renderParticles){
 	// Fountain
 	glDisable(GL_CULL_FACE);
 	modelFountain.render(modelMatrixFountain);
+	glEnable(GL_CULL_FACE);
+
+	//Geiser
+	glDisable(GL_CULL_FACE);
+	for (int i = 0; i < geiserPositions.size(); i++) {
+		geiserPositions[i].y = terrain.getHeightTerrain(geiserPositions[i].x, geiserPositions[i].z);
+		modelGeiser.setPosition(geiserPositions[i]);
+		modelGeiser.render();
+	}
+	//modelGeiser.render(modelMatrixGeiser);
 	glEnable(GL_CULL_FACE);
 
 
