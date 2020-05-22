@@ -111,10 +111,14 @@ Model modelLampPost2;
 // Hierba
 Model modelGrass;
 // Fountain
-Model modelFountain;
+//Model modelFountain;
 
 //Geiser
 Model modelGeiser;
+
+//Palm
+Model modelPalm;
+
 // Model animate instance
 // Mayow
 Model mayowModelAnimate;
@@ -155,7 +159,7 @@ int lastMousePosY, offsetY = 0;
 // Model matrix definitions
 glm::mat4 modelMatrixDart = glm::mat4(1.0f);
 glm::mat4 modelMatrixMayow = glm::mat4(1.0f);
-glm::mat4 modelMatrixFountain = glm::mat4(1.0f);
+//glm::mat4 modelMatrixFountain = glm::mat4(1.0f);
 glm::mat4 modelMatrixFountain1 = glm::mat4(1.0f);
 glm::mat4 modelMatrixGeiser = glm::mat4(1.0f);
 
@@ -200,6 +204,9 @@ std::vector<float> lamp1Orientation = { -17.0, -82.67, 23.70 };
 std::vector<glm::vec3> lamp2Position = { glm::vec3(-36.52, 0, -23.24),
 		glm::vec3(-52.73, 0, -3.90) };
 std::vector<float> lamp2Orientation = {21.37 + 90, -65.0 + 90};
+
+// Palm positions
+std::vector<glm::vec3> palmPositions = {glm::vec3(0.0f, 0.0f, 0.0f)};
 
 //Geiser positions
 std::vector<glm::vec3> geiserPositions = { glm::vec3(20.0f, 0.0f, 30.0f),
@@ -570,12 +577,16 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelGrass.setShader(&shaderMulLighting);
 
 	//Fountain
-	modelFountain.loadModel("../models/fountain/fountain.obj");
-	modelFountain.setShader(&shaderMulLighting);
+	/*modelFountain.loadModel("../models/fountain/fountain.obj");
+	modelFountain.setShader(&shaderMulLighting);*/
 
 	//Geiser
 	modelGeiser.loadModel("../models/Geiser/geiser.obj");
 	modelGeiser.setShader(&shaderMulLighting);
+
+	//Palm
+	modelPalm.loadModel("../models/Palm/palm.obj");
+	modelPalm.setShader(&shaderMulLighting);
 
 	//Mayow
 	mayowModelAnimate.loadModel("../models/mayow/personaje2.fbx");
@@ -1139,8 +1150,9 @@ void destroy() {
 	modelLamp2.destroy();
 	modelLampPost2.destroy();
 	modelGrass.destroy();
-	modelFountain.destroy();
+	//modelFountain.destroy();
 	modelGeiser.destroy();
+	modelPalm.destroy();
 
 	// Custom objects animate
 	mayowModelAnimate.destroy();
@@ -1631,9 +1643,9 @@ void applicationLoop() {
 	modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(13.0f, 0.05f, -5.0f));
 	modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f), glm::vec3(0, 1, 0));
 
-	modelMatrixFountain = glm::translate(modelMatrixFountain, glm::vec3(5.0, 0.0, -40.0));
+	/*modelMatrixFountain = glm::translate(modelMatrixFountain, glm::vec3(5.0, 0.0, -40.0));
 	modelMatrixFountain[3][1] = terrain.getHeightTerrain(modelMatrixFountain[3][0] , modelMatrixFountain[3][2]) + 0.2;
-	modelMatrixFountain = glm::scale(modelMatrixFountain, glm::vec3(10.0f, 10.0f, 10.0f));
+	modelMatrixFountain = glm::scale(modelMatrixFountain, glm::vec3(10.0f, 10.0f, 10.0f));*/
 
 	modelMatrixGeiser = glm::translate(modelMatrixGeiser, glm::vec3(20.0f, 0.0f, 30.0f));
 	modelMatrixGeiser[3][1] = terrain.getHeightTerrain(modelMatrixGeiser[3][0], modelMatrixGeiser[3][2]);
@@ -1984,6 +1996,24 @@ void applicationLoop() {
 		mayowCollider.c = glm::vec3(modelmatrixColliderMayow[3]);
 		addOrUpdateColliders(collidersOBB, "mayow", mayowCollider, modelMatrixMayow);
 
+		// Collider palms
+		for (int i = 0; i < palmPositions.size(); i++) {
+			AbstractModel::OBB palmCollider;
+			glm::mat4 modelMatrixColliderPalm = glm::mat4(1.0);
+			modelMatrixColliderPalm = glm::translate(modelMatrixColliderPalm, palmPositions[i]);
+			//modelMatrixColliderPalm = glm::rotate(modelMatrixColliderPalm, glm::radians(lamp2Orientation[i]),
+			//	glm::vec3(0, 1, 0));
+			addOrUpdateColliders(collidersOBB, "palm-" + std::to_string(i), palmCollider, modelMatrixColliderPalm);
+			// Set the orientation of collider before doing the scale
+			palmCollider.u = glm::quat_cast(modelMatrixColliderPalm);
+			modelMatrixColliderPalm = glm::scale(modelMatrixColliderPalm, glm::vec3(1.0, 1.0, 1.0));
+			modelMatrixColliderPalm = glm::translate(modelMatrixColliderPalm, modelPalm.getObb().c);
+			palmCollider.c = glm::vec3(modelMatrixColliderPalm[3]);
+			palmCollider.e = modelPalm.getObb().e * glm::vec3(1.0, 1.0, 1.0);
+			std::get<0>(collidersOBB.find("palm-" + std::to_string(i))->second) = palmCollider;
+		}
+	
+
 		/*******************************************
 		 * Render de colliders
 		 *******************************************/
@@ -2199,10 +2229,10 @@ void applicationLoop() {
 		/****************************+
 		 * Open AL sound data
 		 */
-		source0Pos[0] = modelMatrixFountain[3].x;
+		/*source0Pos[0] = modelMatrixFountain[3].x;
 		source0Pos[1] = modelMatrixFountain[3].y;
 		source0Pos[2] = modelMatrixFountain[3].z;
-		alSourcefv(source[0], AL_POSITION, source0Pos);
+		alSourcefv(source[0], AL_POSITION, source0Pos);*/
 
 		source2Pos[0] = modelMatrixDart[3].x;
 		source2Pos[1] = modelMatrixDart[3].y;
@@ -2352,9 +2382,9 @@ void renderScene(bool renderParticles){
 	glEnable(GL_CULL_FACE);
 
 	// Fountain
-	glDisable(GL_CULL_FACE);
+	/*glDisable(GL_CULL_FACE);
 	modelFountain.render(modelMatrixFountain);
-	glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);*/
 
 	//Geiser
 	glDisable(GL_CULL_FACE);
@@ -2366,6 +2396,15 @@ void renderScene(bool renderParticles){
 	//modelGeiser.render(modelMatrixGeiser);
 	glEnable(GL_CULL_FACE);
 
+	//Palm
+	glDisable(GL_CULL_FACE);
+	for (int i = 0; i < palmPositions.size(); i++) {
+		palmPositions[i].y = terrain.getHeightTerrain(palmPositions[i].x, palmPositions[i].z);
+		modelPalm.setPosition(palmPositions[i]);
+		modelPalm.render();
+	}
+	//modelGeiser.render(modelMatrixGeiser);
+	glEnable(GL_CULL_FACE);
 
 	/*******************************************
 	 * Custom Anim objects obj
