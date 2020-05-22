@@ -206,7 +206,15 @@ std::vector<glm::vec3> lamp2Position = { glm::vec3(-36.52, 0, -23.24),
 std::vector<float> lamp2Orientation = {21.37 + 90, -65.0 + 90};
 
 // Palm positions
-std::vector<glm::vec3> palmPositions = {glm::vec3(0.0f, 0.0f, 0.0f)};
+std::vector<glm::vec3> palmPositions = { glm::vec3(-10.58f, 0.0f, -1.27f),
+										 glm::vec3(1.73f, 0.0f, -30.61),
+										 glm::vec3(34.7f, 0.0f, -64.39),
+										 glm::vec3(58.98f, 0.0f, -23.8),
+										 glm::vec3(-28.17f, 0.0f, -14.24),
+										 glm::vec3(-60.08f, 0.0f, -45.75),
+										 glm::vec3(62.74f, 0.0f, -5.44),
+										 glm::vec3(17.79f, 0.0f, -3.17)
+};
 
 //Geiser positions
 std::vector<glm::vec3> geiserPositions = { glm::vec3(20.0f, 0.0f, 30.0f),
@@ -250,7 +258,7 @@ double currTime, lastTime;
 // Definition for the particle system
 GLuint initVel, startTime;
 GLuint VAOParticles;
-GLuint nParticles = 4000;
+GLuint nParticles = 3000;
 double currTimeParticlesAnimation, lastTimeParticlesAnimation;
 
 // Definition for the particle system fire

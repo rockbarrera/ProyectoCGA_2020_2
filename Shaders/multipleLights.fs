@@ -62,7 +62,7 @@ vec3 calculateDirectionalLight(Light light, vec3 direction){
     // Diffuse 
     vec3 normal = normalize(our_normal);
     vec3 lightDir = normalize(-direction);
-    float diff = max(dot(normal, lightDir), 0.0);
+    float diff = max(dot(normal, lightDir), 0.0); //Factor difuso
     vec3 diffuse  = light.diffuse * (diff * vec3(texture(texture1, our_uv)));
     
     // Specular
