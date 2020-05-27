@@ -119,6 +119,9 @@ Model modelGeiser;
 //Palm
 Model modelPalm;
 
+//Door
+Model modelDoor;
+
 // Model animate instance
 // Mayow
 Model mayowModelAnimate;
@@ -162,6 +165,7 @@ glm::mat4 modelMatrixMayow = glm::mat4(1.0f);
 //glm::mat4 modelMatrixFountain = glm::mat4(1.0f);
 glm::mat4 modelMatrixFountain1 = glm::mat4(1.0f);
 glm::mat4 modelMatrixGeiser = glm::mat4(1.0f);
+glm::mat4 modelMatrixDoor = glm::mat4(1.0f);
 
 int animationIndex = 1;
 int velModel = 1;
@@ -233,6 +237,17 @@ std::vector<glm::vec3> geiserPositions = { glm::vec3(20.0f, 0.0f, 30.0f),
 										   glm::vec3(-84.12f, 0.0f, -78.0f)
 };
 
+//Fire positions
+std::vector<glm::vec3> firePositions = { glm::vec3(-2.4 , 9 , 0),
+										glm::vec3(2.4 , 9 , 0),
+										glm::vec3(-2.4 , 8.1 , -0.7),
+										glm::vec3(2.5 , 8.1 , -0.7),
+										glm::vec3(-3.3 , 5.4 , 1.1),
+										glm::vec3(3.4 , 5.4 , 1.1),
+										glm::vec3(-2.6 , 2.7 , 1.7),
+										glm::vec3(3.1 , 2.7 , 1.7)
+};
+
 // Blending model unsorted
 std::map<std::string, glm::vec3> blendingUnsorted = {
 		{"geiser0", geiserPositions[0]},
@@ -249,7 +264,14 @@ std::map<std::string, glm::vec3> blendingUnsorted = {
 		{"geiser11", geiserPositions[11]},
 		{"geiser12", geiserPositions[12]},
 		{"geiser13", geiserPositions[13]},
-		{"fire", glm::vec3(0.0, 0.0, 7.0)}
+		{"fire0", firePositions[0]},
+		{"fire1", firePositions[1]},
+		{"fire2", firePositions[2]},
+		{"fire3", firePositions[3]},
+		{"fire4", firePositions[4]},
+		{"fire5", firePositions[5]},
+		{"fire6", firePositions[6]},
+		{"fire7", firePositions[7]}
 };
 
 double deltaTime;
@@ -595,6 +617,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	//Palm
 	modelPalm.loadModel("../models/Palm/palm.obj");
 	modelPalm.setShader(&shaderMulLighting);
+
+	//Door
+	modelDoor.loadModel("../models/Door/DoorFinal.obj");
+	modelDoor.setShader(&shaderMulLighting);
 
 	//Mayow
 	mayowModelAnimate.loadModel("../models/mayow/personaje2.fbx");
@@ -1161,6 +1187,7 @@ void destroy() {
 	//modelFountain.destroy();
 	modelGeiser.destroy();
 	modelPalm.destroy();
+	modelDoor.destroy();
 
 	// Custom objects animate
 	mayowModelAnimate.destroy();
@@ -1657,6 +1684,10 @@ void applicationLoop() {
 
 	modelMatrixGeiser = glm::translate(modelMatrixGeiser, glm::vec3(20.0f, 0.0f, 30.0f));
 	modelMatrixGeiser[3][1] = terrain.getHeightTerrain(modelMatrixGeiser[3][0], modelMatrixGeiser[3][2]);
+
+	modelMatrixDoor = glm::translate(modelMatrixDoor, glm::vec3(0.0, 0.0, -95.0));
+	modelMatrixDoor[3][1] = terrain.getHeightTerrain(modelMatrixDoor[3][0], modelMatrixDoor[3][2]);
+	modelMatrixDoor = glm::rotate(modelMatrixDoor, glm::radians(180.0f), glm::vec3(0, 1, 0));
 
 	// Variables to interpolation key frames
 	fileName = "../animaciones/animation_dart_joints.txt";
@@ -2301,6 +2332,9 @@ void prepareScene(){
 
 	//Mayow
 	mayowModelAnimate.setShader(&shaderMulLighting);
+
+	//Door
+	modelDoor.setShader(&shaderMulLighting);
 }
 
 void prepareDepthScene(){
@@ -2319,6 +2353,9 @@ void prepareDepthScene(){
 
 	//Mayow
 	mayowModelAnimate.setShader(&shaderDepth);
+
+	//Door
+	modelDoor.setShader(&shaderDepth);
 }
 
 void renderScene(bool renderParticles){
@@ -2412,6 +2449,11 @@ void renderScene(bool renderParticles){
 		modelPalm.render();
 	}
 	//modelGeiser.render(modelMatrixGeiser);
+	glEnable(GL_CULL_FACE);
+
+	//Door
+	glDisable(GL_CULL_FACE);
+	modelDoor.render(modelMatrixDoor);
 	glEnable(GL_CULL_FACE);
 
 	/*******************************************
@@ -2893,7 +2935,7 @@ void renderScene(bool renderParticles){
 		  * End Render particles systems
 		  */
 		}
-		else if(renderParticles && it->second.first.compare("fire") == 0){
+		else if(renderParticles && it->second.first.compare("fire0") == 0){
 			/**********
 			 * Init Render particles systems
 			 */
@@ -2940,16 +2982,407 @@ void renderScene(bool renderParticles){
 			/****************************+
 			 * Open AL sound data
 			 */
-			source1Pos[0] = modelFireParticles[3].x;
-			source1Pos[1] = modelFireParticles[3].y;
-			source1Pos[2] = modelFireParticles[3].z;
-			alSourcefv(source[1], AL_POSITION, source1Pos);
+			//source1Pos[0] = modelFireParticles[3].x;
+			//source1Pos[1] = modelFireParticles[3].y;
+			//source1Pos[2] = modelFireParticles[3].z;
+			//alSourcefv(source[1], AL_POSITION, source1Pos);
 
 			/**********
 			 * End Render particles systems
 			 */
 		}
+		else if (renderParticles && it->second.first.compare("fire1") == 0) {
+		/**********
+		 * Init Render particles systems
+		 */
+		 lastTimeParticlesAnimationFire = currTimeParticlesAnimationFire;
+		 currTimeParticlesAnimationFire = TimeManager::Instance().GetTime();
 
+		 shaderParticlesFire.setInt("Pass", 1);
+		 shaderParticlesFire.setFloat("Time", currTimeParticlesAnimationFire);
+		 shaderParticlesFire.setFloat("DeltaT", currTimeParticlesAnimationFire - lastTimeParticlesAnimationFire);
+
+		 glActiveTexture(GL_TEXTURE1);
+		 glBindTexture(GL_TEXTURE_1D, texId);
+		 glEnable(GL_RASTERIZER_DISCARD);
+		 glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, feedback[drawBuf]);
+		 glBeginTransformFeedback(GL_POINTS);
+		 glBindVertexArray(particleArray[1 - drawBuf]);
+		 glVertexAttribDivisor(0, 0);
+		 glVertexAttribDivisor(1, 0);
+		 glVertexAttribDivisor(2, 0);
+		 glDrawArrays(GL_POINTS, 0, nParticlesFire);
+		 glEndTransformFeedback();
+		 glDisable(GL_RASTERIZER_DISCARD);
+
+		 shaderParticlesFire.setInt("Pass", 2);
+		 glm::mat4 modelFireParticles = glm::mat4(1.0);
+		 modelFireParticles = glm::translate(modelFireParticles, it->second.second);
+		 modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 shaderParticlesFire.setMatrix4("model", 1, false, glm::value_ptr(modelFireParticles));
+
+		 shaderParticlesFire.turnOn();
+		 glActiveTexture(GL_TEXTURE0);
+		 glBindTexture(GL_TEXTURE_2D, textureParticleFireID);
+		 glDepthMask(GL_FALSE);
+		 glBindVertexArray(particleArray[drawBuf]);
+		 glVertexAttribDivisor(0, 1);
+		 glVertexAttribDivisor(1, 1);
+		 glVertexAttribDivisor(2, 1);
+		 glDrawArraysInstanced(GL_TRIANGLES, 0, 6, nParticlesFire);
+		 glBindVertexArray(0);
+		 glDepthMask(GL_TRUE);
+		 drawBuf = 1 - drawBuf;
+		 shaderParticlesFire.turnOff();
+
+		 /****************************+
+		  * Open AL sound data
+		  */
+		  //source1Pos[0] = modelFireParticles[3].x;
+		  //source1Pos[1] = modelFireParticles[3].y;
+		  //source1Pos[2] = modelFireParticles[3].z;
+		  //alSourcefv(source[1], AL_POSITION, source1Pos);
+
+		  /**********
+		   * End Render particles systems
+		   */
+		}
+		else if (renderParticles && it->second.first.compare("fire2") == 0) {
+		/**********
+		 * Init Render particles systems
+		 */
+		 lastTimeParticlesAnimationFire = currTimeParticlesAnimationFire;
+		 currTimeParticlesAnimationFire = TimeManager::Instance().GetTime();
+
+		 shaderParticlesFire.setInt("Pass", 1);
+		 shaderParticlesFire.setFloat("Time", currTimeParticlesAnimationFire);
+		 shaderParticlesFire.setFloat("DeltaT", currTimeParticlesAnimationFire - lastTimeParticlesAnimationFire);
+
+		 glActiveTexture(GL_TEXTURE1);
+		 glBindTexture(GL_TEXTURE_1D, texId);
+		 glEnable(GL_RASTERIZER_DISCARD);
+		 glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, feedback[drawBuf]);
+		 glBeginTransformFeedback(GL_POINTS);
+		 glBindVertexArray(particleArray[1 - drawBuf]);
+		 glVertexAttribDivisor(0, 0);
+		 glVertexAttribDivisor(1, 0);
+		 glVertexAttribDivisor(2, 0);
+		 glDrawArrays(GL_POINTS, 0, nParticlesFire);
+		 glEndTransformFeedback();
+		 glDisable(GL_RASTERIZER_DISCARD);
+
+		 shaderParticlesFire.setInt("Pass", 2);
+		 glm::mat4 modelFireParticles = glm::mat4(1.0);
+		 modelFireParticles = glm::translate(modelFireParticles, it->second.second);
+		 modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 shaderParticlesFire.setMatrix4("model", 1, false, glm::value_ptr(modelFireParticles));
+
+		 shaderParticlesFire.turnOn();
+		 glActiveTexture(GL_TEXTURE0);
+		 glBindTexture(GL_TEXTURE_2D, textureParticleFireID);
+		 glDepthMask(GL_FALSE);
+		 glBindVertexArray(particleArray[drawBuf]);
+		 glVertexAttribDivisor(0, 1);
+		 glVertexAttribDivisor(1, 1);
+		 glVertexAttribDivisor(2, 1);
+		 glDrawArraysInstanced(GL_TRIANGLES, 0, 6, nParticlesFire);
+		 glBindVertexArray(0);
+		 glDepthMask(GL_TRUE);
+		 drawBuf = 1 - drawBuf;
+		 shaderParticlesFire.turnOff();
+
+		 /****************************+
+		  * Open AL sound data
+		  */
+		  //source1Pos[0] = modelFireParticles[3].x;
+		  //source1Pos[1] = modelFireParticles[3].y;
+		  //source1Pos[2] = modelFireParticles[3].z;
+		  //alSourcefv(source[1], AL_POSITION, source1Pos);
+
+		  /**********
+		   * End Render particles systems
+		   */
+		}
+		else if (renderParticles && it->second.first.compare("fire3") == 0) {
+		/**********
+		 * Init Render particles systems
+		 */
+		 lastTimeParticlesAnimationFire = currTimeParticlesAnimationFire;
+		 currTimeParticlesAnimationFire = TimeManager::Instance().GetTime();
+
+		 shaderParticlesFire.setInt("Pass", 1);
+		 shaderParticlesFire.setFloat("Time", currTimeParticlesAnimationFire);
+		 shaderParticlesFire.setFloat("DeltaT", currTimeParticlesAnimationFire - lastTimeParticlesAnimationFire);
+
+		 glActiveTexture(GL_TEXTURE1);
+		 glBindTexture(GL_TEXTURE_1D, texId);
+		 glEnable(GL_RASTERIZER_DISCARD);
+		 glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, feedback[drawBuf]);
+		 glBeginTransformFeedback(GL_POINTS);
+		 glBindVertexArray(particleArray[1 - drawBuf]);
+		 glVertexAttribDivisor(0, 0);
+		 glVertexAttribDivisor(1, 0);
+		 glVertexAttribDivisor(2, 0);
+		 glDrawArrays(GL_POINTS, 0, nParticlesFire);
+		 glEndTransformFeedback();
+		 glDisable(GL_RASTERIZER_DISCARD);
+
+		 shaderParticlesFire.setInt("Pass", 2);
+		 glm::mat4 modelFireParticles = glm::mat4(1.0);
+		 modelFireParticles = glm::translate(modelFireParticles, it->second.second);
+		 modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 shaderParticlesFire.setMatrix4("model", 1, false, glm::value_ptr(modelFireParticles));
+
+		 shaderParticlesFire.turnOn();
+		 glActiveTexture(GL_TEXTURE0);
+		 glBindTexture(GL_TEXTURE_2D, textureParticleFireID);
+		 glDepthMask(GL_FALSE);
+		 glBindVertexArray(particleArray[drawBuf]);
+		 glVertexAttribDivisor(0, 1);
+		 glVertexAttribDivisor(1, 1);
+		 glVertexAttribDivisor(2, 1);
+		 glDrawArraysInstanced(GL_TRIANGLES, 0, 6, nParticlesFire);
+		 glBindVertexArray(0);
+		 glDepthMask(GL_TRUE);
+		 drawBuf = 1 - drawBuf;
+		 shaderParticlesFire.turnOff();
+
+		 /****************************+
+		  * Open AL sound data
+		  */
+		  //source1Pos[0] = modelFireParticles[3].x;
+		  //source1Pos[1] = modelFireParticles[3].y;
+		  //source1Pos[2] = modelFireParticles[3].z;
+		  //alSourcefv(source[1], AL_POSITION, source1Pos);
+
+		  /**********
+		   * End Render particles systems
+		   */
+		}
+		else if (renderParticles && it->second.first.compare("fire4") == 0) {
+		/**********
+		 * Init Render particles systems
+		 */
+		 lastTimeParticlesAnimationFire = currTimeParticlesAnimationFire;
+		 currTimeParticlesAnimationFire = TimeManager::Instance().GetTime();
+
+		 shaderParticlesFire.setInt("Pass", 1);
+		 shaderParticlesFire.setFloat("Time", currTimeParticlesAnimationFire);
+		 shaderParticlesFire.setFloat("DeltaT", currTimeParticlesAnimationFire - lastTimeParticlesAnimationFire);
+
+		 glActiveTexture(GL_TEXTURE1);
+		 glBindTexture(GL_TEXTURE_1D, texId);
+		 glEnable(GL_RASTERIZER_DISCARD);
+		 glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, feedback[drawBuf]);
+		 glBeginTransformFeedback(GL_POINTS);
+		 glBindVertexArray(particleArray[1 - drawBuf]);
+		 glVertexAttribDivisor(0, 0);
+		 glVertexAttribDivisor(1, 0);
+		 glVertexAttribDivisor(2, 0);
+		 glDrawArrays(GL_POINTS, 0, nParticlesFire);
+		 glEndTransformFeedback();
+		 glDisable(GL_RASTERIZER_DISCARD);
+
+		 shaderParticlesFire.setInt("Pass", 2);
+		 glm::mat4 modelFireParticles = glm::mat4(1.0);
+		 modelFireParticles = glm::translate(modelFireParticles, it->second.second);
+		 modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 shaderParticlesFire.setMatrix4("model", 1, false, glm::value_ptr(modelFireParticles));
+
+		 shaderParticlesFire.turnOn();
+		 glActiveTexture(GL_TEXTURE0);
+		 glBindTexture(GL_TEXTURE_2D, textureParticleFireID);
+		 glDepthMask(GL_FALSE);
+		 glBindVertexArray(particleArray[drawBuf]);
+		 glVertexAttribDivisor(0, 1);
+		 glVertexAttribDivisor(1, 1);
+		 glVertexAttribDivisor(2, 1);
+		 glDrawArraysInstanced(GL_TRIANGLES, 0, 6, nParticlesFire);
+		 glBindVertexArray(0);
+		 glDepthMask(GL_TRUE);
+		 drawBuf = 1 - drawBuf;
+		 shaderParticlesFire.turnOff();
+
+		 /****************************+
+		  * Open AL sound data
+		  */
+		  //source1Pos[0] = modelFireParticles[3].x;
+		  //source1Pos[1] = modelFireParticles[3].y;
+		  //source1Pos[2] = modelFireParticles[3].z;
+		  //alSourcefv(source[1], AL_POSITION, source1Pos);
+
+		  /**********
+		   * End Render particles systems
+		   */
+		}
+		else if (renderParticles && it->second.first.compare("fire5") == 0) {
+		/**********
+		 * Init Render particles systems
+		 */
+		 lastTimeParticlesAnimationFire = currTimeParticlesAnimationFire;
+		 currTimeParticlesAnimationFire = TimeManager::Instance().GetTime();
+
+		 shaderParticlesFire.setInt("Pass", 1);
+		 shaderParticlesFire.setFloat("Time", currTimeParticlesAnimationFire);
+		 shaderParticlesFire.setFloat("DeltaT", currTimeParticlesAnimationFire - lastTimeParticlesAnimationFire);
+
+		 glActiveTexture(GL_TEXTURE1);
+		 glBindTexture(GL_TEXTURE_1D, texId);
+		 glEnable(GL_RASTERIZER_DISCARD);
+		 glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, feedback[drawBuf]);
+		 glBeginTransformFeedback(GL_POINTS);
+		 glBindVertexArray(particleArray[1 - drawBuf]);
+		 glVertexAttribDivisor(0, 0);
+		 glVertexAttribDivisor(1, 0);
+		 glVertexAttribDivisor(2, 0);
+		 glDrawArrays(GL_POINTS, 0, nParticlesFire);
+		 glEndTransformFeedback();
+		 glDisable(GL_RASTERIZER_DISCARD);
+
+		 shaderParticlesFire.setInt("Pass", 2);
+		 glm::mat4 modelFireParticles = glm::mat4(1.0);
+		 modelFireParticles = glm::translate(modelFireParticles, it->second.second);
+		 modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 shaderParticlesFire.setMatrix4("model", 1, false, glm::value_ptr(modelFireParticles));
+
+		 shaderParticlesFire.turnOn();
+		 glActiveTexture(GL_TEXTURE0);
+		 glBindTexture(GL_TEXTURE_2D, textureParticleFireID);
+		 glDepthMask(GL_FALSE);
+		 glBindVertexArray(particleArray[drawBuf]);
+		 glVertexAttribDivisor(0, 1);
+		 glVertexAttribDivisor(1, 1);
+		 glVertexAttribDivisor(2, 1);
+		 glDrawArraysInstanced(GL_TRIANGLES, 0, 6, nParticlesFire);
+		 glBindVertexArray(0);
+		 glDepthMask(GL_TRUE);
+		 drawBuf = 1 - drawBuf;
+		 shaderParticlesFire.turnOff();
+
+		 /****************************+
+		  * Open AL sound data
+		  */
+		  //source1Pos[0] = modelFireParticles[3].x;
+		  //source1Pos[1] = modelFireParticles[3].y;
+		  //source1Pos[2] = modelFireParticles[3].z;
+		  //alSourcefv(source[1], AL_POSITION, source1Pos);
+
+		  /**********
+		   * End Render particles systems
+		   */
+		}
+		else if (renderParticles && it->second.first.compare("fire6") == 0) {
+		/**********
+		 * Init Render particles systems
+		 */
+		 lastTimeParticlesAnimationFire = currTimeParticlesAnimationFire;
+		 currTimeParticlesAnimationFire = TimeManager::Instance().GetTime();
+
+		 shaderParticlesFire.setInt("Pass", 1);
+		 shaderParticlesFire.setFloat("Time", currTimeParticlesAnimationFire);
+		 shaderParticlesFire.setFloat("DeltaT", currTimeParticlesAnimationFire - lastTimeParticlesAnimationFire);
+
+		 glActiveTexture(GL_TEXTURE1);
+		 glBindTexture(GL_TEXTURE_1D, texId);
+		 glEnable(GL_RASTERIZER_DISCARD);
+		 glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, feedback[drawBuf]);
+		 glBeginTransformFeedback(GL_POINTS);
+		 glBindVertexArray(particleArray[1 - drawBuf]);
+		 glVertexAttribDivisor(0, 0);
+		 glVertexAttribDivisor(1, 0);
+		 glVertexAttribDivisor(2, 0);
+		 glDrawArrays(GL_POINTS, 0, nParticlesFire);
+		 glEndTransformFeedback();
+		 glDisable(GL_RASTERIZER_DISCARD);
+
+		 shaderParticlesFire.setInt("Pass", 2);
+		 glm::mat4 modelFireParticles = glm::mat4(1.0);
+		 modelFireParticles = glm::translate(modelFireParticles, it->second.second);
+		 modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 shaderParticlesFire.setMatrix4("model", 1, false, glm::value_ptr(modelFireParticles));
+
+		 shaderParticlesFire.turnOn();
+		 glActiveTexture(GL_TEXTURE0);
+		 glBindTexture(GL_TEXTURE_2D, textureParticleFireID);
+		 glDepthMask(GL_FALSE);
+		 glBindVertexArray(particleArray[drawBuf]);
+		 glVertexAttribDivisor(0, 1);
+		 glVertexAttribDivisor(1, 1);
+		 glVertexAttribDivisor(2, 1);
+		 glDrawArraysInstanced(GL_TRIANGLES, 0, 6, nParticlesFire);
+		 glBindVertexArray(0);
+		 glDepthMask(GL_TRUE);
+		 drawBuf = 1 - drawBuf;
+		 shaderParticlesFire.turnOff();
+
+		 /****************************+
+		  * Open AL sound data
+		  */
+		  //source1Pos[0] = modelFireParticles[3].x;
+		  //source1Pos[1] = modelFireParticles[3].y;
+		  //source1Pos[2] = modelFireParticles[3].z;
+		  //alSourcefv(source[1], AL_POSITION, source1Pos);
+
+		  /**********
+		   * End Render particles systems
+		   */
+		}
+		else if (renderParticles && it->second.first.compare("fire7") == 0) {
+		/**********
+		 * Init Render particles systems
+		 */
+		 lastTimeParticlesAnimationFire = currTimeParticlesAnimationFire;
+		 currTimeParticlesAnimationFire = TimeManager::Instance().GetTime();
+
+		 shaderParticlesFire.setInt("Pass", 1);
+		 shaderParticlesFire.setFloat("Time", currTimeParticlesAnimationFire);
+		 shaderParticlesFire.setFloat("DeltaT", currTimeParticlesAnimationFire - lastTimeParticlesAnimationFire);
+
+		 glActiveTexture(GL_TEXTURE1);
+		 glBindTexture(GL_TEXTURE_1D, texId);
+		 glEnable(GL_RASTERIZER_DISCARD);
+		 glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, feedback[drawBuf]);
+		 glBeginTransformFeedback(GL_POINTS);
+		 glBindVertexArray(particleArray[1 - drawBuf]);
+		 glVertexAttribDivisor(0, 0);
+		 glVertexAttribDivisor(1, 0);
+		 glVertexAttribDivisor(2, 0);
+		 glDrawArrays(GL_POINTS, 0, nParticlesFire);
+		 glEndTransformFeedback();
+		 glDisable(GL_RASTERIZER_DISCARD);
+
+		 shaderParticlesFire.setInt("Pass", 2);
+		 glm::mat4 modelFireParticles = glm::mat4(1.0);
+		 modelFireParticles = glm::translate(modelFireParticles, it->second.second);
+		 modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 shaderParticlesFire.setMatrix4("model", 1, false, glm::value_ptr(modelFireParticles));
+
+		 shaderParticlesFire.turnOn();
+		 glActiveTexture(GL_TEXTURE0);
+		 glBindTexture(GL_TEXTURE_2D, textureParticleFireID);
+		 glDepthMask(GL_FALSE);
+		 glBindVertexArray(particleArray[drawBuf]);
+		 glVertexAttribDivisor(0, 1);
+		 glVertexAttribDivisor(1, 1);
+		 glVertexAttribDivisor(2, 1);
+		 glDrawArraysInstanced(GL_TRIANGLES, 0, 6, nParticlesFire);
+		 glBindVertexArray(0);
+		 glDepthMask(GL_TRUE);
+		 drawBuf = 1 - drawBuf;
+		 shaderParticlesFire.turnOff();
+
+		 /****************************+
+		  * Open AL sound data
+		  */
+		  //source1Pos[0] = modelFireParticles[3].x;
+		  //source1Pos[1] = modelFireParticles[3].y;
+		  //source1Pos[2] = modelFireParticles[3].z;
+		  //alSourcefv(source[1], AL_POSITION, source1Pos);
+
+		  /**********
+		   * End Render particles systems
+		   */
+		}
 	}
 	glEnable(GL_CULL_FACE);
 }
