@@ -240,8 +240,8 @@ std::vector<glm::vec3> geiserPositions = { glm::vec3(20.0f, 0.0f, 30.0f),
 //Fire positions
 std::vector<glm::vec3> firePositions = { glm::vec3(-2.4 , 9 , 0),
 										glm::vec3(2.4 , 9 , 0),
-										glm::vec3(-2.4 , 8.1 , -0.7),
-										glm::vec3(2.5 , 8.1 , -0.7),
+										glm::vec3(-2.4 , 8.1 , 0.7),
+										glm::vec3(2.5 , 8.1 , 0.7),
 										glm::vec3(-3.3 , 5.4 , 1.1),
 										glm::vec3(3.4 , 5.4 , 1.1),
 										glm::vec3(-2.6 , 2.7 , 1.7),
@@ -2960,9 +2960,10 @@ void renderScene(bool renderParticles){
 			glDisable(GL_RASTERIZER_DISCARD);
 
 			shaderParticlesFire.setInt("Pass", 2);
-			glm::mat4 modelFireParticles = glm::mat4(1.0);
+			glm::mat4 modelFireParticles = /*glm::mat4(1.0)*/ modelMatrixDoor;
 			modelFireParticles = glm::translate(modelFireParticles, it->second.second);
-			modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+			//modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+			modelFireParticles = glm::scale(modelFireParticles, glm::vec3(0.06, 1.0, 1.0));
 			shaderParticlesFire.setMatrix4("model", 1, false, glm::value_ptr(modelFireParticles));
 
 			shaderParticlesFire.turnOn();
@@ -3016,9 +3017,10 @@ void renderScene(bool renderParticles){
 		 glDisable(GL_RASTERIZER_DISCARD);
 
 		 shaderParticlesFire.setInt("Pass", 2);
-		 glm::mat4 modelFireParticles = glm::mat4(1.0);
+		 glm::mat4 modelFireParticles = /*glm::mat4(1.0)*/ modelMatrixDoor;
 		 modelFireParticles = glm::translate(modelFireParticles, it->second.second);
-		 modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 //modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 modelFireParticles = glm::scale(modelFireParticles, glm::vec3(0.06, 1.0, 1.0));
 		 shaderParticlesFire.setMatrix4("model", 1, false, glm::value_ptr(modelFireParticles));
 
 		 shaderParticlesFire.turnOn();
@@ -3072,9 +3074,10 @@ void renderScene(bool renderParticles){
 		 glDisable(GL_RASTERIZER_DISCARD);
 
 		 shaderParticlesFire.setInt("Pass", 2);
-		 glm::mat4 modelFireParticles = glm::mat4(1.0);
+		 glm::mat4 modelFireParticles = /*glm::mat4(1.0)*/ modelMatrixDoor;
 		 modelFireParticles = glm::translate(modelFireParticles, it->second.second);
-		 modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 //modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 modelFireParticles = glm::scale(modelFireParticles, glm::vec3(0.06, 1.0, 1.0));
 		 shaderParticlesFire.setMatrix4("model", 1, false, glm::value_ptr(modelFireParticles));
 
 		 shaderParticlesFire.turnOn();
@@ -3128,9 +3131,10 @@ void renderScene(bool renderParticles){
 		 glDisable(GL_RASTERIZER_DISCARD);
 
 		 shaderParticlesFire.setInt("Pass", 2);
-		 glm::mat4 modelFireParticles = glm::mat4(1.0);
+		 glm::mat4 modelFireParticles = /*glm::mat4(1.0)*/ modelMatrixDoor;
 		 modelFireParticles = glm::translate(modelFireParticles, it->second.second);
-		 modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 //modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 modelFireParticles = glm::scale(modelFireParticles, glm::vec3(0.06, 1.0, 1.0));
 		 shaderParticlesFire.setMatrix4("model", 1, false, glm::value_ptr(modelFireParticles));
 
 		 shaderParticlesFire.turnOn();
@@ -3184,9 +3188,10 @@ void renderScene(bool renderParticles){
 		 glDisable(GL_RASTERIZER_DISCARD);
 
 		 shaderParticlesFire.setInt("Pass", 2);
-		 glm::mat4 modelFireParticles = glm::mat4(1.0);
+		 glm::mat4 modelFireParticles = /*glm::mat4(1.0)*/ modelMatrixDoor;
 		 modelFireParticles = glm::translate(modelFireParticles, it->second.second);
-		 modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 //modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 modelFireParticles = glm::scale(modelFireParticles, glm::vec3(0.06, 1.0, 1.0));
 		 shaderParticlesFire.setMatrix4("model", 1, false, glm::value_ptr(modelFireParticles));
 
 		 shaderParticlesFire.turnOn();
@@ -3240,9 +3245,10 @@ void renderScene(bool renderParticles){
 		 glDisable(GL_RASTERIZER_DISCARD);
 
 		 shaderParticlesFire.setInt("Pass", 2);
-		 glm::mat4 modelFireParticles = glm::mat4(1.0);
+		 glm::mat4 modelFireParticles = /*glm::mat4(1.0)*/ modelMatrixDoor;
 		 modelFireParticles = glm::translate(modelFireParticles, it->second.second);
-		 modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 //modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 modelFireParticles = glm::scale(modelFireParticles, glm::vec3(0.06, 1.0, 1.0));
 		 shaderParticlesFire.setMatrix4("model", 1, false, glm::value_ptr(modelFireParticles));
 
 		 shaderParticlesFire.turnOn();
@@ -3296,9 +3302,10 @@ void renderScene(bool renderParticles){
 		 glDisable(GL_RASTERIZER_DISCARD);
 
 		 shaderParticlesFire.setInt("Pass", 2);
-		 glm::mat4 modelFireParticles = glm::mat4(1.0);
+		 glm::mat4 modelFireParticles = /*glm::mat4(1.0)*/ modelMatrixDoor;
 		 modelFireParticles = glm::translate(modelFireParticles, it->second.second);
-		 modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 //modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 modelFireParticles = glm::scale(modelFireParticles, glm::vec3(0.06, 1.0, 1.0));
 		 shaderParticlesFire.setMatrix4("model", 1, false, glm::value_ptr(modelFireParticles));
 
 		 shaderParticlesFire.turnOn();
@@ -3352,9 +3359,10 @@ void renderScene(bool renderParticles){
 		 glDisable(GL_RASTERIZER_DISCARD);
 
 		 shaderParticlesFire.setInt("Pass", 2);
-		 glm::mat4 modelFireParticles = glm::mat4(1.0);
+		 glm::mat4 modelFireParticles = /*glm::mat4(1.0)*/ modelMatrixDoor;
 		 modelFireParticles = glm::translate(modelFireParticles, it->second.second);
-		 modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 //modelFireParticles[3][1] = terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
+		 modelFireParticles = glm::scale(modelFireParticles, glm::vec3(0.06, 1.0, 1.0));
 		 shaderParticlesFire.setMatrix4("model", 1, false, glm::value_ptr(modelFireParticles));
 
 		 shaderParticlesFire.turnOn();
