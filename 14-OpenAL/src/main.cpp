@@ -105,9 +105,9 @@ ShadowBox * shadowBox;
 // Models complex instances
 
 // Lamps
-Model modelLamp1;
-Model modelLamp2;
-Model modelLampPost2;
+//Model modelLamp1;
+//Model modelLamp2;
+//Model modelLampPost2;
 // Hierba
 Model modelGrass;
 // Fountain
@@ -141,12 +141,6 @@ GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
 GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
 GL_TEXTURE_CUBE_MAP_NEGATIVE_Z };
 
-/*std::string fileNames[6] = { "../Textures/mp_bloodvalley/blood-valley_ft.tga",
-		"../Textures/mp_bloodvalley/blood-valley_bk.tga",
-		"../Textures/mp_bloodvalley/blood-valley_up.tga",
-		"../Textures/mp_bloodvalley/blood-valley_dn.tga",
-		"../Textures/mp_bloodvalley/blood-valley_rt.tga",
-		"../Textures/mp_bloodvalley/blood-valley_lf.tga" };*/
 
 std::string fileNames[6] = { "../Textures/mp_hexagon/hexagon_ft.tga",
 		"../Textures/mp_hexagon/hexagon_bk.tga",
@@ -162,7 +156,6 @@ int lastMousePosY, offsetY = 0;
 // Model matrix definitions
 glm::mat4 modelMatrixDart = glm::mat4(1.0f);
 glm::mat4 modelMatrixMayow = glm::mat4(1.0f);
-//glm::mat4 modelMatrixFountain = glm::mat4(1.0f);
 glm::mat4 modelMatrixFountain1 = glm::mat4(1.0f);
 glm::mat4 modelMatrixGeiser = glm::mat4(1.0f);
 glm::mat4 modelMatrixDoor = glm::mat4(1.0f);
@@ -202,12 +195,12 @@ int stateDoor = 0;
 float dorRotCount = 0.0;
 
 // Lamps positions
-std::vector<glm::vec3> lamp1Position = { glm::vec3(-7.03, 0, -19.14), glm::vec3(
+/*std::vector<glm::vec3> lamp1Position = { glm::vec3(-7.03, 0, -19.14), glm::vec3(
 		24.41, 0, -34.57), glm::vec3(-10.15, 0, -54.10) };
 std::vector<float> lamp1Orientation = { -17.0, -82.67, 23.70 };
 std::vector<glm::vec3> lamp2Position = { glm::vec3(-36.52, 0, -23.24),
 		glm::vec3(-52.73, 0, -3.90) };
-std::vector<float> lamp2Orientation = {21.37 + 90, -65.0 + 90};
+std::vector<float> lamp2Orientation = {21.37 + 90, -65.0 + 90};*/
 
 // Palm positions
 std::vector<glm::vec3> palmPositions = { glm::vec3(-10.58f, 0.0f, -1.27f),
@@ -221,8 +214,8 @@ std::vector<glm::vec3> palmPositions = { glm::vec3(-10.58f, 0.0f, -1.27f),
 };
 
 //Geiser positions
-std::vector<glm::vec3> geiserPositions = { glm::vec3(20.0f, 0.0f, 30.0f),
-										   glm::vec3(20.0f, 0.0f, -30.0f),
+std::vector<glm::vec3> geiserPositions = { glm::vec3(20.0f, -0.0f, 30.0f),
+										   glm::vec3(20.0f, -0.0f, -30.0f),
 										   glm::vec3(-15.0f, 0.0f, -26.0f),
 										   glm::vec3(41.0f, 0.0f, -28.0f),
 										   glm::vec3(-23.0f, 0.0f, -61.0f),
@@ -595,12 +588,12 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	terrain.setPosition(glm::vec3(100, 0, 100));
 
 	//Lamp models
-	modelLamp1.loadModel("../models/Street-Lamp-Black/objLamp.obj");
+	/*modelLamp1.loadModel("../models/Street-Lamp-Black/objLamp.obj");
 	modelLamp1.setShader(&shaderMulLighting);
 	modelLamp2.loadModel("../models/Street_Light/Lamp.obj");
 	modelLamp2.setShader(&shaderMulLighting);
 	modelLampPost2.loadModel("../models/Street_Light/LampPost.obj");
-	modelLampPost2.setShader(&shaderMulLighting);
+	modelLampPost2.setShader(&shaderMulLighting);*/
 
 	//Grass
 	modelGrass.loadModel("../models/grass/grassModel.obj");
@@ -1180,11 +1173,10 @@ void destroy() {
 	terrain.destroy();
 
 	// Custom objects Delete
-	modelLamp1.destroy();
+	/*modelLamp1.destroy();
 	modelLamp2.destroy();
-	modelLampPost2.destroy();
+	modelLampPost2.destroy();*/
 	modelGrass.destroy();
-	//modelFountain.destroy();
 	modelGeiser.destroy();
 	modelPalm.destroy();
 	modelDoor.destroy();
@@ -1861,7 +1853,7 @@ void applicationLoop() {
 		/*******************************************
 		 * Propiedades PointLights
 		 *******************************************/
-		shaderMulLighting.setInt("pointLightCount", lamp1Position.size() + lamp2Orientation.size());
+		/*shaderMulLighting.setInt("pointLightCount", lamp1Position.size() + lamp2Orientation.size());
 		shaderTerrain.setInt("pointLightCount", lamp1Position.size() + lamp2Orientation.size());
 		for (int i = 0; i < lamp1Position.size(); i++){
 			glm::mat4 matrixAdjustLamp = glm::mat4(1.0f);
@@ -1906,7 +1898,7 @@ void applicationLoop() {
 			shaderTerrain.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].constant", 1.0);
 			shaderTerrain.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].linear", 0.09);
 			shaderTerrain.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].quadratic", 0.02);
-		}
+		}*/
 
 		/*******************************************
 		 * 1.- We render the depth buffer
@@ -1986,7 +1978,7 @@ void applicationLoop() {
 		 *******************************************/
 
 		// Lamps1 colliders
-		for (int i = 0; i < lamp1Position.size(); i++){
+		/*for (int i = 0; i < lamp1Position.size(); i++){
 			AbstractModel::OBB lampCollider;
 			glm::mat4 modelMatrixColliderLamp = glm::mat4(1.0);
 			modelMatrixColliderLamp = glm::translate(modelMatrixColliderLamp, lamp1Position[i]);
@@ -2000,10 +1992,10 @@ void applicationLoop() {
 			lampCollider.c = glm::vec3(modelMatrixColliderLamp[3]);
 			lampCollider.e = modelLamp1.getObb().e * glm::vec3(0.5, 0.5, 0.5);
 			std::get<0>(collidersOBB.find("lamp1-" + std::to_string(i))->second) = lampCollider;
-		}
+		}*/
 
 		// Lamps2 colliders
-		for (int i = 0; i < lamp2Position.size(); i++){
+		/*for (int i = 0; i < lamp2Position.size(); i++){
 			AbstractModel::OBB lampCollider;
 			glm::mat4 modelMatrixColliderLamp = glm::mat4(1.0);
 			modelMatrixColliderLamp = glm::translate(modelMatrixColliderLamp, lamp2Position[i]);
@@ -2017,7 +2009,7 @@ void applicationLoop() {
 			lampCollider.c = glm::vec3(modelMatrixColliderLamp[3]);
 			lampCollider.e = modelLampPost2.getObb().e * glm::vec3(1.0, 1.0, 1.0);
 			std::get<0>(collidersOBB.find("lamp2-" + std::to_string(i))->second) = lampCollider;
-		}
+		}*/
 
 		// Collider de mayow
 		AbstractModel::OBB mayowCollider;
@@ -2323,9 +2315,9 @@ void prepareScene(){
 	terrain.setShader(&shaderTerrain);
 
 	//Lamp models
-	modelLamp1.setShader(&shaderMulLighting);
+	/*modelLamp1.setShader(&shaderMulLighting);
 	modelLamp2.setShader(&shaderMulLighting);
-	modelLampPost2.setShader(&shaderMulLighting);
+	modelLampPost2.setShader(&shaderMulLighting);*/
 
 	//Grass
 	modelGrass.setShader(&shaderMulLighting);
@@ -2344,9 +2336,9 @@ void prepareDepthScene(){
 	terrain.setShader(&shaderDepth);
 
 	//Lamp models
-	modelLamp1.setShader(&shaderDepth);
+	/*modelLamp1.setShader(&shaderDepth);
 	modelLamp2.setShader(&shaderDepth);
-	modelLampPost2.setShader(&shaderDepth);
+	modelLampPost2.setShader(&shaderDepth);*/
 
 	//Grass
 	modelGrass.setShader(&shaderDepth);
@@ -2398,7 +2390,7 @@ void renderScene(bool renderParticles){
 	glActiveTexture(GL_TEXTURE0);
 
 	// Render the lamps
-	for (int i = 0; i < lamp1Position.size(); i++){
+	/*for (int i = 0; i < lamp1Position.size(); i++){
 		lamp1Position[i].y = terrain.getHeightTerrain(lamp1Position[i].x, lamp1Position[i].z);
 		modelLamp1.setPosition(lamp1Position[i]);
 		modelLamp1.setScale(glm::vec3(0.5, 0.5, 0.5));
@@ -2416,7 +2408,7 @@ void renderScene(bool renderParticles){
 		modelLampPost2.setScale(glm::vec3(1.0, 1.0, 1.0));
 		modelLampPost2.setOrientation(glm::vec3(0, lamp2Orientation[i], 0));
 		modelLampPost2.render();
-	}
+	}*/
 
 	// Grass
 	glDisable(GL_CULL_FACE);
@@ -2493,8 +2485,8 @@ void renderScene(bool renderParticles){
 			 */
 			glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
 			modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-			modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]) + 0.36 * 10.0;
-			modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(3.0, 3.0, 3.0));
+			modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+			modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
 			currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 			if(currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 				lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2508,7 +2500,7 @@ void renderScene(bool renderParticles){
 			shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 			shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
 			shaderParticlesFountain.setInt("ParticleTex", 0);
-			shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, -0.3f, 0.0f)));
+			shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
 			shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
 			glBindVertexArray(VAOParticles);
 			glDrawArrays(GL_POINTS, 0, nParticles);
@@ -2525,8 +2517,8 @@ void renderScene(bool renderParticles){
 			 */
 			glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
 			modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-			modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]) + 0.36 * 10.0;
-			modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(3.0, 3.0, 3.0));
+			modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+			modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
 			currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 			if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 				lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2540,7 +2532,7 @@ void renderScene(bool renderParticles){
 			shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 			shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
 			shaderParticlesFountain.setInt("ParticleTex", 0);
-			shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, -0.3f, 0.0f)));
+			shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
 			shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
 			glBindVertexArray(VAOParticles);
 			glDrawArrays(GL_POINTS, 0, nParticles);
@@ -2557,8 +2549,8 @@ void renderScene(bool renderParticles){
 			 */
 			glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
 			modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-			modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]) + 0.36 * 10.0;
-			modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(3.0, 3.0, 3.0));
+			modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+			modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
 			currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 			if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 				lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2572,7 +2564,7 @@ void renderScene(bool renderParticles){
 			shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 			shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
 			shaderParticlesFountain.setInt("ParticleTex", 0);
-			shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, -0.3f, 0.0f)));
+			shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
 			shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
 			glBindVertexArray(VAOParticles);
 			glDrawArrays(GL_POINTS, 0, nParticles);
@@ -2589,8 +2581,8 @@ void renderScene(bool renderParticles){
 			 */
 			glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
 			modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-			modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]) + 0.36 * 10.0;
-			modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(3.0, 3.0, 3.0));
+			modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+			modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
 			currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 			if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 				lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2604,7 +2596,7 @@ void renderScene(bool renderParticles){
 			shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 			shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
 			shaderParticlesFountain.setInt("ParticleTex", 0);
-			shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, -0.3f, 0.0f)));
+			shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
 			shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
 			glBindVertexArray(VAOParticles);
 			glDrawArrays(GL_POINTS, 0, nParticles);
@@ -2621,8 +2613,8 @@ void renderScene(bool renderParticles){
 		 */
 		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
 		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]) + 0.36 * 10.0;
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(3.0, 3.0, 3.0));
+		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2636,7 +2628,7 @@ void renderScene(bool renderParticles){
 		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
 		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, -0.3f, 0.0f)));
+		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
 		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
@@ -2653,8 +2645,8 @@ void renderScene(bool renderParticles){
 		 */
 		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
 		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]) + 0.36 * 10.0;
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(3.0, 3.0, 3.0));
+		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2668,7 +2660,7 @@ void renderScene(bool renderParticles){
 		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
 		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, -0.3f, 0.0f)));
+		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
 		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
@@ -2685,8 +2677,8 @@ void renderScene(bool renderParticles){
 		 */
 		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
 		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]) + 0.36 * 10.0;
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(3.0, 3.0, 3.0));
+		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2700,7 +2692,7 @@ void renderScene(bool renderParticles){
 		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
 		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, -0.3f, 0.0f)));
+		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
 		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
@@ -2717,8 +2709,8 @@ void renderScene(bool renderParticles){
 		 */
 		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
 		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]) + 0.36 * 10.0;
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(3.0, 3.0, 3.0));
+		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2732,7 +2724,7 @@ void renderScene(bool renderParticles){
 		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
 		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, -0.3f, 0.0f)));
+		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
 		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
@@ -2749,8 +2741,8 @@ void renderScene(bool renderParticles){
 		 */
 		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
 		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]) + 0.36 * 10.0;
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(3.0, 3.0, 3.0));
+		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2764,7 +2756,7 @@ void renderScene(bool renderParticles){
 		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
 		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, -0.3f, 0.0f)));
+		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
 		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
@@ -2781,8 +2773,8 @@ void renderScene(bool renderParticles){
 		 */
 		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
 		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]) + 0.36 * 10.0;
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(3.0, 3.0, 3.0));
+		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2796,7 +2788,7 @@ void renderScene(bool renderParticles){
 		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
 		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, -0.3f, 0.0f)));
+		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
 		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
@@ -2813,8 +2805,8 @@ void renderScene(bool renderParticles){
 		 */
 		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
 		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]) + 0.36 * 10.0;
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(3.0, 3.0, 3.0));
+		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2828,7 +2820,7 @@ void renderScene(bool renderParticles){
 		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
 		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, -0.3f, 0.0f)));
+		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
 		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
@@ -2845,8 +2837,8 @@ void renderScene(bool renderParticles){
 		 */
 		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
 		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]) + 0.36 * 10.0;
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(3.0, 3.0, 3.0));
+		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2860,7 +2852,7 @@ void renderScene(bool renderParticles){
 		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
 		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, -0.3f, 0.0f)));
+		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
 		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
@@ -2877,8 +2869,8 @@ void renderScene(bool renderParticles){
 		 */
 		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
 		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]) + 0.36 * 10.0;
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(3.0, 3.0, 3.0));
+		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2892,7 +2884,7 @@ void renderScene(bool renderParticles){
 		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
 		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, -0.3f, 0.0f)));
+		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
 		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
@@ -2909,8 +2901,8 @@ void renderScene(bool renderParticles){
 		 */
 		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
 		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]) + 0.36 * 10.0;
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(3.0, 3.0, 3.0));
+		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2924,7 +2916,7 @@ void renderScene(bool renderParticles){
 		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
 		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, -0.3f, 0.0f)));
+		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
 		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
