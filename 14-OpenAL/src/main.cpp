@@ -905,7 +905,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	// Libera la memoria de la textura
 	textureTerrainBlendMap.freeImage(bitmap);
 
-	Texture textureParticlesFountain("../Textures/bluewater.png");
+	Texture textureParticlesFountain("../Textures/vapor.png");
 	bitmap = textureParticlesFountain.loadImage();
 	data = textureParticlesFountain.convertToData(bitmap, imageWidth, imageHeight);
 	glGenTextures(1, &textureParticleFountainID);
