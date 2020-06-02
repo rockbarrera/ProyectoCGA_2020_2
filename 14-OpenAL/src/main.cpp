@@ -106,8 +106,6 @@ ShadowBox * shadowBox;
 
 // Hierba
 Model modelGrass;
-// Fountain
-//Model modelFountain;
 
 //Geiser
 Model modelGeiser;
@@ -120,6 +118,9 @@ Model modelDoor;
 
 //Mountain
 Model modelMountain;
+
+//Tree
+Model modelTree;
 
 // Model animate instance
 // Mayow
@@ -203,14 +204,14 @@ std::vector<glm::vec3> lamp2Position = { glm::vec3(-36.52, 0, -23.24),
 std::vector<float> lamp2Orientation = {21.37 + 90, -65.0 + 90};*/
 
 // Palm positions
-std::vector<glm::vec3> palmPositions = { glm::vec3(-10.58f, 0.0f, -1.27f),
-										 glm::vec3(1.73f, 0.0f, -30.61),
-										 glm::vec3(34.7f, 0.0f, -64.39),
-										 glm::vec3(58.98f, 0.0f, -23.8),
-										 glm::vec3(-28.17f, 0.0f, -14.24),
-										 glm::vec3(-60.08f, 0.0f, -45.75),
-										 glm::vec3(62.74f, 0.0f, -5.44),
-										 glm::vec3(17.79f, 0.0f, -3.17)
+std::vector<glm::vec3> palmPositions = { glm::vec3(-91.42f, 0.0f, 94.41f),
+										 glm::vec3(-94.55f, 0.0f, 72.92f),
+										 glm::vec3(-92.75f, 0.0f, 60.11f),
+										 glm::vec3(-96.89f, 0.0f, 45.54f),
+										 glm::vec3(-85.11f, 0.0f, 32.74f),
+										 glm::vec3(-75.93f, 0.0f, 24.28f),
+										 glm::vec3(-96.32f, 0.0f, 22.95f),
+										 glm::vec3(-87.14f, 0.0f, 13.78f)
 };
 
 //Geiser positions
@@ -225,7 +226,7 @@ std::vector<glm::vec3> geiserPositions = { glm::vec3(46.5 , 0, 40.38),
 										   glm::vec3(28.63 , 0, 78.61),
 										   glm::vec3(14.62 , 0, 69.47),
 										   glm::vec3(8.28 , 0, 65.11),
-										   glm::vec3(19.15 , 0, 64.17),
+										   glm::vec3(22.44 , 0, 94.5),
 										   glm::vec3(6.0 , 0, 58.96),
 										   glm::vec3(35.54f, 0.0f, 67.44f),
 										   glm::vec3(19.08, 0, 85.7),
@@ -643,9 +644,6 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	boxLightViewBox.init();
 	boxLightViewBox.setShader(&shaderViewDepth);
 
-	//modelAircraft.loadModel("../models/Aircraft_obj/E 45 Aircraft_obj.obj");
-	//modelAircraft.setShader(&shaderMulLighting);
-
 	terrain.init();
 	terrain.setShader(&shaderTerrain);
 	terrain.setPosition(glm::vec3(100, 0, 100));
@@ -653,10 +651,6 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	//Grass
 	modelGrass.loadModel("../models/grass/grassJurassic.obj");
 	modelGrass.setShader(&shaderMulLighting);
-
-	//Fountain
-	/*modelFountain.loadModel("../models/fountain/fountain.obj");
-	modelFountain.setShader(&shaderMulLighting);*/
 
 	//Geiser
 	modelGeiser.loadModel("../models/Geiser/geiser.obj");
@@ -671,7 +665,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelDoor.setShader(&shaderMulLighting);
 
 	//Mountain
-	modelMountain.loadModel("../models/Mountain/mountain/mount.blend2.obj");
+	modelMountain.loadModel("../models/Mountain/Volcano2.obj");
 	modelMountain.setShader(&shaderMulLighting);
 
 	//Mayow
@@ -1606,10 +1600,10 @@ void applicationLoop() {
 	modelMatrixDoor[3][1] = terrain.getHeightTerrain(modelMatrixDoor[3][0], modelMatrixDoor[3][2]);
 	modelMatrixDoor = glm::rotate(modelMatrixDoor, glm::radians(180.0f), glm::vec3(0, 1, 0));
 
-	modelMatrixMountain = glm::translate(modelMatrixMountain, glm::vec3(0.0, 0.0, 8.0));
+	modelMatrixMountain = glm::translate(modelMatrixMountain, glm::vec3(-10.0, 0.0, 10.0));
 	modelMatrixMountain[3][1] = terrain.getHeightTerrain(modelMatrixMountain[3][0], modelMatrixMountain[3][2]);
-	modelMatrixMountain = glm::rotate(modelMatrixMountain, glm::radians(90.0f), glm::vec3(0, 1, 0));
-	modelMatrixMountain = glm::scale(modelMatrixMountain, glm::vec3(8.0f, 8.0f, 8.0f));
+	//modelMatrixMountain = glm::rotate(modelMatrixMountain, glm::radians(90.0f), glm::vec3(0, 1, 0));
+	modelMatrixMountain = glm::scale(modelMatrixMountain, glm::vec3(0.2f, 0.2f, 0.2f));
 
 	// Variables to interpolation key frames
 	fileName = "../animaciones/animation_dart_joints.txt";
@@ -1938,6 +1932,22 @@ void applicationLoop() {
 			palmCollider.c = glm::vec3(modelMatrixColliderPalm[3]);
 			palmCollider.e = modelPalm.getObb().e * glm::vec3(1.0, 1.0, 1.0);
 			std::get<0>(collidersOBB.find("palm-" + std::to_string(i))->second) = palmCollider;
+		}
+
+		// Collider Geisers
+		for (int i = 0; i < geiserPositions.size(); i++) {
+			AbstractModel::OBB geiserCollider;
+			glm::mat4 modelMatrixColliderGeiser = glm::mat4(1.0);
+			modelMatrixColliderGeiser = glm::translate(modelMatrixColliderGeiser, geiserPositions[i]);
+			addOrUpdateColliders(collidersOBB, "geiser-" + std::to_string(i), geiserCollider, modelMatrixColliderGeiser);
+			// Set the orientation of collider before doing the scale
+			geiserCollider.u = glm::quat_cast(modelMatrixColliderGeiser);
+			modelMatrixColliderGeiser = glm::scale(modelMatrixColliderGeiser, glm::vec3(1.0, 1.0, 1.0));
+			modelMatrixColliderGeiser = glm::translate(modelMatrixColliderGeiser, modelPalm.getObb().c);
+			geiserCollider.c = glm::vec3(modelMatrixColliderGeiser[3]);
+			//geiserCollider.c.y = terrain.getHeightTerrain(geiserPositions[i].x, geiserPositions[i].z) * 1;
+			geiserCollider.e = modelGeiser.getObb().e * glm::vec3(1.0, 1.0, 1.0);
+			std::get<0>(collidersOBB.find("geiser-" + std::to_string(i))->second) = geiserCollider;
 		}
 	
 
@@ -2302,11 +2312,6 @@ void renderScene(bool renderParticles){
 		modelGrass.render();
 	}
 	glEnable(GL_CULL_FACE);
-
-	// Fountain
-	/*glDisable(GL_CULL_FACE);
-	modelFountain.render(modelMatrixFountain);
-	glEnable(GL_CULL_FACE);*/
 
 	//Geiser
 	glDisable(GL_CULL_FACE);
