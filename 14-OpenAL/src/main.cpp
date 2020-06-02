@@ -104,10 +104,6 @@ ShadowBox * shadowBox;
 
 // Models complex instances
 
-// Lamps
-//Model modelLamp1;
-//Model modelLamp2;
-//Model modelLampPost2;
 // Hierba
 Model modelGrass;
 // Fountain
@@ -122,13 +118,16 @@ Model modelPalm;
 //Door
 Model modelDoor;
 
+//Mountain
+Model modelMountain;
+
 // Model animate instance
 // Mayow
 Model mayowModelAnimate;
 // Terrain model instance
-Terrain terrain(-1, -1, 200, 16, "../Textures/terrenoJurassic.png");
+Terrain terrain(-1, -1, 200, 16, "../Textures/terrenoJurassic2.png");
 
-GLuint textureCespedID, textureWallID, textureWindowID, textureHighwayID, textureLandingPadID;
+GLuint textureCespedID;
 GLuint textureTerrainBackgroundID, textureTerrainRID, textureTerrainGID, textureTerrainBID, textureTerrainBlendMapID;
 GLuint textureParticleFountainID, textureParticleFireID, texId;
 GLuint skyboxTextureID;
@@ -159,8 +158,9 @@ glm::mat4 modelMatrixMayow = glm::mat4(1.0f);
 glm::mat4 modelMatrixFountain1 = glm::mat4(1.0f);
 glm::mat4 modelMatrixGeiser = glm::mat4(1.0f);
 glm::mat4 modelMatrixDoor = glm::mat4(1.0f);
+glm::mat4 modelMatrixMountain = glm::mat4(1.0f);
 
-int animationIndex = 1;
+int animationIndex = 0;
 int velModel = 1;
 float rotDartHead = 0.0, rotDartLeftArm = 0.0, rotDartLeftHand = 0.0, rotDartRightArm = 0.0, rotDartRightHand = 0.0, rotDartLeftLeg = 0.0, rotDartRightLeg = 0.0;
 int modelSelected = 2;
@@ -214,20 +214,26 @@ std::vector<glm::vec3> palmPositions = { glm::vec3(-10.58f, 0.0f, -1.27f),
 };
 
 //Geiser positions
-std::vector<glm::vec3> geiserPositions = { glm::vec3(20.0f, -0.0f, 30.0f),
-										   glm::vec3(20.0f, -0.0f, -30.0f),
-										   glm::vec3(-15.0f, 0.0f, -26.0f),
-										   glm::vec3(41.0f, 0.0f, -28.0f),
-										   glm::vec3(-23.0f, 0.0f, -61.0f),
-										   glm::vec3(-25.0f, 0.0f, 28.0f),
-										   glm::vec3(62.0f, 0.0f, 24.0f),
-										   glm::vec3(80.0f, 0.0f, -28.0f),
-										   glm::vec3(-55.0f, 0.0f, 11.0f),
-										   glm::vec3(-35.71f, 0.0f, 18.33f),
-										   glm::vec3(67.89f, 0.0f, 95.45f),
-										   glm::vec3(32.46f, 0.0f, 70.32f),
-										   glm::vec3(-65.12f, 0.0f, -27.0f),
-										   glm::vec3(-84.12f, 0.0f, -78.0f)
+std::vector<glm::vec3> geiserPositions = { glm::vec3(46.5 , 0, 40.38),
+										   glm::vec3(40.33 , 0, 45.33),
+										   glm::vec3(42.35 , 0, 50.32),
+										   glm::vec3(35.57 , 0, 50.94),
+										   glm::vec3(28.49 , 0, 55.33),
+										   glm::vec3(23.39 , 0, 60.26),
+										   glm::vec3(10.95 , 0, 57.4),
+										   glm::vec3(17.76 , 0, 59.16),
+										   glm::vec3(28.63 , 0, 78.61),
+										   glm::vec3(14.62 , 0, 69.47),
+										   glm::vec3(8.28 , 0, 65.11),
+										   glm::vec3(19.15 , 0, 64.17),
+										   glm::vec3(6.0 , 0, 58.96),
+										   glm::vec3(35.54f, 0.0f, 67.44f),
+										   glm::vec3(19.08, 0, 85.7),
+										   glm::vec3(28.6, 0, 89.94),
+										   glm::vec3(35.43, 0, 85.31),
+										   glm::vec3(43.62, 0, 77.12),
+										   glm::vec3(44.91, 0, 61.08),
+										   glm::vec3(56.59, 0, 65.04)
 };
 
 //Fire positions
@@ -257,6 +263,13 @@ std::map<std::string, glm::vec3> blendingUnsorted = {
 		{"geiser11", geiserPositions[11]},
 		{"geiser12", geiserPositions[12]},
 		{"geiser13", geiserPositions[13]},
+		{"geiser14", geiserPositions[14]},
+		{"geiser15", geiserPositions[15]},
+		{"geiser16", geiserPositions[16]},
+		{"geiser17", geiserPositions[17]},
+		{"geiser18", geiserPositions[18]},
+		{"geiser19", geiserPositions[19]},
+		{"geiser20", geiserPositions[20]},
 		{"fire0", firePositions[0]},
 		{"fire1", firePositions[1]},
 		{"fire2", firePositions[2]},
@@ -587,14 +600,6 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	terrain.setShader(&shaderTerrain);
 	terrain.setPosition(glm::vec3(100, 0, 100));
 
-	//Lamp models
-	/*modelLamp1.loadModel("../models/Street-Lamp-Black/objLamp.obj");
-	modelLamp1.setShader(&shaderMulLighting);
-	modelLamp2.loadModel("../models/Street_Light/Lamp.obj");
-	modelLamp2.setShader(&shaderMulLighting);
-	modelLampPost2.loadModel("../models/Street_Light/LampPost.obj");
-	modelLampPost2.setShader(&shaderMulLighting);*/
-
 	//Grass
 	modelGrass.loadModel("../models/grass/grassModel.obj");
 	modelGrass.setShader(&shaderMulLighting);
@@ -615,15 +620,19 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelDoor.loadModel("../models/Door/DoorFinal.obj");
 	modelDoor.setShader(&shaderMulLighting);
 
+	//Mountain
+	modelMountain.loadModel("../models/Mountain/mountain/mount.blend2.obj");
+	modelMountain.setShader(&shaderMulLighting);
+
 	//Mayow
-	mayowModelAnimate.loadModel("../models/mayow/personaje2.fbx");
+	mayowModelAnimate.loadModel("../models/Walk/Walk.fbx");
 	mayowModelAnimate.setShader(&shaderMulLighting);
 
 	camera->setPosition(glm::vec3(0.0, 0.0, 10.0));
 	camera->setDistanceFromTarget(distanceFromTarget);
 	camera->setSensitivity(1.0);
 
-	cameraFPS->setPosition(glm::vec3(0.0, 3.0, 4.0));
+	cameraFPS->setPosition(glm::vec3(0.0, 6.0, 0.0));
 
 	// Definimos el tamanio de la imagen
 	int imageWidth, imageHeight;
@@ -685,134 +694,6 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 		std::cout << "Failed to load texture" << std::endl;
 	// Libera la memoria de la textura
 	textureCesped.freeImage(bitmap);
-
-	// Definiendo la textura a utilizar
-	Texture textureWall("../Textures/whiteWall.jpg");
-	// Carga el mapa de bits (FIBITMAP es el tipo de dato de la libreria)
-	bitmap = textureWall.loadImage();
-	// Convertimos el mapa de bits en un arreglo unidimensional de tipo unsigned char
-	data = textureWall.convertToData(bitmap, imageWidth,
-			imageHeight);
-	// Creando la textura con id 1
-	glGenTextures(1, &textureWallID);
-	// Enlazar esa textura a una tipo de textura de 2D.
-	glBindTexture(GL_TEXTURE_2D, textureWallID);
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Verifica si se pudo abrir la textura
-	if (data) {
-		// Transferis los datos de la imagen a memoria
-		// Tipo de textura, Mipmaps, Formato interno de openGL, ancho, alto, Mipmaps,
-		// Formato interno de la libreria de la imagen, el tipo de dato y al apuntador
-		// a los datos
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
-		GL_BGRA, GL_UNSIGNED_BYTE, data);
-		// Generan los niveles del mipmap (OpenGL es el ecargado de realizarlos)
-		glGenerateMipmap(GL_TEXTURE_2D);
-	} else
-		std::cout << "Failed to load texture" << std::endl;
-	// Libera la memoria de la textura
-	textureWall.freeImage(bitmap);
-
-	// Definiendo la textura a utilizar
-	Texture textureWindow("../Textures/ventana.png");
-	// Carga el mapa de bits (FIBITMAP es el tipo de dato de la libreria)
-	bitmap = textureWindow.loadImage();
-	// Convertimos el mapa de bits en un arreglo unidimensional de tipo unsigned char
-	data = textureWindow.convertToData(bitmap, imageWidth,
-			imageHeight);
-	// Creando la textura con id 1
-	glGenTextures(1, &textureWindowID);
-	// Enlazar esa textura a una tipo de textura de 2D.
-	glBindTexture(GL_TEXTURE_2D, textureWindowID);
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Verifica si se pudo abrir la textura
-	if (data) {
-		// Transferis los datos de la imagen a memoria
-		// Tipo de textura, Mipmaps, Formato interno de openGL, ancho, alto, Mipmaps,
-		// Formato interno de la libreria de la imagen, el tipo de dato y al apuntador
-		// a los datos
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
-		GL_BGRA, GL_UNSIGNED_BYTE, data);
-		// Generan los niveles del mipmap (OpenGL es el ecargado de realizarlos)
-		glGenerateMipmap(GL_TEXTURE_2D);
-	} else
-		std::cout << "Failed to load texture" << std::endl;
-	// Libera la memoria de la textura
-	textureWindow.freeImage(bitmap);
-
-	// Definiendo la textura a utilizar
-	Texture textureHighway("../Textures/highway.jpg");
-	// Carga el mapa de bits (FIBITMAP es el tipo de dato de la libreria)
-	bitmap = textureHighway.loadImage();
-	// Convertimos el mapa de bits en un arreglo unidimensional de tipo unsigned char
-	data = textureHighway.convertToData(bitmap, imageWidth,
-			imageHeight);
-	// Creando la textura con id 1
-	glGenTextures(1, &textureHighwayID);
-	// Enlazar esa textura a una tipo de textura de 2D.
-	glBindTexture(GL_TEXTURE_2D, textureHighwayID);
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Verifica si se pudo abrir la textura
-	if (data) {
-		// Transferis los datos de la imagen a memoria
-		// Tipo de textura, Mipmaps, Formato interno de openGL, ancho, alto, Mipmaps,
-		// Formato interno de la libreria de la imagen, el tipo de dato y al apuntador
-		// a los datos
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
-		GL_BGRA, GL_UNSIGNED_BYTE, data);
-		// Generan los niveles del mipmap (OpenGL es el ecargado de realizarlos)
-		glGenerateMipmap(GL_TEXTURE_2D);
-	} else
-		std::cout << "Failed to load texture" << std::endl;
-	// Libera la memoria de la textura
-	textureHighway.freeImage(bitmap);
-
-	// Definiendo la textura a utilizar
-	Texture textureLandingPad("../Textures/landingPad.jpg");
-	// Carga el mapa de bits (FIBITMAP es el tipo de dato de la libreria)
-	bitmap = textureLandingPad.loadImage();
-	// Convertimos el mapa de bits en un arreglo unidimensional de tipo unsigned char
-	data = textureLandingPad.convertToData(bitmap, imageWidth,
-			imageHeight);
-	// Creando la textura con id 1
-	glGenTextures(1, &textureLandingPadID);
-	// Enlazar esa textura a una tipo de textura de 2D.
-	glBindTexture(GL_TEXTURE_2D, textureLandingPadID);
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Verifica si se pudo abrir la textura
-	if (data) {
-		// Transferis los datos de la imagen a memoria
-		// Tipo de textura, Mipmaps, Formato interno de openGL, ancho, alto, Mipmaps,
-		// Formato interno de la libreria de la imagen, el tipo de dato y al apuntador
-		// a los datos
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
-		GL_BGRA, GL_UNSIGNED_BYTE, data);
-		// Generan los niveles del mipmap (OpenGL es el ecargado de realizarlos)
-		glGenerateMipmap(GL_TEXTURE_2D);
-	} else
-		std::cout << "Failed to load texture" << std::endl;
-	// Libera la memoria de la textura
-	textureLandingPad.freeImage(bitmap);
 
 	// Definiendo la textura a utilizar
 	Texture textureTerrainBackground("../Textures/ca.jpg");
@@ -943,7 +824,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	textureTerrainB.freeImage(bitmap);
 
 	// Definiendo la textura a utilizar
-	Texture textureTerrainBlendMap("../Textures/blendMapP4.png");
+	Texture textureTerrainBlendMap("../Textures/blendMapJurassic.png");
 	// Carga el mapa de bits (FIBITMAP es el tipo de dato de la libreria)
 	bitmap = textureTerrainBlendMap.loadImage(true);
 	// Convertimos el mapa de bits en un arreglo unidimensional de tipo unsigned char
@@ -1173,13 +1054,11 @@ void destroy() {
 	terrain.destroy();
 
 	// Custom objects Delete
-	/*modelLamp1.destroy();
-	modelLamp2.destroy();
-	modelLampPost2.destroy();*/
 	modelGrass.destroy();
 	modelGeiser.destroy();
 	modelPalm.destroy();
 	modelDoor.destroy();
+	modelMountain.destroy();
 
 	// Custom objects animate
 	mayowModelAnimate.destroy();
@@ -1187,10 +1066,6 @@ void destroy() {
 	// Textures Delete
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDeleteTextures(1, &textureCespedID);
-	glDeleteTextures(1, &textureWallID);
-	glDeleteTextures(1, &textureWindowID);
-	glDeleteTextures(1, &textureHighwayID);
-	glDeleteTextures(1, &textureLandingPadID);
 	glDeleteTextures(1, &textureTerrainBackgroundID);
 	glDeleteTextures(1, &textureTerrainRID);
 	glDeleteTextures(1, &textureTerrainGID);
@@ -1667,7 +1542,7 @@ void applicationLoop() {
 
 	modelMatrixDart = glm::translate(modelMatrixDart, glm::vec3(3.0, 0.0, 20.0));
 
-	modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(13.0f, 0.05f, -5.0f));
+	modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0f, 0.05f, -90.0f));
 	modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f), glm::vec3(0, 1, 0));
 
 	/*modelMatrixFountain = glm::translate(modelMatrixFountain, glm::vec3(5.0, 0.0, -40.0));
@@ -1680,6 +1555,11 @@ void applicationLoop() {
 	modelMatrixDoor = glm::translate(modelMatrixDoor, glm::vec3(0.0, 0.0, -95.0));
 	modelMatrixDoor[3][1] = terrain.getHeightTerrain(modelMatrixDoor[3][0], modelMatrixDoor[3][2]);
 	modelMatrixDoor = glm::rotate(modelMatrixDoor, glm::radians(180.0f), glm::vec3(0, 1, 0));
+
+	modelMatrixMountain = glm::translate(modelMatrixMountain, glm::vec3(0.0, 0.0, 8.0));
+	modelMatrixMountain[3][1] = terrain.getHeightTerrain(modelMatrixMountain[3][0], modelMatrixMountain[3][2]);
+	modelMatrixMountain = glm::rotate(modelMatrixMountain, glm::radians(90.0f), glm::vec3(0, 1, 0));
+	modelMatrixMountain = glm::scale(modelMatrixMountain, glm::vec3(8.0f, 8.0f, 8.0f));
 
 	// Variables to interpolation key frames
 	fileName = "../animaciones/animation_dart_joints.txt";
@@ -1977,40 +1857,6 @@ void applicationLoop() {
 		 * IMPORTANT do this before interpolations
 		 *******************************************/
 
-		// Lamps1 colliders
-		/*for (int i = 0; i < lamp1Position.size(); i++){
-			AbstractModel::OBB lampCollider;
-			glm::mat4 modelMatrixColliderLamp = glm::mat4(1.0);
-			modelMatrixColliderLamp = glm::translate(modelMatrixColliderLamp, lamp1Position[i]);
-			modelMatrixColliderLamp = glm::rotate(modelMatrixColliderLamp, glm::radians(lamp1Orientation[i]),
-					glm::vec3(0, 1, 0));
-			addOrUpdateColliders(collidersOBB, "lamp1-" + std::to_string(i), lampCollider, modelMatrixColliderLamp);
-			// Set the orientation of collider before doing the scale
-			lampCollider.u = glm::quat_cast(modelMatrixColliderLamp);
-			modelMatrixColliderLamp = glm::scale(modelMatrixColliderLamp, glm::vec3(0.5, 0.5, 0.5));
-			modelMatrixColliderLamp = glm::translate(modelMatrixColliderLamp, modelLamp1.getObb().c);
-			lampCollider.c = glm::vec3(modelMatrixColliderLamp[3]);
-			lampCollider.e = modelLamp1.getObb().e * glm::vec3(0.5, 0.5, 0.5);
-			std::get<0>(collidersOBB.find("lamp1-" + std::to_string(i))->second) = lampCollider;
-		}*/
-
-		// Lamps2 colliders
-		/*for (int i = 0; i < lamp2Position.size(); i++){
-			AbstractModel::OBB lampCollider;
-			glm::mat4 modelMatrixColliderLamp = glm::mat4(1.0);
-			modelMatrixColliderLamp = glm::translate(modelMatrixColliderLamp, lamp2Position[i]);
-			modelMatrixColliderLamp = glm::rotate(modelMatrixColliderLamp, glm::radians(lamp2Orientation[i]),
-					glm::vec3(0, 1, 0));
-			addOrUpdateColliders(collidersOBB, "lamp2-" + std::to_string(i), lampCollider, modelMatrixColliderLamp);
-			// Set the orientation of collider before doing the scale
-			lampCollider.u = glm::quat_cast(modelMatrixColliderLamp);
-			modelMatrixColliderLamp = glm::scale(modelMatrixColliderLamp, glm::vec3(1.0, 1.0, 1.0));
-			modelMatrixColliderLamp = glm::translate(modelMatrixColliderLamp, modelLampPost2.getObb().c);
-			lampCollider.c = glm::vec3(modelMatrixColliderLamp[3]);
-			lampCollider.e = modelLampPost2.getObb().e * glm::vec3(1.0, 1.0, 1.0);
-			std::get<0>(collidersOBB.find("lamp2-" + std::to_string(i))->second) = lampCollider;
-		}*/
-
 		// Collider de mayow
 		AbstractModel::OBB mayowCollider;
 		glm::mat4 modelmatrixColliderMayow = glm::mat4(modelMatrixMayow);
@@ -2018,12 +1864,12 @@ void applicationLoop() {
 				glm::radians(-90.0f), glm::vec3(1, 0, 0));
 		// Set the orientation of collider before doing the scale
 		mayowCollider.u = glm::quat_cast(modelmatrixColliderMayow);
-		modelmatrixColliderMayow = glm::scale(modelmatrixColliderMayow, glm::vec3(0.021, 0.021, 0.021));
+		modelmatrixColliderMayow = glm::scale(modelmatrixColliderMayow, glm::vec3(2.0, 2.0, 2.0));
 		modelmatrixColliderMayow = glm::translate(modelmatrixColliderMayow,
 				glm::vec3(mayowModelAnimate.getObb().c.x,
 						mayowModelAnimate.getObb().c.y,
 						mayowModelAnimate.getObb().c.z));
-		mayowCollider.e = mayowModelAnimate.getObb().e * glm::vec3(0.021, 0.021, 0.021) * glm::vec3(0.787401574, 0.787401574, 0.787401574);
+		mayowCollider.e = mayowModelAnimate.getObb().e * glm::vec3(2.0, 2.0, 2.0) * glm::vec3(0.787401574, 0.787401574, 0.787401574);
 		mayowCollider.c = glm::vec3(modelmatrixColliderMayow[3]);
 		addOrUpdateColliders(collidersOBB, "mayow", mayowCollider, modelMatrixMayow);
 
@@ -2314,11 +2160,6 @@ void prepareScene(){
 
 	terrain.setShader(&shaderTerrain);
 
-	//Lamp models
-	/*modelLamp1.setShader(&shaderMulLighting);
-	modelLamp2.setShader(&shaderMulLighting);
-	modelLampPost2.setShader(&shaderMulLighting);*/
-
 	//Grass
 	modelGrass.setShader(&shaderMulLighting);
 
@@ -2327,6 +2168,9 @@ void prepareScene(){
 
 	//Door
 	modelDoor.setShader(&shaderMulLighting);
+
+	//Mountain
+	modelMountain.setShader(&shaderMulLighting);
 }
 
 void prepareDepthScene(){
@@ -2334,11 +2178,6 @@ void prepareDepthScene(){
 	skyboxSphere.setShader(&shaderDepth);
 
 	terrain.setShader(&shaderDepth);
-
-	//Lamp models
-	/*modelLamp1.setShader(&shaderDepth);
-	modelLamp2.setShader(&shaderDepth);
-	modelLampPost2.setShader(&shaderDepth);*/
 
 	//Grass
 	modelGrass.setShader(&shaderDepth);
@@ -2348,6 +2187,9 @@ void prepareDepthScene(){
 
 	//Door
 	modelDoor.setShader(&shaderDepth);
+
+	//Mountanin
+	modelMountain.setShader(&shaderDepth);
 }
 
 void renderScene(bool renderParticles){
@@ -2389,30 +2231,9 @@ void renderScene(bool renderParticles){
 	// Forze to enable the unit texture to 0 always ----------------- IMPORTANT
 	glActiveTexture(GL_TEXTURE0);
 
-	// Render the lamps
-	/*for (int i = 0; i < lamp1Position.size(); i++){
-		lamp1Position[i].y = terrain.getHeightTerrain(lamp1Position[i].x, lamp1Position[i].z);
-		modelLamp1.setPosition(lamp1Position[i]);
-		modelLamp1.setScale(glm::vec3(0.5, 0.5, 0.5));
-		modelLamp1.setOrientation(glm::vec3(0, lamp1Orientation[i], 0));
-		modelLamp1.render();
-	}
-
-	for (int i = 0; i < lamp2Position.size(); i++){
-		lamp2Position[i].y = terrain.getHeightTerrain(lamp2Position[i].x, lamp2Position[i].z);
-		modelLamp2.setPosition(lamp2Position[i]);
-		modelLamp2.setScale(glm::vec3(1.0, 1.0, 1.0));
-		modelLamp2.setOrientation(glm::vec3(0, lamp2Orientation[i], 0));
-		modelLamp2.render();
-		modelLampPost2.setPosition(lamp2Position[i]);
-		modelLampPost2.setScale(glm::vec3(1.0, 1.0, 1.0));
-		modelLampPost2.setOrientation(glm::vec3(0, lamp2Orientation[i], 0));
-		modelLampPost2.render();
-	}*/
-
 	// Grass
 	glDisable(GL_CULL_FACE);
-	glm::vec3 grassPosition = glm::vec3(0.0, 0.0, 0.0);
+	glm::vec3 grassPosition = glm::vec3(0.0, 0.0, -80.0);
 	grassPosition.y = terrain.getHeightTerrain(grassPosition.x, grassPosition.z);
 	modelGrass.setPosition(grassPosition);
 	modelGrass.render();
@@ -2448,13 +2269,18 @@ void renderScene(bool renderParticles){
 	modelDoor.render(modelMatrixDoor);
 	glEnable(GL_CULL_FACE);
 
+	//Mountanin
+	glDisable(GL_CULL_FACE);
+	modelMountain.render(modelMatrixMountain);
+	glEnable(GL_CULL_FACE);
+
 	/*******************************************
 	 * Custom Anim objects obj
 	 *******************************************/
 	modelMatrixMayow[3][1] = terrain.getHeightTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2]);
 	glm::mat4 modelMatrixMayowBody = glm::mat4(modelMatrixMayow);
-	modelMatrixMayowBody = glm::scale(modelMatrixMayowBody, glm::vec3(0.021, 0.021, 0.021));
-	mayowModelAnimate.setAnimationIndex(animationIndex);
+	modelMatrixMayowBody = glm::scale(modelMatrixMayowBody, glm::vec3(2.0, 2.0, 2.0));
+	mayowModelAnimate.setAnimationIndex(0);
 	mayowModelAnimate.render(modelMatrixMayowBody);
 
 	/**********
@@ -2923,6 +2749,205 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesFountain.turnOff();
+
+		 /**********
+		  * End Render particles systems
+		  */
+		}
+		else if (renderParticles && it->second.first.compare("geiser14") == 0) {
+		/**********
+		 * Init Render particles systems
+		 */
+		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
+		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
+		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
+		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
+			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
+		 //glDisable(GL_DEPTH_TEST);
+		 glDepthMask(GL_FALSE);
+		 // Set the point size
+		 glPointSize(10.0f);
+		 glActiveTexture(GL_TEXTURE0);
+		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 shaderParticlesFountain.turnOn();
+		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesFountain.setInt("ParticleTex", 0);
+		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 glBindVertexArray(VAOParticles);
+		 glDrawArrays(GL_POINTS, 0, nParticles);
+		 glDepthMask(GL_TRUE);
+		 //glEnable(GL_DEPTH_TEST);
+		 shaderParticlesFountain.turnOff();
+
+		 /**********
+		  * End Render particles systems
+		  */
+		}
+		else if (renderParticles && it->second.first.compare("geiser15") == 0) {
+		/**********
+		 * Init Render particles systems
+		 */
+		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
+		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
+		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
+		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
+			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
+		 //glDisable(GL_DEPTH_TEST);
+		 glDepthMask(GL_FALSE);
+		 // Set the point size
+		 glPointSize(10.0f);
+		 glActiveTexture(GL_TEXTURE0);
+		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 shaderParticlesFountain.turnOn();
+		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesFountain.setInt("ParticleTex", 0);
+		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 glBindVertexArray(VAOParticles);
+		 glDrawArrays(GL_POINTS, 0, nParticles);
+		 glDepthMask(GL_TRUE);
+		 //glEnable(GL_DEPTH_TEST);
+		 shaderParticlesFountain.turnOff();
+
+		 /**********
+		  * End Render particles systems
+		  */
+		}
+		else if (renderParticles && it->second.first.compare("geiser16") == 0) {
+		/**********
+		 * Init Render particles systems
+		 */
+		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
+		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
+		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
+		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
+			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
+		 //glDisable(GL_DEPTH_TEST);
+		 glDepthMask(GL_FALSE);
+		 // Set the point size
+		 glPointSize(10.0f);
+		 glActiveTexture(GL_TEXTURE0);
+		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 shaderParticlesFountain.turnOn();
+		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesFountain.setInt("ParticleTex", 0);
+		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 glBindVertexArray(VAOParticles);
+		 glDrawArrays(GL_POINTS, 0, nParticles);
+		 glDepthMask(GL_TRUE);
+		 //glEnable(GL_DEPTH_TEST);
+		 shaderParticlesFountain.turnOff();
+
+		 /**********
+		  * End Render particles systems
+		  */
+		}
+		else if (renderParticles && it->second.first.compare("geiser17") == 0) {
+		/**********
+		 * Init Render particles systems
+		 */
+		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
+		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
+		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
+		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
+			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
+		 //glDisable(GL_DEPTH_TEST);
+		 glDepthMask(GL_FALSE);
+		 // Set the point size
+		 glPointSize(10.0f);
+		 glActiveTexture(GL_TEXTURE0);
+		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 shaderParticlesFountain.turnOn();
+		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesFountain.setInt("ParticleTex", 0);
+		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 glBindVertexArray(VAOParticles);
+		 glDrawArrays(GL_POINTS, 0, nParticles);
+		 glDepthMask(GL_TRUE);
+		 //glEnable(GL_DEPTH_TEST);
+		 shaderParticlesFountain.turnOff();
+
+		 /**********
+		  * End Render particles systems
+		  */
+		}
+		else if (renderParticles && it->second.first.compare("geiser18") == 0) {
+		/**********
+		 * Init Render particles systems
+		 */
+		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
+		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
+		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
+		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
+			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
+		 //glDisable(GL_DEPTH_TEST);
+		 glDepthMask(GL_FALSE);
+		 // Set the point size
+		 glPointSize(10.0f);
+		 glActiveTexture(GL_TEXTURE0);
+		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 shaderParticlesFountain.turnOn();
+		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesFountain.setInt("ParticleTex", 0);
+		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 glBindVertexArray(VAOParticles);
+		 glDrawArrays(GL_POINTS, 0, nParticles);
+		 glDepthMask(GL_TRUE);
+		 //glEnable(GL_DEPTH_TEST);
+		 shaderParticlesFountain.turnOff();
+
+		 /**********
+		  * End Render particles systems
+		  */
+		}
+		else if (renderParticles && it->second.first.compare("geiser19") == 0) {
+		/**********
+		 * Init Render particles systems
+		 */
+		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
+		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
+		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
+		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
+		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
+			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
+		 //glDisable(GL_DEPTH_TEST);
+		 glDepthMask(GL_FALSE);
+		 // Set the point size
+		 glPointSize(10.0f);
+		 glActiveTexture(GL_TEXTURE0);
+		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 shaderParticlesFountain.turnOn();
+		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesFountain.setInt("ParticleTex", 0);
+		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 glBindVertexArray(VAOParticles);
+		 glDrawArrays(GL_POINTS, 0, nParticles);
+		 glDepthMask(GL_TRUE);
+		 //glEnable(GL_DEPTH_TEST);
+		 shaderParticlesFountain.turnOff();
+
 		 /**********
 		  * End Render particles systems
 		  */
