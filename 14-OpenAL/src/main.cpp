@@ -79,7 +79,7 @@ Shader shaderMulLighting;
 //Shader para el terreno
 Shader shaderTerrain;
 //Shader para las particulas de fountain
-Shader shaderParticlesFountain;
+Shader shaderParticlesGeiser;
 //Shader para las particulas de fuego
 Shader shaderParticlesFire;
 //Shader para visualizar el buffer de profundidad
@@ -569,7 +569,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	shaderSkybox.initialize("../Shaders/skyBox.vs", "../Shaders/skyBox_fog.fs");
 	shaderMulLighting.initialize("../Shaders/iluminacion_textura_animation_shadow.vs", "../Shaders/multipleLights_shadow.fs");
 	shaderTerrain.initialize("../Shaders/terrain_shadow.vs", "../Shaders/terrain_shadow.fs");
-	shaderParticlesFountain.initialize("../Shaders/particlesFountain.vs", "../Shaders/particlesFountain.fs");
+	shaderParticlesGeiser.initialize("../Shaders/particlesFountain.vs", "../Shaders/particlesFountain.fs");
 	shaderParticlesFire.initialize("../Shaders/particlesFire.vs", "../Shaders/particlesFire.fs", {"Position", "Velocity", "Age"});
 	shaderViewDepth.initialize("../Shaders/texturizado.vs", "../Shaders/texturizado_depth_view.fs");
 	shaderDepth.initialize("../Shaders/shadow_mapping_depth.vs", "../Shaders/shadow_mapping_depth.fs");
@@ -1040,7 +1040,7 @@ void destroy() {
 	shaderMulLighting.destroy();
 	shaderSkybox.destroy();
 	shaderTerrain.destroy();
-	shaderParticlesFountain.destroy();
+	shaderParticlesGeiser.destroy();
 	shaderParticlesFire.destroy();
 
 	// Basic objects Delete
@@ -1669,9 +1669,9 @@ void applicationLoop() {
 		shaderTerrain.setMatrix4("lightSpaceMatrix", 1, false,
 				glm::value_ptr(lightSpaceMatrix));
 		// Settea la matriz de vista y projection al shader para el fountain
-		shaderParticlesFountain.setMatrix4("projection", 1, false,
+		shaderParticlesGeiser.setMatrix4("projection", 1, false,
 					glm::value_ptr(projection));
-		shaderParticlesFountain.setMatrix4("view", 1, false,
+		shaderParticlesGeiser.setMatrix4("view", 1, false,
 				glm::value_ptr(view));
 		// Settea la matriz de vista y projection al shader para el fuego
 		shaderParticlesFire.setInt("Pass", 2);
@@ -2309,10 +2309,10 @@ void renderScene(bool renderParticles){
 			/**********
 			 * Init Render particles systems
 			 */
-			glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-			modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-			modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-			modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+			glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+			modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+			modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+			modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 			currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 			if(currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 				lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2322,17 +2322,17 @@ void renderScene(bool renderParticles){
 			glPointSize(10.0f);
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-			shaderParticlesFountain.turnOn();
-			shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-			shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-			shaderParticlesFountain.setInt("ParticleTex", 0);
-			shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-			shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+			shaderParticlesGeiser.turnOn();
+			shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+			shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+			shaderParticlesGeiser.setInt("ParticleTex", 0);
+			shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+			shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 			glBindVertexArray(VAOParticles);
 			glDrawArrays(GL_POINTS, 0, nParticles);
 			glDepthMask(GL_TRUE);
 			//glEnable(GL_DEPTH_TEST);
-			shaderParticlesFountain.turnOff();
+			shaderParticlesGeiser.turnOff();
 			/**********
 			 * End Render particles systems
 			 */
@@ -2341,10 +2341,10 @@ void renderScene(bool renderParticles){
 			/**********
 			 * Init Render particles systems
 			 */
-			glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-			modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-			modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-			modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+			glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+			modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+			modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+			modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 			currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 			if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 				lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2354,17 +2354,17 @@ void renderScene(bool renderParticles){
 			glPointSize(10.0f);
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-			shaderParticlesFountain.turnOn();
-			shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-			shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-			shaderParticlesFountain.setInt("ParticleTex", 0);
-			shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-			shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+			shaderParticlesGeiser.turnOn();
+			shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+			shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+			shaderParticlesGeiser.setInt("ParticleTex", 0);
+			shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+			shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 			glBindVertexArray(VAOParticles);
 			glDrawArrays(GL_POINTS, 0, nParticles);
 			glDepthMask(GL_TRUE);
 			//glEnable(GL_DEPTH_TEST);
-			shaderParticlesFountain.turnOff();
+			shaderParticlesGeiser.turnOff();
 			/**********
 			 * End Render particles systems
 			 */
@@ -2373,10 +2373,10 @@ void renderScene(bool renderParticles){
 			/**********
 			 * Init Render particles systems
 			 */
-			glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-			modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-			modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-			modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+			glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+			modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+			modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+			modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 			currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 			if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 				lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2386,17 +2386,17 @@ void renderScene(bool renderParticles){
 			glPointSize(10.0f);
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-			shaderParticlesFountain.turnOn();
-			shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-			shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-			shaderParticlesFountain.setInt("ParticleTex", 0);
-			shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-			shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+			shaderParticlesGeiser.turnOn();
+			shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+			shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+			shaderParticlesGeiser.setInt("ParticleTex", 0);
+			shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+			shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 			glBindVertexArray(VAOParticles);
 			glDrawArrays(GL_POINTS, 0, nParticles);
 			glDepthMask(GL_TRUE);
 			//glEnable(GL_DEPTH_TEST);
-			shaderParticlesFountain.turnOff();
+			shaderParticlesGeiser.turnOff();
 			/**********
 			 * End Render particles systems
 			 */
@@ -2405,10 +2405,10 @@ void renderScene(bool renderParticles){
 			/**********
 			 * Init Render particles systems
 			 */
-			glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-			modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-			modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-			modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+			glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+			modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+			modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+			modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 			currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 			if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 				lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2418,17 +2418,17 @@ void renderScene(bool renderParticles){
 			glPointSize(10.0f);
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-			shaderParticlesFountain.turnOn();
-			shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-			shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-			shaderParticlesFountain.setInt("ParticleTex", 0);
-			shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-			shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+			shaderParticlesGeiser.turnOn();
+			shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+			shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+			shaderParticlesGeiser.setInt("ParticleTex", 0);
+			shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+			shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 			glBindVertexArray(VAOParticles);
 			glDrawArrays(GL_POINTS, 0, nParticles);
 			glDepthMask(GL_TRUE);
 			//glEnable(GL_DEPTH_TEST);
-			shaderParticlesFountain.turnOff();
+			shaderParticlesGeiser.turnOff();
 			/**********
 			 * End Render particles systems
 			 */
@@ -2437,10 +2437,10 @@ void renderScene(bool renderParticles){
 		/**********
 		 * Init Render particles systems
 		 */
-		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+		 modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+		 modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+		 modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2450,17 +2450,17 @@ void renderScene(bool renderParticles){
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
 		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-		 shaderParticlesFountain.turnOn();
-		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 shaderParticlesGeiser.turnOn();
+		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesGeiser.setInt("ParticleTex", 0);
+		 shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
-		 shaderParticlesFountain.turnOff();
+		 shaderParticlesGeiser.turnOff();
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2469,10 +2469,10 @@ void renderScene(bool renderParticles){
 		/**********
 		 * Init Render particles systems
 		 */
-		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+		 modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+		 modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+		 modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2482,17 +2482,17 @@ void renderScene(bool renderParticles){
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
 		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-		 shaderParticlesFountain.turnOn();
-		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 shaderParticlesGeiser.turnOn();
+		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesGeiser.setInt("ParticleTex", 0);
+		 shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
-		 shaderParticlesFountain.turnOff();
+		 shaderParticlesGeiser.turnOff();
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2501,10 +2501,10 @@ void renderScene(bool renderParticles){
 		/**********
 		 * Init Render particles systems
 		 */
-		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+		 modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+		 modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+		 modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2514,17 +2514,17 @@ void renderScene(bool renderParticles){
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
 		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-		 shaderParticlesFountain.turnOn();
-		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 shaderParticlesGeiser.turnOn();
+		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesGeiser.setInt("ParticleTex", 0);
+		 shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
-		 shaderParticlesFountain.turnOff();
+		 shaderParticlesGeiser.turnOff();
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2533,10 +2533,10 @@ void renderScene(bool renderParticles){
 		/**********
 		 * Init Render particles systems
 		 */
-		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+		 modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+		 modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+		 modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2546,17 +2546,17 @@ void renderScene(bool renderParticles){
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
 		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-		 shaderParticlesFountain.turnOn();
-		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 shaderParticlesGeiser.turnOn();
+		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesGeiser.setInt("ParticleTex", 0);
+		 shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
-		 shaderParticlesFountain.turnOff();
+		 shaderParticlesGeiser.turnOff();
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2565,10 +2565,10 @@ void renderScene(bool renderParticles){
 		/**********
 		 * Init Render particles systems
 		 */
-		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+		 modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+		 modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+		 modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2578,17 +2578,17 @@ void renderScene(bool renderParticles){
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
 		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-		 shaderParticlesFountain.turnOn();
-		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 shaderParticlesGeiser.turnOn();
+		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesGeiser.setInt("ParticleTex", 0);
+		 shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
-		 shaderParticlesFountain.turnOff();
+		 shaderParticlesGeiser.turnOff();
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2597,10 +2597,10 @@ void renderScene(bool renderParticles){
 		/**********
 		 * Init Render particles systems
 		 */
-		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+		 modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+		 modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+		 modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2610,17 +2610,17 @@ void renderScene(bool renderParticles){
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
 		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-		 shaderParticlesFountain.turnOn();
-		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 shaderParticlesGeiser.turnOn();
+		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesGeiser.setInt("ParticleTex", 0);
+		 shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
-		 shaderParticlesFountain.turnOff();
+		 shaderParticlesGeiser.turnOff();
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2629,10 +2629,10 @@ void renderScene(bool renderParticles){
 		/**********
 		 * Init Render particles systems
 		 */
-		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+		 modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+		 modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+		 modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2642,17 +2642,17 @@ void renderScene(bool renderParticles){
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
 		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-		 shaderParticlesFountain.turnOn();
-		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 shaderParticlesGeiser.turnOn();
+		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesGeiser.setInt("ParticleTex", 0);
+		 shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
-		 shaderParticlesFountain.turnOff();
+		 shaderParticlesGeiser.turnOff();
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2661,10 +2661,10 @@ void renderScene(bool renderParticles){
 		/**********
 		 * Init Render particles systems
 		 */
-		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+		 modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+		 modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+		 modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2674,17 +2674,17 @@ void renderScene(bool renderParticles){
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
 		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-		 shaderParticlesFountain.turnOn();
-		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 shaderParticlesGeiser.turnOn();
+		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesGeiser.setInt("ParticleTex", 0);
+		 shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
-		 shaderParticlesFountain.turnOff();
+		 shaderParticlesGeiser.turnOff();
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2693,10 +2693,10 @@ void renderScene(bool renderParticles){
 		/**********
 		 * Init Render particles systems
 		 */
-		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+		 modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+		 modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+		 modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2706,17 +2706,17 @@ void renderScene(bool renderParticles){
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
 		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-		 shaderParticlesFountain.turnOn();
-		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 shaderParticlesGeiser.turnOn();
+		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesGeiser.setInt("ParticleTex", 0);
+		 shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
-		 shaderParticlesFountain.turnOff();
+		 shaderParticlesGeiser.turnOff();
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2725,10 +2725,10 @@ void renderScene(bool renderParticles){
 		/**********
 		 * Init Render particles systems
 		 */
-		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+		 modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+		 modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+		 modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2738,17 +2738,17 @@ void renderScene(bool renderParticles){
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
 		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-		 shaderParticlesFountain.turnOn();
-		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 shaderParticlesGeiser.turnOn();
+		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesGeiser.setInt("ParticleTex", 0);
+		 shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
-		 shaderParticlesFountain.turnOff();
+		 shaderParticlesGeiser.turnOff();
 
 		 /**********
 		  * End Render particles systems
@@ -2758,10 +2758,10 @@ void renderScene(bool renderParticles){
 		/**********
 		 * Init Render particles systems
 		 */
-		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+		 modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+		 modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+		 modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2771,17 +2771,17 @@ void renderScene(bool renderParticles){
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
 		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-		 shaderParticlesFountain.turnOn();
-		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 shaderParticlesGeiser.turnOn();
+		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesGeiser.setInt("ParticleTex", 0);
+		 shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
-		 shaderParticlesFountain.turnOff();
+		 shaderParticlesGeiser.turnOff();
 
 		 /**********
 		  * End Render particles systems
@@ -2791,10 +2791,10 @@ void renderScene(bool renderParticles){
 		/**********
 		 * Init Render particles systems
 		 */
-		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+		 modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+		 modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+		 modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2804,17 +2804,17 @@ void renderScene(bool renderParticles){
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
 		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-		 shaderParticlesFountain.turnOn();
-		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 shaderParticlesGeiser.turnOn();
+		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesGeiser.setInt("ParticleTex", 0);
+		 shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
-		 shaderParticlesFountain.turnOff();
+		 shaderParticlesGeiser.turnOff();
 
 		 /**********
 		  * End Render particles systems
@@ -2824,10 +2824,10 @@ void renderScene(bool renderParticles){
 		/**********
 		 * Init Render particles systems
 		 */
-		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+		 modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+		 modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+		 modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2837,17 +2837,17 @@ void renderScene(bool renderParticles){
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
 		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-		 shaderParticlesFountain.turnOn();
-		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 shaderParticlesGeiser.turnOn();
+		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesGeiser.setInt("ParticleTex", 0);
+		 shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
-		 shaderParticlesFountain.turnOff();
+		 shaderParticlesGeiser.turnOff();
 
 		 /**********
 		  * End Render particles systems
@@ -2857,10 +2857,10 @@ void renderScene(bool renderParticles){
 		/**********
 		 * Init Render particles systems
 		 */
-		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+		 modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+		 modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+		 modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2870,17 +2870,17 @@ void renderScene(bool renderParticles){
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
 		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-		 shaderParticlesFountain.turnOn();
-		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 shaderParticlesGeiser.turnOn();
+		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesGeiser.setInt("ParticleTex", 0);
+		 shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
-		 shaderParticlesFountain.turnOff();
+		 shaderParticlesGeiser.turnOff();
 
 		 /**********
 		  * End Render particles systems
@@ -2890,10 +2890,10 @@ void renderScene(bool renderParticles){
 		/**********
 		 * Init Render particles systems
 		 */
-		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+		 modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+		 modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+		 modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2903,17 +2903,17 @@ void renderScene(bool renderParticles){
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
 		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-		 shaderParticlesFountain.turnOn();
-		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 shaderParticlesGeiser.turnOn();
+		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesGeiser.setInt("ParticleTex", 0);
+		 shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
-		 shaderParticlesFountain.turnOff();
+		 shaderParticlesGeiser.turnOff();
 
 		 /**********
 		  * End Render particles systems
@@ -2923,10 +2923,10 @@ void renderScene(bool renderParticles){
 		/**********
 		 * Init Render particles systems
 		 */
-		 glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-		 modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-		 modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]);
-		 modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(1.0, 2.0, 1.0));
+		 glm::mat4 modelMatrixParticlesGeiser = glm::mat4(1.0);
+		 modelMatrixParticlesGeiser = glm::translate(modelMatrixParticlesGeiser, it->second.second);
+		 modelMatrixParticlesGeiser[3][1] = terrain.getHeightTerrain(modelMatrixParticlesGeiser[3][0], modelMatrixParticlesGeiser[3][2]);
+		 modelMatrixParticlesGeiser = glm::scale(modelMatrixParticlesGeiser, glm::vec3(1.0, 2.0, 1.0));
 		 currTimeParticlesAnimation = TimeManager::Instance().GetTime();
 		 if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
 			 lastTimeParticlesAnimation = currTimeParticlesAnimation;
@@ -2936,17 +2936,17 @@ void renderScene(bool renderParticles){
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
 		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-		 shaderParticlesFountain.turnOn();
-		 shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-		 shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-		 shaderParticlesFountain.setInt("ParticleTex", 0);
-		 shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
-		 shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
+		 shaderParticlesGeiser.turnOn();
+		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
+		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
+		 shaderParticlesGeiser.setInt("ParticleTex", 0);
+		 shaderParticlesGeiser.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, 0.3f, 0.0f)));
+		 shaderParticlesGeiser.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesGeiser));
 		 glBindVertexArray(VAOParticles);
 		 glDrawArrays(GL_POINTS, 0, nParticles);
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
-		 shaderParticlesFountain.turnOff();
+		 shaderParticlesGeiser.turnOff();
 
 		 /**********
 		  * End Render particles systems
