@@ -129,7 +129,7 @@ Terrain terrain(-1, -1, 200, 16, "../Textures/terrenoJurassic2.png");
 
 GLuint textureCespedID;
 GLuint textureTerrainBackgroundID, textureTerrainRID, textureTerrainGID, textureTerrainBID, textureTerrainBlendMapID;
-GLuint textureParticleFountainID, textureParticleFireID, texId;
+GLuint textureParticlesGeiserID, textureParticleFireID, texId;
 GLuint skyboxTextureID;
 
 GLenum types[6] = {
@@ -905,11 +905,11 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	// Libera la memoria de la textura
 	textureTerrainBlendMap.freeImage(bitmap);
 
-	Texture textureParticlesFountain("../Textures/vapor.png");
-	bitmap = textureParticlesFountain.loadImage();
-	data = textureParticlesFountain.convertToData(bitmap, imageWidth, imageHeight);
-	glGenTextures(1, &textureParticleFountainID);
-	glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+	Texture textureParticlesGeiser("../Textures/vapor.png");
+	bitmap = textureParticlesGeiser.loadImage();
+	data = textureParticlesGeiser.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &textureParticlesGeiserID);
+	glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 	// set the texture wrapping parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);// set texture wrapping to GL_REPEAT (default wrapping method)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -923,7 +923,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	}
 	else
 		std::cout << "Failed to load texture" << std::endl;
-	textureParticlesFountain.freeImage(bitmap);
+	textureParticlesGeiser.freeImage(bitmap);
 
 	Texture textureParticleFire("../Textures/fire.png");
 	bitmap = textureParticleFire.loadImage();
@@ -1121,7 +1121,7 @@ void destroy() {
 	glDeleteTextures(1, &textureTerrainGID);
 	glDeleteTextures(1, &textureTerrainBID);
 	glDeleteTextures(1, &textureTerrainBlendMapID);
-	glDeleteTextures(1, &textureParticleFountainID);
+	glDeleteTextures(1, &textureParticlesGeiserID);
 	glDeleteTextures(1, &textureParticleFireID);
 
 	// Cube Maps Delete
@@ -2384,7 +2384,7 @@ void renderScene(bool renderParticles){
 			// Set the point size
 			glPointSize(10.0f);
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+			glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 			shaderParticlesGeiser.turnOn();
 			shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 			shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -2416,7 +2416,7 @@ void renderScene(bool renderParticles){
 			// Set the point size
 			glPointSize(10.0f);
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+			glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 			shaderParticlesGeiser.turnOn();
 			shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 			shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -2448,7 +2448,7 @@ void renderScene(bool renderParticles){
 			// Set the point size
 			glPointSize(10.0f);
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+			glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 			shaderParticlesGeiser.turnOn();
 			shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 			shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -2480,7 +2480,7 @@ void renderScene(bool renderParticles){
 			// Set the point size
 			glPointSize(10.0f);
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+			glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 			shaderParticlesGeiser.turnOn();
 			shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 			shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -2512,7 +2512,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -2544,7 +2544,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -2576,7 +2576,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -2608,7 +2608,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -2640,7 +2640,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -2672,7 +2672,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -2704,7 +2704,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -2736,7 +2736,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -2768,7 +2768,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -2800,7 +2800,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -2833,7 +2833,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -2866,7 +2866,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -2899,7 +2899,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -2932,7 +2932,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -2965,7 +2965,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -2998,7 +2998,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -3031,7 +3031,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -3064,7 +3064,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -3097,7 +3097,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -3130,7 +3130,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -3163,7 +3163,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -3196,7 +3196,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
@@ -3229,7 +3229,7 @@ void renderScene(bool renderParticles){
 		 // Set the point size
 		 glPointSize(10.0f);
 		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
+		 glBindTexture(GL_TEXTURE_2D, textureParticlesGeiserID);
 		 shaderParticlesGeiser.turnOn();
 		 shaderParticlesGeiser.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
 		 shaderParticlesGeiser.setFloat("ParticleLifetime", 3.5f);
