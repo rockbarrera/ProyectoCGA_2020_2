@@ -1175,6 +1175,7 @@ bool processInput(bool continueApplication) {
 	if (enableCountSelected && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS){
 		enableCountSelected = false;
 		inputMethod = false; //Para manejar teclado
+		glfwSetWindowTitle(window, "Window GLFW - Teclado");
 	}
 	else if(glfwGetKey(window, GLFW_KEY_1) == GLFW_RELEASE) {
 		enableCountSelected = true;
@@ -1183,6 +1184,7 @@ bool processInput(bool continueApplication) {
 	if (enableCountSelected && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
 		enableCountSelected = false;
 		inputMethod = true; //Para manejar gamePad
+		glfwSetWindowTitle(window, "Window GLFW - GamePad");
 	}
 	else if (glfwGetKey(window, GLFW_KEY_2) == GLFW_RELEASE) {
 		enableCountSelected = true;
@@ -1510,6 +1512,9 @@ void gamePad() {
 		//std::cout << "Botones disponibles: " << buttonCount << std::endl;
 		//system("cls");
 
+	}
+	else {
+		glfwSetWindowTitle(window, "Window GLFW - GamePad No hay GamePad conectado");
 	}
 	//--------------------Fin gamepad
 }
@@ -3650,7 +3655,7 @@ void renderScene(bool renderParticles){
 }
 
 int main(int argc, char **argv) {
-	init(800, 700, "Window GLFW", false);
+	init(800, 700, "Window GLFW - Teclado", false);
 	applicationLoop();
 	destroy();
 	return 1;
