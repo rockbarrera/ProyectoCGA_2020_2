@@ -1030,7 +1030,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	// Config source 0
 	// Generate buffers, or else no sound will happen!
 	alGenBuffers(NUM_BUFFERS, buffer);
-	buffer[0] = alutCreateBufferFromFile("../sounds/fountain.wav");
+	buffer[0] = alutCreateBufferFromFile("../sounds/caminar.wav");
 	buffer[1] = alutCreateBufferFromFile("../sounds/geiser.wav");
 	buffer[2] = alutCreateBufferFromFile("../sounds/antorcha.wav");
 	int errorAlut = alutGetError();
@@ -1051,7 +1051,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 		printf("init - no errors after alGenSources\n");
 	}
 	alSourcef(source[0], AL_PITCH, 1.0f);
-	alSourcef(source[0], AL_GAIN, 3.0f);
+	alSourcef(source[0], AL_GAIN, 0.3f);
 	alSourcefv(source[0], AL_POSITION, source0Pos);
 	alSourcefv(source[0], AL_VELOCITY, source0Vel);
 	alSourcei(source[0], AL_BUFFER, buffer[0]);
@@ -1337,6 +1337,7 @@ bool processInput(bool continueApplication) {
 			modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, -0.02));
 			animationIndex = 0;
 		}
+
 	}
 	
 	gamePad();
@@ -1377,7 +1378,15 @@ void gamePad() {
 				modelMatrixMayow = glm::rotate(modelMatrixMayow,
 					glm::radians(-0.8f * axes[0]),
 					glm::vec3(0, 1, 0));
-				animationIndex = 0;
+				float ax = axes[0];
+				float ay = axes[1];
+				if (ax == 0.000000000 && ay == 0.000000000) {
+					animationIndex = 0; //Detenido
+				}
+				else {
+					animationIndex = 1; //Caminando
+				}
+				
 				camera->mouseMoveCamera(axes[2], axes[3], deltaTime);
 
 				break;
@@ -2121,7 +2130,7 @@ void applicationLoop() {
 
 		// Constantes de animaciones
 		rotHelHelY += 0.5;
-		animationIndex = 1;
+		//animationIndex = 1;
 
 		/*******************************************
 		 * State machines
@@ -2148,6 +2157,11 @@ void applicationLoop() {
 		/****************************+
 		 * Open AL sound data
 		 */
+
+		source0Pos[0] = modelMatrixMayow[3].x;
+		source0Pos[1] = modelMatrixMayow[3].y;
+		source0Pos[2] = modelMatrixMayow[3].z;
+		alSourcefv(source[0], AL_POSITION, source0Pos);
 
 		source2Pos[0] = modelMatrixDoor[3].x;
 		source2Pos[1] = modelMatrixDoor[3].y;
@@ -2189,9 +2203,15 @@ void applicationLoop() {
 		alListenerfv(AL_ORIENTATION, listenerOri);
 
 		for(unsigned int i = 0; i < sourcesPlay.size(); i++){
-			if(sourcesPlay[i]){
+			if(sourcesPlay[i]){ //Para que lo reproduzca todo el tiempo
 				sourcesPlay[i] = false;
 				alSourcePlay(source[i]);
+				if (animationIndex == 1 && i == 0)
+					alSourcePlay(source[i]);
+			}
+			if (animationIndex == 0 && i == 0) {
+				sourcesPlay[i] = true;
+				alSourceStop(source[i]);
 			}
 		}
 	}
