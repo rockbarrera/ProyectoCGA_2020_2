@@ -389,7 +389,7 @@ ALenum format;
 ALvoid *data;
 int ch;
 ALboolean loop;
-std::vector<bool> sourcesPlay = {true, true, true};
+std::vector<bool> sourcesPlay = {false, false, true};
 
 // Se definen todos las funciones.
 void reshapeCallback(GLFWwindow *Window, int widthRes, int heightRes);
@@ -1030,7 +1030,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	alGenBuffers(NUM_BUFFERS, buffer);
 	buffer[0] = alutCreateBufferFromFile("../sounds/fountain.wav");
 	buffer[1] = alutCreateBufferFromFile("../sounds/fire.wav");
-	buffer[2] = alutCreateBufferFromFile("../sounds/darth_vader.wav");
+	buffer[2] = alutCreateBufferFromFile("../sounds/antorcha.wav");
 	int errorAlut = alutGetError();
 	if (errorAlut != ALUT_ERROR_NO_ERROR){
 		printf("- Error open files with alut %d !!\n", errorAlut);
@@ -1064,8 +1064,9 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	alSourcei(source[1], AL_LOOPING, AL_TRUE);
 	alSourcef(source[1], AL_MAX_DISTANCE, 2000);
 
+	//Fuente de sonido de la antorcha (puerta)
 	alSourcef(source[2], AL_PITCH, 1.0f);
-	alSourcef(source[2], AL_GAIN, 0.3f);
+	alSourcef(source[2], AL_GAIN, 4.0f);
 	alSourcefv(source[2], AL_POSITION, source2Pos);
 	alSourcefv(source[2], AL_VELOCITY, source2Vel);
 	alSourcei(source[2], AL_BUFFER, buffer[2]);
@@ -2170,38 +2171,42 @@ void applicationLoop() {
 		source0Pos[2] = modelMatrixFountain[3].z;
 		alSourcefv(source[0], AL_POSITION, source0Pos);*/
 
-		source2Pos[0] = modelMatrixDart[3].x;
-		source2Pos[1] = modelMatrixDart[3].y;
-		source2Pos[2] = modelMatrixDart[3].z;
-		alSourcefv(source[2], AL_POSITION, source2Pos);
+		if (stateCamera == 1) {
+			source2Pos[0] = modelMatrixDoor[3].x;
+			source2Pos[1] = modelMatrixDoor[3].y;
+			source2Pos[2] = modelMatrixDoor[3].z;
+			alSourcefv(source[2], AL_POSITION, source2Pos);
 
-		// Listener for the Thris person camera
-		listenerPos[0] = modelMatrixMayow[3].x;
-		listenerPos[1] = modelMatrixMayow[3].y;
-		listenerPos[2] = modelMatrixMayow[3].z;
-		alListenerfv(AL_POSITION, listenerPos);
+			// Listener for the Thris person camera
+			listenerPos[0] = modelMatrixMayow[3].x;
+			listenerPos[1] = modelMatrixMayow[3].y;
+			listenerPos[2] = modelMatrixMayow[3].z;
+			alListenerfv(AL_POSITION, listenerPos);
 
-		glm::vec3 upModel = glm::normalize(modelMatrixMayow[1]);
-		glm::vec3 frontModel = glm::normalize(modelMatrixMayow[2]);
+			glm::vec3 upModel = glm::normalize(modelMatrixMayow[1]);
+			glm::vec3 frontModel = glm::normalize(modelMatrixMayow[2]);
 
-		listenerOri[0] = frontModel.x;
-		listenerOri[1] = frontModel.y;
-		listenerOri[2] = frontModel.z;
-		listenerOri[3] = upModel.x;
-		listenerOri[4] = upModel.y;
-		listenerOri[5] = upModel.z;
-
-		// Listener for the First person camera
-		/*listenerPos[0] = camera->getPosition().x;
-		listenerPos[1] = camera->getPosition().y;
-		listenerPos[2] = camera->getPosition().z;
-		alListenerfv(AL_POSITION, listenerPos);
-		listenerOri[0] = camera->getFront().x;
-		listenerOri[1] = camera->getFront().y;
-		listenerOri[2] = camera->getFront().z;
-		listenerOri[3] = camera->getUp().x;
-		listenerOri[4] = camera->getUp().y;
-		listenerOri[5] = camera->getUp().z;*/
+			listenerOri[0] = frontModel.x;
+			listenerOri[1] = frontModel.y;
+			listenerOri[2] = frontModel.z;
+			listenerOri[3] = upModel.x;
+			listenerOri[4] = upModel.y;
+			listenerOri[5] = upModel.z;
+		}
+		else if (stateCamera == 2) {
+			// Listener for the First person camera
+			listenerPos[0] = cameraFPS->getPosition().x;
+			listenerPos[1] = cameraFPS->getPosition().y;
+			listenerPos[2] = cameraFPS->getPosition().z;
+			alListenerfv(AL_POSITION, listenerPos);
+			listenerOri[0] = cameraFPS->getFront().x;
+			listenerOri[1] = cameraFPS->getFront().y;
+			listenerOri[2] = cameraFPS->getFront().z;
+			listenerOri[3] = cameraFPS->getUp().x;
+			listenerOri[4] = cameraFPS->getUp().y;
+			listenerOri[5] = cameraFPS->getUp().z;
+		}
+		
 		alListenerfv(AL_ORIENTATION, listenerOri);
 
 		for(unsigned int i = 0; i < sourcesPlay.size(); i++){
