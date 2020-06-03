@@ -337,8 +337,8 @@ GLuint depthMap, depthMapFBO;
  */
 
 // OpenAL Defines
-#define NUM_BUFFERS 3
-#define NUM_SOURCES 3
+#define NUM_BUFFERS 4
+#define NUM_SOURCES 4
 #define NUM_ENVIRONMENTS 1
 // Listener
 ALfloat listenerPos[] = { 0.0, 0.0, 4.0 };
@@ -355,6 +355,11 @@ ALfloat source1Vel[] = { 0.0, 0.0, 0.0 };
 // Source 2 Sonido Antorcha
 ALfloat source2Pos[] = { 2.0, 0.0, 0.0 };
 ALfloat source2Vel[] = { 0.0, 0.0, 0.0 };
+
+// Source Main Theme
+ALfloat sourceMainThemePos[] = { 0.0, 0.0, 0.0 };
+ALfloat sourceMainThemeVel[] = { 0.0, 0.0, 0.0 };
+
 // Buffers
 ALuint buffer[NUM_BUFFERS];
 ALuint source[NUM_SOURCES];
@@ -365,7 +370,7 @@ ALenum format;
 ALvoid *data;
 int ch;
 ALboolean loop;
-std::vector<bool> sourcesPlay = {false, true, true};
+std::vector<bool> sourcesPlay = {false, true, true, true};
 
 // Se definen todos las funciones.
 void reshapeCallback(GLFWwindow *Window, int widthRes, int heightRes);
@@ -1007,6 +1012,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	buffer[0] = alutCreateBufferFromFile("../sounds/caminar.wav");
 	buffer[1] = alutCreateBufferFromFile("../sounds/geiser.wav");
 	buffer[2] = alutCreateBufferFromFile("../sounds/antorcha.wav");
+	buffer[3] = alutCreateBufferFromFile("../sounds/JurassicParkMainTheme.wav");
 	int errorAlut = alutGetError();
 	if (errorAlut != ALUT_ERROR_NO_ERROR){
 		printf("- Error open files with alut %d !!\n", errorAlut);
@@ -1050,6 +1056,15 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	alSourcei(source[2], AL_BUFFER, buffer[2]);
 	alSourcei(source[2], AL_LOOPING, AL_TRUE);
 	alSourcef(source[2], AL_MAX_DISTANCE, 500);
+
+	//Tema principal Main Theme
+	alSourcef(source[3], AL_PITCH, 1.0f);
+	alSourcef(source[3], AL_GAIN, 0.6f);
+	alSourcefv(source[3], AL_POSITION, sourceMainThemePos);
+	alSourcefv(source[3], AL_VELOCITY, sourceMainThemeVel);
+	alSourcei(source[3], AL_BUFFER, buffer[3]);
+	alSourcei(source[3], AL_LOOPING, AL_TRUE);
+	alSourcef(source[3], AL_MAX_DISTANCE, 500);
 }
 
 void destroy() {
