@@ -154,7 +154,7 @@ int lastMousePosX, offsetX = 0;
 int lastMousePosY, offsetY = 0;
 
 // Model matrix definitions
-glm::mat4 modelMatrixDart = glm::mat4(1.0f);
+//glm::mat4 modelMatrixDart = glm::mat4(1.0f);
 glm::mat4 modelMatrixMayow = glm::mat4(1.0f);
 glm::mat4 modelMatrixFountain1 = glm::mat4(1.0f);
 glm::mat4 modelMatrixGeiser = glm::mat4(1.0f);
@@ -163,30 +163,12 @@ glm::mat4 modelMatrixMountain = glm::mat4(1.0f);
 
 int animationIndex = 0;
 int velModel = 1;
-float rotDartHead = 0.0, rotDartLeftArm = 0.0, rotDartLeftHand = 0.0, rotDartRightArm = 0.0, rotDartRightHand = 0.0, rotDartLeftLeg = 0.0, rotDartRightLeg = 0.0;
 int modelSelected = 2;
 bool enableCountSelected = true;
 bool enableCountSelectedGamePad = true;
+bool inputMethod = false;
 
 // Variables to animations keyframes
-bool saveFrame = false, availableSave = true;
-std::ofstream myfile;
-std::string fileName = "";
-bool record = false;
-
-// Joints interpolations Dart Lego
-std::vector<std::vector<float>> keyFramesDartJoints;
-std::vector<std::vector<glm::mat4>> keyFramesDart;
-int indexFrameDartJoints = 0;
-int indexFrameDartJointsNext = 1;
-float interpolationDartJoints = 0.0;
-int maxNumPasosDartJoints = 20;
-int numPasosDartJoints = 0;
-int indexFrameDart = 0;
-int indexFrameDartNext = 1;
-float interpolationDart = 0.0;
-int maxNumPasosDart = 200;
-int numPasosDart = 0;
 
 // Var animate helicopter
 float rotHelHelY = 0.0;
@@ -194,14 +176,6 @@ float rotHelHelY = 0.0;
 // Var animate lambo dor
 int stateDoor = 0;
 float dorRotCount = 0.0;
-
-// Lamps positions
-/*std::vector<glm::vec3> lamp1Position = { glm::vec3(-7.03, 0, -19.14), glm::vec3(
-		24.41, 0, -34.57), glm::vec3(-10.15, 0, -54.10) };
-std::vector<float> lamp1Orientation = { -17.0, -82.67, 23.70 };
-std::vector<glm::vec3> lamp2Position = { glm::vec3(-36.52, 0, -23.24),
-		glm::vec3(-52.73, 0, -3.90) };
-std::vector<float> lamp2Orientation = {21.37 + 90, -65.0 + 90};*/
 
 // Palm positions
 std::vector<glm::vec3> palmPositions = { glm::vec3(-91.42f, 0.0f, 94.41f),
@@ -1196,151 +1170,101 @@ bool processInput(bool continueApplication) {
 	if (exitApp || glfwWindowShouldClose(window) != 0) {
 		return false;
 	}
-	
-	//Seleccionar cámara TPS ó FPS
-	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
-		stateCamera = 1;
-	}
-	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
-		stateCamera = 2;
-	}
-	//Fin de selección de cámara TPS ó FPS
 
-	if (stateCamera == 2) {
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			cameraFPS->moveFrontCamera(true, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			cameraFPS->moveFrontCamera(false, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-			cameraFPS->moveRightCamera(false, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-			cameraFPS->moveRightCamera(true, deltaTime);
-		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-			cameraFPS->mouseMoveCamera(offsetX, offsetY, deltaTime);
-		offsetX = 0;
-		offsetY = 0;
-	}
-	else if (stateCamera == 1) {
-		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-			camera->mouseMoveCamera(offsetX, 0.0, deltaTime);
-		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
-			camera->mouseMoveCamera(0.0, offsetY, deltaTime);
-		offsetX = 0;
-		offsetY = 0;
-	}
-
-	
-
-	// Seleccionar modelo
-	if (enableCountSelected && glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS){
+	//Seleccionar método de entrada
+	if (enableCountSelected && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS){
 		enableCountSelected = false;
-		modelSelected++;
-		if(modelSelected > 2)
-			modelSelected = 0;
-		if(modelSelected == 1)
-			fileName = "../animaciones/animation_dart_joints.txt";
-		if (modelSelected == 2)
-			fileName = "../animaciones/animation_dart.txt";
-		std::cout << "modelSelected:" << modelSelected << std::endl;
+		inputMethod = false; //Para manejar teclado
 	}
-	else if(glfwGetKey(window, GLFW_KEY_TAB) == GLFW_RELEASE)
+	else if(glfwGetKey(window, GLFW_KEY_1) == GLFW_RELEASE) {
 		enableCountSelected = true;
-
-	// Guardar key frames
-	if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS
-			&& glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS){
-		record = true;
-		if(myfile.is_open())
-			myfile.close();
-		myfile.open(fileName);
-	}
-	if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE
-			&& glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS){
-		record = false;
-		myfile.close();
-		if(modelSelected == 1)
-			keyFramesDartJoints = getKeyRotFrames(fileName);
-		if (modelSelected == 2)
-			keyFramesDart = getKeyFrames(fileName);
-	}
-	if(availableSave && glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS){
-		saveFrame = true;
-		availableSave = false;
-	}if(glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_RELEASE)
-		availableSave = true;
-
-	// Dart Lego model movements
-	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
-			glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-		rotDartHead += 0.02;
-	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-			glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-		rotDartHead -= 0.02;
-	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
-			glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
-		rotDartLeftArm += 0.02;
-	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-			glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
-		rotDartLeftArm -= 0.02;
-	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
-			glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
-		rotDartRightArm += 0.02;
-	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-			glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
-		rotDartRightArm -= 0.02;
-	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
-			glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
-		rotDartLeftHand += 0.02;
-	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-			glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
-		rotDartLeftHand -= 0.02;
-	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
-			glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
-		rotDartRightHand += 0.02;
-	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-			glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
-		rotDartRightHand -= 0.02;
-	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
-			glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
-		rotDartLeftLeg += 0.02;
-	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-			glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
-		rotDartLeftLeg -= 0.02;
-	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
-			glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS)
-		rotDartRightLeg += 0.02;
-	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-			glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS)
-		rotDartRightLeg -= 0.02;
-	if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-		modelMatrixDart = glm::rotate(modelMatrixDart, 0.02f, glm::vec3(0, 1, 0));
-	else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-		modelMatrixDart = glm::rotate(modelMatrixDart, -0.02f, glm::vec3(0, 1, 0));
-	if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-		modelMatrixDart = glm::translate(modelMatrixDart, glm::vec3(-0.02, 0.0, 0.0));
-	else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-		modelMatrixDart = glm::translate(modelMatrixDart, glm::vec3(0.02, 0.0, 0.0));
-
-	if (stateCamera == 1) {
-		if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-			modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(1.0f), glm::vec3(0, 1, 0));
-			animationIndex = 0;
-		}
-		else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-			modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-1.0f), glm::vec3(0, 1, 0));
-			animationIndex = 0;
-		}if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-			modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, 0.02));
-			animationIndex = 0;
-		}
-		else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-			modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, -0.02));
-			animationIndex = 0;
-		}
-
 	}
 	
-	gamePad();
+	if (enableCountSelected && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+		enableCountSelected = false;
+		inputMethod = true; //Para manejar gamePad
+	}
+	else if (glfwGetKey(window, GLFW_KEY_2) == GLFW_RELEASE) {
+		enableCountSelected = true;
+	}
+	
+	if (!inputMethod) {
+		//Seleccionar cámara TPS ó FPS
+		if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
+			stateCamera = 1;
+		}
+		if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+			stateCamera = 2;
+		}
+		//Fin de selección de cámara TPS ó FPS
+
+		if (stateCamera == 2) {
+			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+				cameraFPS->moveFrontCamera(true, deltaTime);
+			if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+				cameraFPS->moveFrontCamera(false, deltaTime);
+			if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+				cameraFPS->moveRightCamera(false, deltaTime);
+			if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+				cameraFPS->moveRightCamera(true, deltaTime);
+			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+				cameraFPS->mouseMoveCamera(offsetX, offsetY, deltaTime);
+			offsetX = 0;
+			offsetY = 0;
+		}
+		else if (stateCamera == 1) {
+			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+				camera->mouseMoveCamera(offsetX, 0.0, deltaTime);
+			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+				camera->mouseMoveCamera(0.0, offsetY, deltaTime);
+			offsetX = 0;
+			offsetY = 0;
+		}
+
+
+
+		// Seleccionar modelo
+		if (enableCountSelected && glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
+			enableCountSelected = false;
+			modelSelected++;
+			if (modelSelected > 2)
+				modelSelected = 0;
+			if (modelSelected == 1)
+
+				if (modelSelected == 2)
+					std::cout << "modelSelected:" << modelSelected << std::endl;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_RELEASE)
+			enableCountSelected = true;
+
+
+		if (stateCamera == 1) {
+			if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+				modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(1.0f), glm::vec3(0, 1, 0));
+				animationIndex = 1;
+			}
+			else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+				modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-1.0f), glm::vec3(0, 1, 0));
+				animationIndex = 1;
+			}if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+				modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, 0.02));
+				animationIndex = 1;
+			}
+			else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+				modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, -0.02));
+				animationIndex = 1;
+			}
+
+			if (modelSelected == 2 && (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_RELEASE &&
+									   glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_RELEASE &&
+									   glfwGetKey(window, GLFW_KEY_UP) == GLFW_RELEASE &&
+									   glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_RELEASE)) 
+				animationIndex = 0;
+		}
+	}
+	else {
+		gamePad();
+	}
 	
 	glfwPollEvents();
 	return continueApplication;
@@ -1598,7 +1522,7 @@ void applicationLoop() {
 	glm::vec3 target;
 	float angleTarget;
 
-	modelMatrixDart = glm::translate(modelMatrixDart, glm::vec3(3.0, 0.0, 20.0));
+	//modelMatrixDart = glm::translate(modelMatrixDart, glm::vec3(3.0, 0.0, 20.0));
 
 	modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0f, 0.05f, -90.0f));
 	modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f), glm::vec3(0, 1, 0));
@@ -1620,9 +1544,9 @@ void applicationLoop() {
 	modelMatrixMountain = glm::scale(modelMatrixMountain, glm::vec3(0.2f, 0.2f, 0.2f));
 
 	// Variables to interpolation key frames
-	fileName = "../animaciones/animation_dart_joints.txt";
+	/*fileName = "../animaciones/animation_dart_joints.txt";
 	keyFramesDartJoints = getKeyRotFrames(fileName);
-	keyFramesDart = getKeyFrames("../animaciones/animation_dart.txt");
+	keyFramesDart = getKeyFrames("../animaciones/animation_dart.txt");*/
 
 	lastTime = TimeManager::Instance().GetTime();
 
@@ -1657,15 +1581,13 @@ void applicationLoop() {
 		glm::mat4 projection = glm::perspective(glm::radians(45.0f),
 				(float) screenWidth / (float) screenHeight, 0.1f, 100.0f);
 
-		if(modelSelected == 1){
-			axis = glm::axis(glm::quat_cast(modelMatrixDart));
-			angleTarget = glm::angle(glm::quat_cast(modelMatrixDart));
-			target = modelMatrixDart[3];
-		}
-		else{
+		if(modelSelected == 2){
 			axis = glm::axis(glm::quat_cast(modelMatrixMayow));
 			angleTarget = glm::angle(glm::quat_cast(modelMatrixMayow));
 			target = modelMatrixMayow[3];
+		}
+		else{
+			
 		}
 
 		if(std::isnan(angleTarget))
@@ -2063,8 +1985,8 @@ void applicationLoop() {
 				else {
 					if (jt->first.compare("mayow") == 0)
 						modelMatrixMayow = std::get<1>(jt->second);
-					if (jt->first.compare("dart") == 0)
-						modelMatrixDart = std::get<1>(jt->second);
+					/*if (jt->first.compare("dart") == 0)
+						modelMatrixDart = std::get<1>(jt->second);*/
 				}
 			}
 		}
@@ -2072,7 +1994,7 @@ void applicationLoop() {
 		/*******************************************
 		 * Interpolation key frames with disconect objects
 		 *******************************************/
-		if(record && modelSelected == 1){
+		/*if(record && modelSelected == 1){
 			matrixDartJoints.push_back(rotDartHead);
 			matrixDartJoints.push_back(rotDartLeftArm);
 			matrixDartJoints.push_back(rotDartLeftHand);
@@ -2104,9 +2026,9 @@ void applicationLoop() {
 			rotDartRightHand = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 4, interpolationDartJoints);
 			rotDartLeftLeg = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 5, interpolationDartJoints);
 			rotDartRightLeg = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 6, interpolationDartJoints);
-		}
+		}*/
 
-		if (record && modelSelected == 2) {
+		/*if (record && modelSelected == 2) {
 			matrixDart.push_back(modelMatrixDart);
 			if (saveFrame) {
 				appendFrame(myfile, matrixDart);
@@ -2126,10 +2048,10 @@ void applicationLoop() {
 			if (indexFrameDartNext > keyFramesDart.size() - 1)
 				indexFrameDartNext = 0;
 			modelMatrixDart = interpolate(keyFramesDart, indexFrameDart, indexFrameDartNext, 0, interpolationDart);
-		}
+		}*/
 
 		// Constantes de animaciones
-		rotHelHelY += 0.5;
+		//rotHelHelY += 0.5;
 		//animationIndex = 1;
 
 		/*******************************************
