@@ -373,10 +373,12 @@ ALfloat listenerOri[] = { 0.0, 0.0, 1.0, 0.0, 1.0, 0.0 };
 // Source 0
 ALfloat source0Pos[] = { -2.0, 0.0, 0.0 };
 ALfloat source0Vel[] = { 0.0, 0.0, 0.0 };
-// Source 1
-ALfloat source1Pos[] = { 2.0, 0.0, 0.0 };
+
+// Source 1 Sonido geiser
+ALfloat source1Pos[] = { 40.27, 0.0, 77.43 };
 ALfloat source1Vel[] = { 0.0, 0.0, 0.0 };
-// Source 2
+
+// Source 2 Sonido Antorcha
 ALfloat source2Pos[] = { 2.0, 0.0, 0.0 };
 ALfloat source2Vel[] = { 0.0, 0.0, 0.0 };
 // Buffers
@@ -389,7 +391,7 @@ ALenum format;
 ALvoid *data;
 int ch;
 ALboolean loop;
-std::vector<bool> sourcesPlay = {false, false, true};
+std::vector<bool> sourcesPlay = {false, true, true};
 
 // Se definen todos las funciones.
 void reshapeCallback(GLFWwindow *Window, int widthRes, int heightRes);
@@ -1029,7 +1031,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	// Generate buffers, or else no sound will happen!
 	alGenBuffers(NUM_BUFFERS, buffer);
 	buffer[0] = alutCreateBufferFromFile("../sounds/fountain.wav");
-	buffer[1] = alutCreateBufferFromFile("../sounds/fire.wav");
+	buffer[1] = alutCreateBufferFromFile("../sounds/geiser.wav");
 	buffer[2] = alutCreateBufferFromFile("../sounds/antorcha.wav");
 	int errorAlut = alutGetError();
 	if (errorAlut != ALUT_ERROR_NO_ERROR){
@@ -1056,13 +1058,15 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	alSourcei(source[0], AL_LOOPING, AL_TRUE);
 	alSourcef(source[0], AL_MAX_DISTANCE, 2000);
 
-	alSourcef(source[1], AL_PITCH, 1.0f);
-	alSourcef(source[1], AL_GAIN, 3.0f);
+	//Funte de sonido de los geiser
+
+	alSourcef(source[1], AL_PITCH, 3.0f);
+	alSourcef(source[1], AL_GAIN, 6.0f);
 	alSourcefv(source[1], AL_POSITION, source1Pos);
 	alSourcefv(source[1], AL_VELOCITY, source1Vel);
 	alSourcei(source[1], AL_BUFFER, buffer[1]);
 	alSourcei(source[1], AL_LOOPING, AL_TRUE);
-	alSourcef(source[1], AL_MAX_DISTANCE, 2000);
+	alSourcef(source[1], AL_MAX_DISTANCE, 1500);
 
 	//Fuente de sonido de la antorcha (puerta)
 	alSourcef(source[2], AL_PITCH, 1.0f);
@@ -1778,52 +1782,30 @@ void applicationLoop() {
 		/*******************************************
 		 * Propiedades PointLights
 		 *******************************************/
-		/*shaderMulLighting.setInt("pointLightCount", lamp1Position.size() + lamp2Orientation.size());
-		shaderTerrain.setInt("pointLightCount", lamp1Position.size() + lamp2Orientation.size());
-		for (int i = 0; i < lamp1Position.size(); i++){
-			glm::mat4 matrixAdjustLamp = glm::mat4(1.0f);
-			matrixAdjustLamp = glm::translate(matrixAdjustLamp, lamp1Position[i]);
-			matrixAdjustLamp = glm::rotate(matrixAdjustLamp, glm::radians(lamp1Orientation[i]), glm::vec3(0, 1, 0));
-			matrixAdjustLamp = glm::scale(matrixAdjustLamp, glm::vec3(0.5, 0.5, 0.5));
-			matrixAdjustLamp = glm::translate(matrixAdjustLamp, glm::vec3(0, 10.3585, 0));
-			glm::vec3 lampPosition = glm::vec3(matrixAdjustLamp[3]);
+		shaderMulLighting.setInt("pointLightCount", firePositions.size());
+		shaderTerrain.setInt("pointLightCount", firePositions.size());
+		for (int i = 0; i < firePositions.size(); i++){
+			glm::mat4 matrixAdjustTorch = modelMatrixDoor;
+			matrixAdjustTorch = glm::translate(matrixAdjustTorch, firePositions[i]);
+			//matrixAdjustTorch = glm::rotate(matrixAdjustLamp, glm::radians(lamp2Orientation[i]), glm::vec3(0, 1, 0));
+			matrixAdjustTorch = glm::scale(matrixAdjustTorch, glm::vec3(1.0, 1.0, 1.0));
+			matrixAdjustTorch = glm::translate(matrixAdjustTorch, glm::vec3(0.759521, 5.00174, 0));
+			glm::vec3 firePosition = glm::vec3(matrixAdjustTorch[3]);
 			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.ambient", glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
 			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
 			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.specular", glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].position", glm::value_ptr(lampPosition));
+			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].position", glm::value_ptr(firePosition));
 			shaderMulLighting.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0);
 			shaderMulLighting.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.09);
 			shaderMulLighting.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.01);
 			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.ambient", glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
 			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
 			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.specular", glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].position", glm::value_ptr(lampPosition));
+			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].position", glm::value_ptr(firePosition));
 			shaderTerrain.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0);
 			shaderTerrain.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.09);
 			shaderTerrain.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.02);
 		}
-		for (int i = 0; i < lamp2Position.size(); i++){
-			glm::mat4 matrixAdjustLamp = glm::mat4(1.0f);
-			matrixAdjustLamp = glm::translate(matrixAdjustLamp, lamp2Position[i]);
-			matrixAdjustLamp = glm::rotate(matrixAdjustLamp, glm::radians(lamp2Orientation[i]), glm::vec3(0, 1, 0));
-			matrixAdjustLamp = glm::scale(matrixAdjustLamp, glm::vec3(1.0, 1.0, 1.0));
-			matrixAdjustLamp = glm::translate(matrixAdjustLamp, glm::vec3(0.759521, 5.00174, 0));
-			glm::vec3 lampPosition = glm::vec3(matrixAdjustLamp[3]);
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.ambient", glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.specular", glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].position", glm::value_ptr(lampPosition));
-			shaderMulLighting.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].constant", 1.0);
-			shaderMulLighting.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].linear", 0.09);
-			shaderMulLighting.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].quadratic", 0.01);
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.ambient", glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.specular", glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].position", glm::value_ptr(lampPosition));
-			shaderTerrain.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].constant", 1.0);
-			shaderTerrain.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].linear", 0.09);
-			shaderTerrain.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].quadratic", 0.02);
-		}*/
 
 		/*******************************************
 		 * 1.- We render the depth buffer
@@ -2166,16 +2148,13 @@ void applicationLoop() {
 		/****************************+
 		 * Open AL sound data
 		 */
-		/*source0Pos[0] = modelMatrixFountain[3].x;
-		source0Pos[1] = modelMatrixFountain[3].y;
-		source0Pos[2] = modelMatrixFountain[3].z;
-		alSourcefv(source[0], AL_POSITION, source0Pos);*/
+
+		source2Pos[0] = modelMatrixDoor[3].x;
+		source2Pos[1] = modelMatrixDoor[3].y;
+		source2Pos[2] = modelMatrixDoor[3].z;
+		alSourcefv(source[2], AL_POSITION, source2Pos);
 
 		if (stateCamera == 1) {
-			source2Pos[0] = modelMatrixDoor[3].x;
-			source2Pos[1] = modelMatrixDoor[3].y;
-			source2Pos[2] = modelMatrixDoor[3].z;
-			alSourcefv(source[2], AL_POSITION, source2Pos);
 
 			// Listener for the Thris person camera
 			listenerPos[0] = modelMatrixMayow[3].x;
@@ -2405,6 +2384,7 @@ void renderScene(bool renderParticles){
 			glDepthMask(GL_TRUE);
 			//glEnable(GL_DEPTH_TEST);
 			shaderParticlesGeiser.turnOff();
+
 			/**********
 			 * End Render particles systems
 			 */
@@ -2437,6 +2417,7 @@ void renderScene(bool renderParticles){
 			glDepthMask(GL_TRUE);
 			//glEnable(GL_DEPTH_TEST);
 			shaderParticlesGeiser.turnOff();
+
 			/**********
 			 * End Render particles systems
 			 */
@@ -2469,6 +2450,7 @@ void renderScene(bool renderParticles){
 			glDepthMask(GL_TRUE);
 			//glEnable(GL_DEPTH_TEST);
 			shaderParticlesGeiser.turnOff();
+
 			/**********
 			 * End Render particles systems
 			 */
@@ -2501,6 +2483,7 @@ void renderScene(bool renderParticles){
 			glDepthMask(GL_TRUE);
 			//glEnable(GL_DEPTH_TEST);
 			shaderParticlesGeiser.turnOff();
+
 			/**********
 			 * End Render particles systems
 			 */
@@ -2533,6 +2516,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
+
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2565,6 +2549,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
+	
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2597,6 +2582,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
+
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2629,6 +2615,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
+	
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2661,6 +2648,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
+
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2693,6 +2681,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
+
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2725,6 +2714,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
+		
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2757,6 +2747,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
+
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2789,6 +2780,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
+
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2920,7 +2912,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
-
+	
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2953,7 +2945,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
-
+	
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2986,7 +2978,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
-
+	
 		 /**********
 		  * End Render particles systems
 		  */
@@ -3019,7 +3011,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
-
+	
 		 /**********
 		  * End Render particles systems
 		  */
@@ -3052,7 +3044,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
-
+		
 		 /**********
 		  * End Render particles systems
 		  */
@@ -3118,7 +3110,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
-
+	
 		 /**********
 		  * End Render particles systems
 		  */
