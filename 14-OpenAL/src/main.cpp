@@ -89,6 +89,7 @@ Shader shaderDepth;
 
 std::shared_ptr<Camera> camera(new ThirdPersonCamera());
 std::shared_ptr<FirstPersonCamera> cameraFPS(new FirstPersonCamera()); //Cámara en primera persona
+std::shared_ptr<FirstPersonCamera> cameraFPSpersonaje(new FirstPersonCamera()); //Cámara personaje principal
 
 int stateCamera = 1; //1 para la TPS y 2 para la FPS
 
@@ -125,6 +126,10 @@ Model modelTree;
 // Model animate instance
 // Mayow
 Model mayowModelAnimate;
+
+//Triceratop
+Model triceratopModelAnimate;
+
 // Terrain model instance
 Terrain terrain(-1, -1, 200, 16, "../Textures/terrenoJurassic2.png");
 
@@ -154,39 +159,31 @@ int lastMousePosX, offsetX = 0;
 int lastMousePosY, offsetY = 0;
 
 // Model matrix definitions
-glm::mat4 modelMatrixDart = glm::mat4(1.0f);
+//glm::mat4 modelMatrixDart = glm::mat4(1.0f);
 glm::mat4 modelMatrixMayow = glm::mat4(1.0f);
 glm::mat4 modelMatrixFountain1 = glm::mat4(1.0f);
 glm::mat4 modelMatrixGeiser = glm::mat4(1.0f);
 glm::mat4 modelMatrixDoor = glm::mat4(1.0f);
 glm::mat4 modelMatrixMountain = glm::mat4(1.0f);
+glm::mat4 modelMatrixTriceratop = glm::mat4(1.0f);
 
 int animationIndex = 0;
 int velModel = 1;
-float rotDartHead = 0.0, rotDartLeftArm = 0.0, rotDartLeftHand = 0.0, rotDartRightArm = 0.0, rotDartRightHand = 0.0, rotDartLeftLeg = 0.0, rotDartRightLeg = 0.0;
 int modelSelected = 2;
 bool enableCountSelected = true;
 bool enableCountSelectedGamePad = true;
+bool inputMethod = false;
+
+//Movimientos del triceratop
+int state = 0;
+float advanceCount = 0.0;
+float rotCount = 0.0;
+float rotTriceratop = 0.0;
+float rotWheelsY = 0.0;
+int numberAdvance = 0;
+int maxAdvance = 0.0;
 
 // Variables to animations keyframes
-bool saveFrame = false, availableSave = true;
-std::ofstream myfile;
-std::string fileName = "";
-bool record = false;
-
-// Joints interpolations Dart Lego
-std::vector<std::vector<float>> keyFramesDartJoints;
-std::vector<std::vector<glm::mat4>> keyFramesDart;
-int indexFrameDartJoints = 0;
-int indexFrameDartJointsNext = 1;
-float interpolationDartJoints = 0.0;
-int maxNumPasosDartJoints = 20;
-int numPasosDartJoints = 0;
-int indexFrameDart = 0;
-int indexFrameDartNext = 1;
-float interpolationDart = 0.0;
-int maxNumPasosDart = 200;
-int numPasosDart = 0;
 
 // Var animate helicopter
 float rotHelHelY = 0.0;
@@ -194,14 +191,6 @@ float rotHelHelY = 0.0;
 // Var animate lambo dor
 int stateDoor = 0;
 float dorRotCount = 0.0;
-
-// Lamps positions
-/*std::vector<glm::vec3> lamp1Position = { glm::vec3(-7.03, 0, -19.14), glm::vec3(
-		24.41, 0, -34.57), glm::vec3(-10.15, 0, -54.10) };
-std::vector<float> lamp1Orientation = { -17.0, -82.67, 23.70 };
-std::vector<glm::vec3> lamp2Position = { glm::vec3(-36.52, 0, -23.24),
-		glm::vec3(-52.73, 0, -3.90) };
-std::vector<float> lamp2Orientation = {21.37 + 90, -65.0 + 90};*/
 
 // Palm positions
 std::vector<glm::vec3> palmPositions = { glm::vec3(-91.42f, 0.0f, 94.41f),
@@ -292,6 +281,34 @@ std::vector<glm::vec3> grassPositionsGeiser = { glm::vec3(0.0, 0.0, -80.0),
 												glm::vec3(44.55, 0, 44.53)
 };
 
+//Grass Position hervivioros
+std::vector<glm::vec3> grassPositionHerv{ glm::vec3(-32.51, 0.0, 54.26), 
+										  glm::vec3(-41.93, 0.0, 57.12),
+										  glm::vec3(-37.38, 0.0, 64.56),
+										  glm::vec3(-35.86, 0.0, 73.61),
+										  glm::vec3(-40.73, 0.0, 69.65),
+										  glm::vec3(-49.53, 0.0, 64.62),
+										  glm::vec3(-44.16, 0.0, 63.46),
+										  glm::vec3(-42.10, 0.0, 75.70),
+										  glm::vec3(-45.85, 0.0, 83.56),
+										  glm::vec3(-48.02, 0.0, 70.80),
+										  glm::vec3(-53.75, 0.0, 65.34),
+										  glm::vec3(-54.64, 0.0, 56.12),
+										  glm::vec3(-60.04, 0.0, 59.47),
+										  glm::vec3(-62.07, 0.0, 66.25),
+										  glm::vec3(-55.47, 0.0, 70.46),
+										  glm::vec3(-58.44, 0.0, 76.89),
+										  glm::vec3(-55.48, 0.0, 79.77),
+										  glm::vec3(-52.31, 0.0, 84.54),
+										  glm::vec3(-59.35, 0.0, 86.18),
+										  glm::vec3(-63.36, 0.0, 81.82),
+										  glm::vec3(-68.33, 0.0, 73.97),
+										  glm::vec3(-66.45, 0.0, 58.48),
+										  glm::vec3(-68.85, 0.0, 52.90),
+										  glm::vec3(-76.80, 0.0, 55.22),
+										  glm::vec3(-77.08, 0.0, 65.01)
+};
+
 // Blending model unsorted
 std::map<std::string, glm::vec3> blendingUnsorted = {
 		{"geiser0", geiserPositions[0]},
@@ -363,8 +380,8 @@ GLuint depthMap, depthMapFBO;
  */
 
 // OpenAL Defines
-#define NUM_BUFFERS 3
-#define NUM_SOURCES 3
+#define NUM_BUFFERS 5
+#define NUM_SOURCES 5
 #define NUM_ENVIRONMENTS 1
 // Listener
 ALfloat listenerPos[] = { 0.0, 0.0, 4.0 };
@@ -373,12 +390,23 @@ ALfloat listenerOri[] = { 0.0, 0.0, 1.0, 0.0, 1.0, 0.0 };
 // Source 0
 ALfloat source0Pos[] = { -2.0, 0.0, 0.0 };
 ALfloat source0Vel[] = { 0.0, 0.0, 0.0 };
-// Source 1
-ALfloat source1Pos[] = { 2.0, 0.0, 0.0 };
+
+// Source 1 Sonido geiser
+ALfloat source1Pos[] = { 40.27, 0.0, 77.43 };
 ALfloat source1Vel[] = { 0.0, 0.0, 0.0 };
-// Source 2
+
+// Source 2 Sonido Antorcha
 ALfloat source2Pos[] = { 2.0, 0.0, 0.0 };
 ALfloat source2Vel[] = { 0.0, 0.0, 0.0 };
+
+// Source Main Theme
+ALfloat sourceMainThemePos[] = { 0.0, 0.0, 0.0 };
+ALfloat sourceMainThemeVel[] = { 0.0, 0.0, 0.0 };
+
+// Source camara
+ALfloat sourceCamPos[] = { 0.0, 0.0, 0.0 };
+ALfloat sourceCamVel[] = { 0.0, 0.0, 0.0 };
+
 // Buffers
 ALuint buffer[NUM_BUFFERS];
 ALuint source[NUM_SOURCES];
@@ -389,7 +417,7 @@ ALenum format;
 ALvoid *data;
 int ch;
 ALboolean loop;
-std::vector<bool> sourcesPlay = {true, true, true};
+std::vector<bool> sourcesPlay = {false, true, true, false, false};
 
 // Se definen todos las funciones.
 void reshapeCallback(GLFWwindow *Window, int widthRes, int heightRes);
@@ -672,11 +700,17 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	mayowModelAnimate.loadModel("../models/Walk/Walk.fbx");
 	mayowModelAnimate.setShader(&shaderMulLighting);
 
+	//Triceratop
+	triceratopModelAnimate.loadModel("../models/Dinosaur/Triceratop.fbx");
+	triceratopModelAnimate.setShader(&shaderMulLighting);
+
 	camera->setPosition(glm::vec3(0.0, 0.0, 10.0));
 	camera->setDistanceFromTarget(distanceFromTarget);
 	camera->setSensitivity(1.0);
 
 	cameraFPS->setPosition(glm::vec3(0.0, 6.0, 0.0));
+
+	cameraFPSpersonaje->setPosition(modelMatrixMayow[3]);
 
 	// Definimos el tamanio de la imagen
 	int imageWidth, imageHeight;
@@ -804,7 +838,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	textureTerrainR.freeImage(bitmap);
 
 	// Definiendo la textura a utilizar
-	Texture textureTerrainG("../Textures/lava.jpg");
+	Texture textureTerrainG("../Textures/agua.png");
 	// Carga el mapa de bits (FIBITMAP es el tipo de dato de la libreria)
 	bitmap = textureTerrainG.loadImage();
 	// Convertimos el mapa de bits en un arreglo unidimensional de tipo unsigned char
@@ -1028,9 +1062,11 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	// Config source 0
 	// Generate buffers, or else no sound will happen!
 	alGenBuffers(NUM_BUFFERS, buffer);
-	buffer[0] = alutCreateBufferFromFile("../sounds/fountain.wav");
-	buffer[1] = alutCreateBufferFromFile("../sounds/fire.wav");
-	buffer[2] = alutCreateBufferFromFile("../sounds/darth_vader.wav");
+	buffer[0] = alutCreateBufferFromFile("../sounds/caminar.wav");
+	buffer[1] = alutCreateBufferFromFile("../sounds/geiser.wav");
+	buffer[2] = alutCreateBufferFromFile("../sounds/antorcha.wav");
+	buffer[3] = alutCreateBufferFromFile("../sounds/JurassicParkMainTheme.wav");
+	buffer[4] = alutCreateBufferFromFile("../sounds/camara.wav");
 	int errorAlut = alutGetError();
 	if (errorAlut != ALUT_ERROR_NO_ERROR){
 		printf("- Error open files with alut %d !!\n", errorAlut);
@@ -1049,28 +1085,49 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 		printf("init - no errors after alGenSources\n");
 	}
 	alSourcef(source[0], AL_PITCH, 1.0f);
-	alSourcef(source[0], AL_GAIN, 3.0f);
+	alSourcef(source[0], AL_GAIN, 0.3f);
 	alSourcefv(source[0], AL_POSITION, source0Pos);
 	alSourcefv(source[0], AL_VELOCITY, source0Vel);
 	alSourcei(source[0], AL_BUFFER, buffer[0]);
 	alSourcei(source[0], AL_LOOPING, AL_TRUE);
 	alSourcef(source[0], AL_MAX_DISTANCE, 2000);
 
-	alSourcef(source[1], AL_PITCH, 1.0f);
-	alSourcef(source[1], AL_GAIN, 3.0f);
+	//Funte de sonido de los geiser
+
+	alSourcef(source[1], AL_PITCH, 3.0f);
+	alSourcef(source[1], AL_GAIN, 6.0f);
 	alSourcefv(source[1], AL_POSITION, source1Pos);
 	alSourcefv(source[1], AL_VELOCITY, source1Vel);
 	alSourcei(source[1], AL_BUFFER, buffer[1]);
 	alSourcei(source[1], AL_LOOPING, AL_TRUE);
-	alSourcef(source[1], AL_MAX_DISTANCE, 2000);
+	alSourcef(source[1], AL_MAX_DISTANCE, 1500);
 
+	//Fuente de sonido de la antorcha (puerta)
 	alSourcef(source[2], AL_PITCH, 1.0f);
-	alSourcef(source[2], AL_GAIN, 0.3f);
+	alSourcef(source[2], AL_GAIN, 4.0f);
 	alSourcefv(source[2], AL_POSITION, source2Pos);
 	alSourcefv(source[2], AL_VELOCITY, source2Vel);
 	alSourcei(source[2], AL_BUFFER, buffer[2]);
 	alSourcei(source[2], AL_LOOPING, AL_TRUE);
 	alSourcef(source[2], AL_MAX_DISTANCE, 500);
+
+	//Tema principal Main Theme
+	alSourcef(source[3], AL_PITCH, 1.0f);
+	alSourcef(source[3], AL_GAIN, 0.6f);
+	alSourcefv(source[3], AL_POSITION, sourceMainThemePos);
+	alSourcefv(source[3], AL_VELOCITY, sourceMainThemeVel);
+	alSourcei(source[3], AL_BUFFER, buffer[3]);
+	alSourcei(source[3], AL_LOOPING, AL_TRUE);
+	alSourcef(source[3], AL_MAX_DISTANCE, 500);
+
+	//Sonido de cámara
+	alSourcef(source[4], AL_PITCH, 1.0f);
+	alSourcef(source[4], AL_GAIN, 1.0f);
+	alSourcefv(source[4], AL_POSITION, sourceCamPos);
+	alSourcefv(source[4], AL_VELOCITY, sourceCamVel);
+	alSourcei(source[4], AL_BUFFER, buffer[4]);
+	alSourcei(source[4], AL_LOOPING, AL_TRUE);
+	alSourcef(source[4], AL_MAX_DISTANCE, 100);
 }
 
 void destroy() {
@@ -1106,6 +1163,7 @@ void destroy() {
 
 	// Custom objects animate
 	mayowModelAnimate.destroy();
+	triceratopModelAnimate.destroy();
 
 	// Textures Delete
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -1191,150 +1249,123 @@ bool processInput(bool continueApplication) {
 	if (exitApp || glfwWindowShouldClose(window) != 0) {
 		return false;
 	}
-	
-	//Seleccionar cámara TPS ó FPS
-	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
-		stateCamera = 1;
-	}
-	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
-		stateCamera = 2;
-	}
-	//Fin de selección de cámara TPS ó FPS
 
-	if (stateCamera == 2) {
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			cameraFPS->moveFrontCamera(true, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			cameraFPS->moveFrontCamera(false, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-			cameraFPS->moveRightCamera(false, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-			cameraFPS->moveRightCamera(true, deltaTime);
-		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-			cameraFPS->mouseMoveCamera(offsetX, offsetY, deltaTime);
-		offsetX = 0;
-		offsetY = 0;
-	}
-	else if (stateCamera == 1) {
-		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-			camera->mouseMoveCamera(offsetX, 0.0, deltaTime);
-		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
-			camera->mouseMoveCamera(0.0, offsetY, deltaTime);
-		offsetX = 0;
-		offsetY = 0;
-	}
-
-	
-
-	// Seleccionar modelo
-	if (enableCountSelected && glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS){
+	//Seleccionar método de entrada
+	if (enableCountSelected && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS){
 		enableCountSelected = false;
-		modelSelected++;
-		if(modelSelected > 2)
-			modelSelected = 0;
-		if(modelSelected == 1)
-			fileName = "../animaciones/animation_dart_joints.txt";
-		if (modelSelected == 2)
-			fileName = "../animaciones/animation_dart.txt";
-		std::cout << "modelSelected:" << modelSelected << std::endl;
+		inputMethod = false; //Para manejar teclado
+		glfwSetWindowTitle(window, "Window GLFW - Teclado");
 	}
-	else if(glfwGetKey(window, GLFW_KEY_TAB) == GLFW_RELEASE)
+	else if(glfwGetKey(window, GLFW_KEY_1) == GLFW_RELEASE) {
 		enableCountSelected = true;
-
-	// Guardar key frames
-	if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS
-			&& glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS){
-		record = true;
-		if(myfile.is_open())
-			myfile.close();
-		myfile.open(fileName);
-	}
-	if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE
-			&& glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS){
-		record = false;
-		myfile.close();
-		if(modelSelected == 1)
-			keyFramesDartJoints = getKeyRotFrames(fileName);
-		if (modelSelected == 2)
-			keyFramesDart = getKeyFrames(fileName);
-	}
-	if(availableSave && glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS){
-		saveFrame = true;
-		availableSave = false;
-	}if(glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_RELEASE)
-		availableSave = true;
-
-	// Dart Lego model movements
-	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
-			glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-		rotDartHead += 0.02;
-	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-			glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-		rotDartHead -= 0.02;
-	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
-			glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
-		rotDartLeftArm += 0.02;
-	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-			glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
-		rotDartLeftArm -= 0.02;
-	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
-			glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
-		rotDartRightArm += 0.02;
-	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-			glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
-		rotDartRightArm -= 0.02;
-	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
-			glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
-		rotDartLeftHand += 0.02;
-	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-			glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
-		rotDartLeftHand -= 0.02;
-	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
-			glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
-		rotDartRightHand += 0.02;
-	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-			glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
-		rotDartRightHand -= 0.02;
-	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
-			glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
-		rotDartLeftLeg += 0.02;
-	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-			glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
-		rotDartLeftLeg -= 0.02;
-	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
-			glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS)
-		rotDartRightLeg += 0.02;
-	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-			glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS)
-		rotDartRightLeg -= 0.02;
-	if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-		modelMatrixDart = glm::rotate(modelMatrixDart, 0.02f, glm::vec3(0, 1, 0));
-	else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-		modelMatrixDart = glm::rotate(modelMatrixDart, -0.02f, glm::vec3(0, 1, 0));
-	if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-		modelMatrixDart = glm::translate(modelMatrixDart, glm::vec3(-0.02, 0.0, 0.0));
-	else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-		modelMatrixDart = glm::translate(modelMatrixDart, glm::vec3(0.02, 0.0, 0.0));
-
-	if (stateCamera == 1) {
-		if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-			modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(1.0f), glm::vec3(0, 1, 0));
-			animationIndex = 0;
-		}
-		else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-			modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-1.0f), glm::vec3(0, 1, 0));
-			animationIndex = 0;
-		}if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-			modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, 0.02));
-			animationIndex = 0;
-		}
-		else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-			modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, -0.02));
-			animationIndex = 0;
-		}
 	}
 	
-	gamePad();
+	if (enableCountSelected && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+		enableCountSelected = false;
+		inputMethod = true; //Para manejar gamePad
+		glfwSetWindowTitle(window, "Window GLFW - GamePad");
+	}
+	else if (glfwGetKey(window, GLFW_KEY_2) == GLFW_RELEASE) {
+		enableCountSelected = true;
+	}
+	
+	if (!inputMethod) {
+		//Seleccionar cámara TPS ó FPS o FPS del personaje
+		if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
+			stateCamera = 1;
+		}
+		if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+			stateCamera = 2;
+		}
+		if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
+			stateCamera = 3;
+			cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3]) + glm::vec3(0.0, 2.0, 0.0));
+		}
+		//Fin de selección de cámara TPS ó FPS
+
+		//Movimiento exclusivo de las cámaras
+		if (stateCamera == 3) {
+			//Reproducir el sonido de la cámara
+			if (enableCountSelected && glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+				enableCountSelected = false;
+				sourcesPlay[4] = true;
+			}
+			else if (glfwGetKey(window, GLFW_KEY_P) == GLFW_RELEASE) {
+				enableCountSelected = true;
+			}
+		}
+		else if (stateCamera == 2) {
+			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+				cameraFPS->moveFrontCamera(true, deltaTime);
+			if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+				cameraFPS->moveFrontCamera(false, deltaTime);
+			if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+				cameraFPS->moveRightCamera(false, deltaTime);
+			if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+				cameraFPS->moveRightCamera(true, deltaTime);
+			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+				cameraFPS->mouseMoveCamera(offsetX, offsetY, deltaTime);
+			offsetX = 0;
+			offsetY = 0;
+		}
+		else if (stateCamera == 1) {
+			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+				camera->mouseMoveCamera(offsetX, 0.0, deltaTime);
+			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+				camera->mouseMoveCamera(0.0, offsetY, deltaTime);
+			offsetX = 0;
+			offsetY = 0;
+		}
+		//Fin Movimiento exclusivo de las cámaras
+
+
+		// Seleccionar modelo
+		if (enableCountSelected && glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
+			enableCountSelected = false;
+			modelSelected++;
+			if (modelSelected > 2)
+				modelSelected = 0;
+			if (modelSelected == 1)
+
+				if (modelSelected == 2)
+					std::cout << "modelSelected:" << modelSelected << std::endl;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_RELEASE)
+			enableCountSelected = true;
+
+		//Mover al personaje con las teclas de dirección y su cámara de personaje
+		if (stateCamera == 1) {
+			if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+				modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(1.0f), glm::vec3(0, 1, 0));
+				animationIndex = 1;
+			}
+			else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+				modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-1.0f), glm::vec3(0, 1, 0));
+				animationIndex = 1;
+			}if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+				modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, 0.02));
+				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
+												+ glm::vec3(0.0, 2.0, 0.0));
+				animationIndex = 1;
+			}
+			else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+				modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, -0.02));
+				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
+												+ glm::vec3(0.0, 2.0, 0.0));
+				animationIndex = 1;
+			}
+
+			if (modelSelected == 2 && (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_RELEASE &&
+									   glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_RELEASE &&
+									   glfwGetKey(window, GLFW_KEY_UP) == GLFW_RELEASE &&
+									   glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_RELEASE)) 
+				animationIndex = 0;
+		}
+		//Fin Mover al personaje con las teclas de dirección y su cámara de personaje
+	}
+	else {
+		gamePad();
+	}
 	
 	glfwPollEvents();
 	return continueApplication;
@@ -1372,8 +1403,18 @@ void gamePad() {
 				modelMatrixMayow = glm::rotate(modelMatrixMayow,
 					glm::radians(-0.8f * axes[0]),
 					glm::vec3(0, 1, 0));
-				animationIndex = 0;
+				float ax = axes[0];
+				float ay = axes[1];
+				if (ax == 0.000000000 && ay == 0.000000000) {
+					animationIndex = 0; //Detenido
+				}
+				else {
+					animationIndex = 1; //Caminando
+				}
+				
 				camera->mouseMoveCamera(axes[2], axes[3], deltaTime);
+				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
+												+ glm::vec3(0.0, 2.0, 0.0));
 
 				break;
 			}
@@ -1384,6 +1425,14 @@ void gamePad() {
 			cameraFPS->mouseMoveCamera(axes[2]*2.0, axes[3]*2.0, deltaTime);
 			offsetX = 0;
 			offsetY = 0;
+		}
+		else if (stateCamera == 3) { //Mover tanto cámara como personaje
+
+			//cameraFPSpersonaje->moveFrontCamera(true, axes[1] * 0.05);
+			//cameraFPSpersonaje->moveRightCamera(true, axes[0] * 0.05);
+			//cameraFPSpersonaje->mouseMoveCamera(axes[2] * 2.0, axes[3] * 2.0, deltaTime);
+			//offsetX = 0;
+			//offsetY = 0;
 		}
 		//------------------------------------ Fin de rotación y traslación de los modelos
 
@@ -1408,7 +1457,14 @@ void gamePad() {
 		/*Botón B*/
 		if (GLFW_PRESS == buttons[1])
 		{
-			std::cout << "B button presed: " + std::to_string(cameraFPS->getPosition().x) + ", " + std::to_string(cameraFPS->getPosition().z) << std::endl;
+			if (stateCamera == 2) {
+				std::cout << "B button presed: " 
+					+ std::to_string(cameraFPS->getPosition().x) 
+					+ ", " + std::to_string(cameraFPS->getPosition().z) << std::endl;
+			}
+			else if (stateCamera == 3){
+				sourcesPlay[4] = true;
+			}						
 		}
 		if (GLFW_RELEASE == buttons[1])
 		{
@@ -1465,7 +1521,9 @@ void gamePad() {
 			std::cout << "Select button presed" << std::endl;
 			enableCountSelectedGamePad = false; //Controlar la selección de la cámara
 			stateCamera++;
-			if (stateCamera > 2) stateCamera = 1;
+			/*if (stateCamera == 3) cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3]) 
+																+ glm::vec3(0.0, 2.0, 0.0));*/
+			if (stateCamera > 3) stateCamera = 1;
 
 		}
 		else if (GLFW_RELEASE == buttons[6])
@@ -1573,6 +1631,9 @@ void gamePad() {
 		//system("cls");
 
 	}
+	else {
+		glfwSetWindowTitle(window, "Window GLFW - GamePad No hay GamePad conectado");
+	}
 	//--------------------Fin gamepad
 }
 
@@ -1584,10 +1645,12 @@ void applicationLoop() {
 	glm::vec3 target;
 	float angleTarget;
 
-	modelMatrixDart = glm::translate(modelMatrixDart, glm::vec3(3.0, 0.0, 20.0));
-
 	modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0f, 0.05f, -90.0f));
 	modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f), glm::vec3(0, 1, 0));
+
+	modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(-29.97f, 0.0f, 65.74f));
+	//modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(-0.0f, 0.0f, 0.0f));
+	modelMatrixTriceratop = glm::rotate(modelMatrixTriceratop, glm::radians(-90.0f), glm::vec3(0, 1, 0));
 
 	/*modelMatrixFountain = glm::translate(modelMatrixFountain, glm::vec3(5.0, 0.0, -40.0));
 	modelMatrixFountain[3][1] = terrain.getHeightTerrain(modelMatrixFountain[3][0] , modelMatrixFountain[3][2]) + 0.2;
@@ -1604,11 +1667,6 @@ void applicationLoop() {
 	modelMatrixMountain[3][1] = terrain.getHeightTerrain(modelMatrixMountain[3][0], modelMatrixMountain[3][2]);
 	//modelMatrixMountain = glm::rotate(modelMatrixMountain, glm::radians(90.0f), glm::vec3(0, 1, 0));
 	modelMatrixMountain = glm::scale(modelMatrixMountain, glm::vec3(0.2f, 0.2f, 0.2f));
-
-	// Variables to interpolation key frames
-	fileName = "../animaciones/animation_dart_joints.txt";
-	keyFramesDartJoints = getKeyRotFrames(fileName);
-	keyFramesDart = getKeyFrames("../animaciones/animation_dart.txt");
 
 	lastTime = TimeManager::Instance().GetTime();
 
@@ -1643,15 +1701,13 @@ void applicationLoop() {
 		glm::mat4 projection = glm::perspective(glm::radians(45.0f),
 				(float) screenWidth / (float) screenHeight, 0.1f, 100.0f);
 
-		if(modelSelected == 1){
-			axis = glm::axis(glm::quat_cast(modelMatrixDart));
-			angleTarget = glm::angle(glm::quat_cast(modelMatrixDart));
-			target = modelMatrixDart[3];
-		}
-		else{
+		if(modelSelected == 2){
 			axis = glm::axis(glm::quat_cast(modelMatrixMayow));
 			angleTarget = glm::angle(glm::quat_cast(modelMatrixMayow));
 			target = modelMatrixMayow[3];
+		}
+		else{
+			
 		}
 
 		if(std::isnan(angleTarget))
@@ -1664,13 +1720,17 @@ void applicationLoop() {
 		camera->setAngleTarget(angleTarget);
 		camera->updateCamera();
 
-		if (stateCamera == 1) { //La matriz de vista varía dependiendo de la selección de la cámara
+		//Se asigna la matriz de vista dependiendo de la cámara seleccionada
+		if (stateCamera == 1) { 
 			view = camera->getViewMatrix();
 		}
-
-		if (stateCamera == 2) {
+		else if (stateCamera == 2) {
 			view = cameraFPS->getViewMatrix();
 		}
+		else if (stateCamera == 3) {
+			view = cameraFPSpersonaje->getViewMatrix();
+		}
+		//Fin de asignación la matriz de vista dependiendo de la cámara seleccionada
 
 		shadowBox->update(screenWidth, screenHeight);
 		glm::vec3 centerBox = shadowBox->getCenter();
@@ -1777,52 +1837,30 @@ void applicationLoop() {
 		/*******************************************
 		 * Propiedades PointLights
 		 *******************************************/
-		/*shaderMulLighting.setInt("pointLightCount", lamp1Position.size() + lamp2Orientation.size());
-		shaderTerrain.setInt("pointLightCount", lamp1Position.size() + lamp2Orientation.size());
-		for (int i = 0; i < lamp1Position.size(); i++){
-			glm::mat4 matrixAdjustLamp = glm::mat4(1.0f);
-			matrixAdjustLamp = glm::translate(matrixAdjustLamp, lamp1Position[i]);
-			matrixAdjustLamp = glm::rotate(matrixAdjustLamp, glm::radians(lamp1Orientation[i]), glm::vec3(0, 1, 0));
-			matrixAdjustLamp = glm::scale(matrixAdjustLamp, glm::vec3(0.5, 0.5, 0.5));
-			matrixAdjustLamp = glm::translate(matrixAdjustLamp, glm::vec3(0, 10.3585, 0));
-			glm::vec3 lampPosition = glm::vec3(matrixAdjustLamp[3]);
+		shaderMulLighting.setInt("pointLightCount", firePositions.size());
+		shaderTerrain.setInt("pointLightCount", firePositions.size());
+		for (int i = 0; i < firePositions.size(); i++){
+			glm::mat4 matrixAdjustTorch = modelMatrixDoor;
+			matrixAdjustTorch = glm::translate(matrixAdjustTorch, firePositions[i]);
+			//matrixAdjustTorch = glm::rotate(matrixAdjustLamp, glm::radians(lamp2Orientation[i]), glm::vec3(0, 1, 0));
+			matrixAdjustTorch = glm::scale(matrixAdjustTorch, glm::vec3(1.0, 1.0, 1.0));
+			matrixAdjustTorch = glm::translate(matrixAdjustTorch, glm::vec3(0.759521, 5.00174, 0));
+			glm::vec3 firePosition = glm::vec3(matrixAdjustTorch[3]);
 			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.ambient", glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
 			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
 			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.specular", glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].position", glm::value_ptr(lampPosition));
+			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].position", glm::value_ptr(firePosition));
 			shaderMulLighting.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0);
 			shaderMulLighting.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.09);
 			shaderMulLighting.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.01);
 			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.ambient", glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
 			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
 			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.specular", glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].position", glm::value_ptr(lampPosition));
+			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].position", glm::value_ptr(firePosition));
 			shaderTerrain.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0);
 			shaderTerrain.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.09);
 			shaderTerrain.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.02);
 		}
-		for (int i = 0; i < lamp2Position.size(); i++){
-			glm::mat4 matrixAdjustLamp = glm::mat4(1.0f);
-			matrixAdjustLamp = glm::translate(matrixAdjustLamp, lamp2Position[i]);
-			matrixAdjustLamp = glm::rotate(matrixAdjustLamp, glm::radians(lamp2Orientation[i]), glm::vec3(0, 1, 0));
-			matrixAdjustLamp = glm::scale(matrixAdjustLamp, glm::vec3(1.0, 1.0, 1.0));
-			matrixAdjustLamp = glm::translate(matrixAdjustLamp, glm::vec3(0.759521, 5.00174, 0));
-			glm::vec3 lampPosition = glm::vec3(matrixAdjustLamp[3]);
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.ambient", glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.specular", glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].position", glm::value_ptr(lampPosition));
-			shaderMulLighting.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].constant", 1.0);
-			shaderMulLighting.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].linear", 0.09);
-			shaderMulLighting.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].quadratic", 0.01);
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.ambient", glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.specular", glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].position", glm::value_ptr(lampPosition));
-			shaderTerrain.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].constant", 1.0);
-			shaderTerrain.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].linear", 0.09);
-			shaderTerrain.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].quadratic", 0.02);
-		}*/
 
 		/*******************************************
 		 * 1.- We render the depth buffer
@@ -1913,9 +1951,27 @@ void applicationLoop() {
 				glm::vec3(mayowModelAnimate.getObb().c.x,
 						mayowModelAnimate.getObb().c.y,
 						mayowModelAnimate.getObb().c.z));
-		mayowCollider.e = mayowModelAnimate.getObb().e * glm::vec3(2.0, 2.0, 2.0);
+		mayowCollider.e = mayowModelAnimate.getObb().e * glm::vec3(2.0, 2.0, 2.0) * glm::vec3(0.787401574, 0.787401574, 0.787401574);
 		mayowCollider.c = glm::vec3(modelmatrixColliderMayow[3]);
 		addOrUpdateColliders(collidersOBB, "mayow", mayowCollider, modelMatrixMayow);
+
+		// Collider Triceratop
+		AbstractModel::OBB triceratopCollider;
+		glm::mat4 modelmatrixColliderTriceratops = glm::mat4(modelMatrixTriceratop);
+		modelmatrixColliderTriceratops = glm::rotate(modelmatrixColliderTriceratops,
+													glm::radians(-90.0f), glm::vec3(1, 0, 0));
+		// Set the orientation of collider before doing the scale
+		triceratopCollider.u = glm::quat_cast(modelmatrixColliderTriceratops);
+		modelmatrixColliderTriceratops = glm::scale(modelmatrixColliderTriceratops, glm::vec3(0.01, 0.01, 0.01));
+		modelmatrixColliderTriceratops = glm::translate(modelmatrixColliderTriceratops,
+			glm::vec3(triceratopModelAnimate.getObb().c.x,
+				triceratopModelAnimate.getObb().c.y,
+				triceratopModelAnimate.getObb().c.z));
+		triceratopCollider.e = triceratopModelAnimate.getObb().e * glm::vec3(0.01, 0.01, 0.01) 
+																 /** glm::vec3(0.787401574, 0.787401574, 0.787401574);*/
+																	* glm::vec3(1.4, 1.4, 1.4);
+		triceratopCollider.c = glm::vec3(modelmatrixColliderTriceratops[3]);
+		addOrUpdateColliders(collidersOBB, "triceratop", triceratopCollider, modelMatrixTriceratop);
 
 		// Collider palms
 		for (int i = 0; i < palmPositions.size(); i++) {
@@ -2071,8 +2127,8 @@ void applicationLoop() {
 				else {
 					if (jt->first.compare("mayow") == 0)
 						modelMatrixMayow = std::get<1>(jt->second);
-					if (jt->first.compare("dart") == 0)
-						modelMatrixDart = std::get<1>(jt->second);
+					/*if (jt->first.compare("dart") == 0)
+						modelMatrixDart = std::get<1>(jt->second);*/
 				}
 			}
 		}
@@ -2080,69 +2136,56 @@ void applicationLoop() {
 		/*******************************************
 		 * Interpolation key frames with disconect objects
 		 *******************************************/
-		if(record && modelSelected == 1){
-			matrixDartJoints.push_back(rotDartHead);
-			matrixDartJoints.push_back(rotDartLeftArm);
-			matrixDartJoints.push_back(rotDartLeftHand);
-			matrixDartJoints.push_back(rotDartRightArm);
-			matrixDartJoints.push_back(rotDartRightHand);
-			matrixDartJoints.push_back(rotDartLeftLeg);
-			matrixDartJoints.push_back(rotDartRightLeg);
-			if (saveFrame) {
-				appendFrame(myfile, matrixDartJoints);
-				saveFrame = false;
-			}
-		}
-		else if(keyFramesDartJoints.size() > 0){
-			// Para reproducir el frame
-			interpolationDartJoints = numPasosDartJoints / (float) maxNumPasosDartJoints;
-			numPasosDartJoints++;
-			if (interpolationDartJoints > 1.0) {
-				numPasosDartJoints = 0;
-				interpolationDartJoints = 0;
-				indexFrameDartJoints = indexFrameDartJointsNext;
-				indexFrameDartJointsNext++;
-			}
-			if (indexFrameDartJointsNext > keyFramesDartJoints.size() - 1)
-				indexFrameDartJointsNext = 0;
-			rotDartHead = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 0, interpolationDartJoints);
-			rotDartLeftArm = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 1, interpolationDartJoints);
-			rotDartLeftHand = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 2, interpolationDartJoints);
-			rotDartRightArm = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 3, interpolationDartJoints);
-			rotDartRightHand = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 4, interpolationDartJoints);
-			rotDartLeftLeg = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 5, interpolationDartJoints);
-			rotDartRightLeg = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 6, interpolationDartJoints);
-		}
 
-		if (record && modelSelected == 2) {
-			matrixDart.push_back(modelMatrixDart);
-			if (saveFrame) {
-				appendFrame(myfile, matrixDart);
-				saveFrame = false;
-			}
-		}
-		else if (keyFramesDart.size() > 0) {
-			// Para reproducir el frame
-			interpolationDart = numPasosDart / (float)maxNumPasosDart;
-			numPasosDart++;
-			if (interpolationDart > 1.0) {
-				numPasosDart = 0;
-				interpolationDart = 0;
-				indexFrameDart = indexFrameDartNext;
-				indexFrameDartNext++;
-			}
-			if (indexFrameDartNext > keyFramesDart.size() - 1)
-				indexFrameDartNext = 0;
-			modelMatrixDart = interpolate(keyFramesDart, indexFrameDart, indexFrameDartNext, 0, interpolationDart);
-		}
-
-		// Constantes de animaciones
-		rotHelHelY += 0.5;
-		animationIndex = 1;
 
 		/*******************************************
 		 * State machines
 		 *******************************************/
+
+		 // State machine for Triceratop
+		switch (state) {//Solo es 0,1,2 y 3
+		case 0:
+			if (numberAdvance == 0)
+				maxAdvance = 30.0;
+			else if (numberAdvance == 1)
+				maxAdvance = 15.0;
+			else if (numberAdvance == 2)
+				maxAdvance = 10.5;
+			else if (numberAdvance == 3)
+				maxAdvance = 15.0;
+			else if (numberAdvance == 4)
+				maxAdvance = 10.5;
+			state = 1;
+			break;
+		case 1: //Avanzar
+			modelMatrixTriceratop = glm::translate(modelMatrixTriceratop/*matriz acumulable*/, glm::vec3(0.0, 0.0, 0.1));
+			advanceCount += 0.1;
+			rotTriceratop += 0.05;
+			rotWheelsY -= 0.02;
+			if (rotWheelsY < 0)
+				rotWheelsY = 0;
+			if (advanceCount > maxAdvance) {
+				advanceCount = 0;
+				numberAdvance++;
+				state = 2;
+			}
+			break;
+		case 2: //Girar
+			modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(0.0, 0.0, 0.025));
+			modelMatrixTriceratop = glm::rotate(modelMatrixTriceratop, glm::radians(0.5f), glm::vec3(0, 1, 0));
+			rotCount += 0.5f;
+			rotTriceratop += 0.05;
+			rotWheelsY += 0.02;
+			if (rotWheelsY > 0.25)
+				rotWheelsY = 0.25;
+			if (rotCount >= 90.0) {
+				rotCount = 0;
+				state = 0;
+				if (numberAdvance > 4)
+					numberAdvance = 1;
+			}
+			break;
+		}
 
 		// State machine for the lambo car
 		switch(stateDoor){
@@ -2160,54 +2203,91 @@ void applicationLoop() {
 			break;
 		}
 
+
+
 		glfwSwapBuffers(window);
 
 		/****************************+
 		 * Open AL sound data
 		 */
-		/*source0Pos[0] = modelMatrixFountain[3].x;
-		source0Pos[1] = modelMatrixFountain[3].y;
-		source0Pos[2] = modelMatrixFountain[3].z;
-		alSourcefv(source[0], AL_POSITION, source0Pos);*/
+		
+		//Pisadas
+		source0Pos[0] = modelMatrixMayow[3].x;
+		source0Pos[1] = modelMatrixMayow[3].y;
+		source0Pos[2] = modelMatrixMayow[3].z;
+		alSourcefv(source[0], AL_POSITION, source0Pos);
 
-		source2Pos[0] = modelMatrixDart[3].x;
-		source2Pos[1] = modelMatrixDart[3].y;
-		source2Pos[2] = modelMatrixDart[3].z;
+		//Antorcha
+		source2Pos[0] = modelMatrixDoor[3].x;
+		source2Pos[1] = modelMatrixDoor[3].y;
+		source2Pos[2] = modelMatrixDoor[3].z;
 		alSourcefv(source[2], AL_POSITION, source2Pos);
 
-		// Listener for the Thris person camera
-		listenerPos[0] = modelMatrixMayow[3].x;
-		listenerPos[1] = modelMatrixMayow[3].y;
-		listenerPos[2] = modelMatrixMayow[3].z;
-		alListenerfv(AL_POSITION, listenerPos);
+		//Obturador
+		sourceCamPos[0] = modelMatrixMayow[3].x;
+		sourceCamPos[1] = modelMatrixMayow[3].y + 2.0;
+		sourceCamPos[2] = modelMatrixMayow[3].z;
+		alSourcefv(source[4], AL_POSITION, sourceCamPos);
 
-		glm::vec3 upModel = glm::normalize(modelMatrixMayow[1]);
-		glm::vec3 frontModel = glm::normalize(modelMatrixMayow[2]);
+		//Poner la escucha dependiendo de la posición de la cámara
+		if (stateCamera == 1) {
 
-		listenerOri[0] = frontModel.x;
-		listenerOri[1] = frontModel.y;
-		listenerOri[2] = frontModel.z;
-		listenerOri[3] = upModel.x;
-		listenerOri[4] = upModel.y;
-		listenerOri[5] = upModel.z;
+			// Listener for the Thris person camera
+			listenerPos[0] = modelMatrixMayow[3].x;
+			listenerPos[1] = modelMatrixMayow[3].y;
+			listenerPos[2] = modelMatrixMayow[3].z;
+			alListenerfv(AL_POSITION, listenerPos);
 
-		// Listener for the First person camera
-		/*listenerPos[0] = camera->getPosition().x;
-		listenerPos[1] = camera->getPosition().y;
-		listenerPos[2] = camera->getPosition().z;
-		alListenerfv(AL_POSITION, listenerPos);
-		listenerOri[0] = camera->getFront().x;
-		listenerOri[1] = camera->getFront().y;
-		listenerOri[2] = camera->getFront().z;
-		listenerOri[3] = camera->getUp().x;
-		listenerOri[4] = camera->getUp().y;
-		listenerOri[5] = camera->getUp().z;*/
+			glm::vec3 upModel = glm::normalize(modelMatrixMayow[1]);
+			glm::vec3 frontModel = glm::normalize(modelMatrixMayow[2]);
+
+			listenerOri[0] = frontModel.x;
+			listenerOri[1] = frontModel.y;
+			listenerOri[2] = frontModel.z;
+			listenerOri[3] = upModel.x;
+			listenerOri[4] = upModel.y;
+			listenerOri[5] = upModel.z;
+		}
+		else if (stateCamera == 2) {
+			// Listener for the First person camera
+			listenerPos[0] = cameraFPS->getPosition().x;
+			listenerPos[1] = cameraFPS->getPosition().y;
+			listenerPos[2] = cameraFPS->getPosition().z;
+			alListenerfv(AL_POSITION, listenerPos);
+			listenerOri[0] = cameraFPS->getFront().x;
+			listenerOri[1] = cameraFPS->getFront().y;
+			listenerOri[2] = cameraFPS->getFront().z;
+			listenerOri[3] = cameraFPS->getUp().x;
+			listenerOri[4] = cameraFPS->getUp().y;
+			listenerOri[5] = cameraFPS->getUp().z;
+		}
+		else if (stateCamera == 3) {
+			// Listener for the First person camera
+			listenerPos[0] = cameraFPSpersonaje->getPosition().x;
+			listenerPos[1] = cameraFPSpersonaje->getPosition().y;
+			listenerPos[2] = cameraFPSpersonaje->getPosition().z;
+			alListenerfv(AL_POSITION, listenerPos);
+			listenerOri[0] = cameraFPSpersonaje->getFront().x;
+			listenerOri[1] = cameraFPSpersonaje->getFront().y;
+			listenerOri[2] = cameraFPSpersonaje->getFront().z;
+			listenerOri[3] = cameraFPSpersonaje->getUp().x;
+			listenerOri[4] = cameraFPSpersonaje->getUp().y;
+			listenerOri[5] = cameraFPSpersonaje->getUp().z;
+		}
+		//Fin Poner la escucha dependiendo de la posición de la cámara
+		
 		alListenerfv(AL_ORIENTATION, listenerOri);
 
 		for(unsigned int i = 0; i < sourcesPlay.size(); i++){
-			if(sourcesPlay[i]){
+			if(sourcesPlay[i]){ //Para que lo reproduzca todo el tiempo
 				sourcesPlay[i] = false;
 				alSourcePlay(source[i]);
+				if (animationIndex == 1 && i == 0)
+					alSourcePlay(source[i]);
+			}
+			if (animationIndex == 0 && i == 0) {
+				sourcesPlay[i] = true;
+				alSourceStop(source[i]);
 			}
 		}
 	}
@@ -2224,6 +2304,9 @@ void prepareScene(){
 
 	//Mayow
 	mayowModelAnimate.setShader(&shaderMulLighting);
+
+	//Triceratops
+	triceratopModelAnimate.setShader(&shaderMulLighting);
 
 	//Door
 	modelDoor.setShader(&shaderMulLighting);
@@ -2249,6 +2332,9 @@ void prepareDepthScene(){
 
 	//Mayow
 	mayowModelAnimate.setShader(&shaderDepth);
+
+	//Triceratops
+	triceratopModelAnimate.setShader(&shaderDepth);
 
 	//Door
 	modelDoor.setShader(&shaderDepth);
@@ -2312,6 +2398,15 @@ void renderScene(bool renderParticles){
 	}
 	glEnable(GL_CULL_FACE);
 
+	glDisable(GL_CULL_FACE);
+	for (int i = 0; i < grassPositionHerv.size(); i++) {
+		grassPositionHerv[i].y = terrain.getHeightTerrain(grassPositionHerv[i].x, grassPositionHerv[i].z);
+		modelGrass.setPosition(grassPositionHerv[i]);
+		modelGrass.setScale(glm::vec3(0.5, 0.5, 0.5));
+		modelGrass.render();
+	}
+	glEnable(GL_CULL_FACE);
+
 	//Geiser
 	glDisable(GL_CULL_FACE);
 	for (int i = 0; i < geiserPositions.size(); i++) {
@@ -2349,6 +2444,13 @@ void renderScene(bool renderParticles){
 	modelMatrixMayowBody = glm::scale(modelMatrixMayowBody, glm::vec3(2.0, 2.0, 2.0));
 	mayowModelAnimate.setAnimationIndex(0);
 	mayowModelAnimate.render(modelMatrixMayowBody);
+
+	modelMatrixTriceratop[3][1] = terrain.getHeightTerrain(modelMatrixTriceratop[3][0], modelMatrixTriceratop[3][2]);
+	glm::mat4 modelMatrixTriceratopBody = glm::mat4(modelMatrixTriceratop);
+	modelMatrixTriceratopBody = glm::rotate(modelMatrixTriceratopBody, rotTriceratop, glm::vec3(0, 1, 0));
+	modelMatrixTriceratopBody = glm::scale(modelMatrixTriceratopBody, glm::vec3(0.01, 0.01, 0.01));
+	triceratopModelAnimate.setAnimationIndex(1);
+	triceratopModelAnimate.render(modelMatrixTriceratopBody);
 
 	/**********
 	 * Update the position with alpha objects
@@ -2400,6 +2502,7 @@ void renderScene(bool renderParticles){
 			glDepthMask(GL_TRUE);
 			//glEnable(GL_DEPTH_TEST);
 			shaderParticlesGeiser.turnOff();
+
 			/**********
 			 * End Render particles systems
 			 */
@@ -2432,6 +2535,7 @@ void renderScene(bool renderParticles){
 			glDepthMask(GL_TRUE);
 			//glEnable(GL_DEPTH_TEST);
 			shaderParticlesGeiser.turnOff();
+
 			/**********
 			 * End Render particles systems
 			 */
@@ -2464,6 +2568,7 @@ void renderScene(bool renderParticles){
 			glDepthMask(GL_TRUE);
 			//glEnable(GL_DEPTH_TEST);
 			shaderParticlesGeiser.turnOff();
+
 			/**********
 			 * End Render particles systems
 			 */
@@ -2496,6 +2601,7 @@ void renderScene(bool renderParticles){
 			glDepthMask(GL_TRUE);
 			//glEnable(GL_DEPTH_TEST);
 			shaderParticlesGeiser.turnOff();
+
 			/**********
 			 * End Render particles systems
 			 */
@@ -2528,6 +2634,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
+
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2560,6 +2667,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
+	
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2592,6 +2700,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
+
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2624,6 +2733,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
+	
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2656,6 +2766,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
+
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2688,6 +2799,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
+
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2720,6 +2832,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
+		
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2752,6 +2865,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
+
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2784,6 +2898,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
+
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2915,7 +3030,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
-
+	
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2948,7 +3063,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
-
+	
 		 /**********
 		  * End Render particles systems
 		  */
@@ -2981,7 +3096,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
-
+	
 		 /**********
 		  * End Render particles systems
 		  */
@@ -3014,7 +3129,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
-
+	
 		 /**********
 		  * End Render particles systems
 		  */
@@ -3047,7 +3162,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
-
+		
 		 /**********
 		  * End Render particles systems
 		  */
@@ -3113,7 +3228,7 @@ void renderScene(bool renderParticles){
 		 glDepthMask(GL_TRUE);
 		 //glEnable(GL_DEPTH_TEST);
 		 shaderParticlesGeiser.turnOff();
-
+	
 		 /**********
 		  * End Render particles systems
 		  */
@@ -3711,7 +3826,7 @@ void renderScene(bool renderParticles){
 }
 
 int main(int argc, char **argv) {
-	init(800, 700, "Window GLFW", false);
+	init(800, 700, "Window GLFW - Teclado", false);
 	applicationLoop();
 	destroy();
 	return 1;
