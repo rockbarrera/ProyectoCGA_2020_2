@@ -131,7 +131,7 @@ Model mayowModelAnimate;
 Model triceratopModelAnimate;
 
 // Terrain model instance
-Terrain terrain(-1, -1, 200, 16, "../Textures/terrenoJurassic2.png");
+Terrain terrain(-1, -1, 200, 16, "../Textures/terrenoJurassic.png");
 
 GLuint textureCespedID;
 GLuint textureTerrainBackgroundID, textureTerrainRID, textureTerrainGID, textureTerrainBID, textureTerrainBlendMapID;
@@ -1647,7 +1647,7 @@ void applicationLoop() {
 	float angleTarget;
 
 	modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0f, 0.05f, -90.0f));
-	modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f), glm::vec3(0, 1, 0));
+	//modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f), glm::vec3(0, 1, 0));
 
 	modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(-66.95f, 0.0f, 59.76f));
 	//modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(-0.0f, 0.0f, 0.0f));
@@ -1943,8 +1943,8 @@ void applicationLoop() {
 		// Collider de mayow
 		AbstractModel::OBB mayowCollider;
 		glm::mat4 modelmatrixColliderMayow = glm::mat4(modelMatrixMayow);
-		modelmatrixColliderMayow = glm::rotate(modelmatrixColliderMayow,
-				glm::radians(-90.0f), glm::vec3(1, 0, 0));
+		//modelmatrixColliderMayow = glm::rotate(modelmatrixColliderMayow,
+		//		glm::radians(-90.0f), glm::vec3(1, 0, 0));
 		// Set the orientation of collider before doing the scale
 		mayowCollider.u = glm::quat_cast(modelmatrixColliderMayow);
 		modelmatrixColliderMayow = glm::scale(modelmatrixColliderMayow, glm::vec3(2.0, 2.0, 2.0));
@@ -1999,7 +1999,10 @@ void applicationLoop() {
 			// Set the orientation of collider before doing the scale
 			geiserCollider.u = glm::quat_cast(modelMatrixColliderGeiser);
 			modelMatrixColliderGeiser = glm::scale(modelMatrixColliderGeiser, glm::vec3(1.0, 1.0, 1.0));
-			modelMatrixColliderGeiser = glm::translate(modelMatrixColliderGeiser, modelPalm.getObb().c);
+			modelMatrixColliderGeiser = glm::translate(modelMatrixColliderGeiser, modelPalm.getObb().c 
+																	+ glm::vec3(-1.65, 0, 0));
+			modelMatrixColliderGeiser[3].y = terrain.getHeightTerrain(modelMatrixColliderGeiser[3].x,
+																	modelMatrixColliderGeiser[3].z) + 0.5;
 			geiserCollider.c = glm::vec3(modelMatrixColliderGeiser[3]);
 			geiserCollider.e = modelGeiser.getObb().e * glm::vec3(1.0, 1.0, 1.0);
 			std::get<0>(collidersOBB.find("geiser-" + std::to_string(i))->second) = geiserCollider;
