@@ -338,8 +338,8 @@ GLuint depthMap, depthMapFBO;
  */
 
 // OpenAL Defines
-#define NUM_BUFFERS 4
-#define NUM_SOURCES 4
+#define NUM_BUFFERS 5
+#define NUM_SOURCES 5
 #define NUM_ENVIRONMENTS 1
 // Listener
 ALfloat listenerPos[] = { 0.0, 0.0, 4.0 };
@@ -361,6 +361,10 @@ ALfloat source2Vel[] = { 0.0, 0.0, 0.0 };
 ALfloat sourceMainThemePos[] = { 0.0, 0.0, 0.0 };
 ALfloat sourceMainThemeVel[] = { 0.0, 0.0, 0.0 };
 
+// Source camara
+ALfloat sourceCamPos[] = { 0.0, 0.0, 0.0 };
+ALfloat sourceCamVel[] = { 0.0, 0.0, 0.0 };
+
 // Buffers
 ALuint buffer[NUM_BUFFERS];
 ALuint source[NUM_SOURCES];
@@ -371,7 +375,7 @@ ALenum format;
 ALvoid *data;
 int ch;
 ALboolean loop;
-std::vector<bool> sourcesPlay = {false, true, true, false};
+std::vector<bool> sourcesPlay = {false, true, true, false, false};
 
 // Se definen todos las funciones.
 void reshapeCallback(GLFWwindow *Window, int widthRes, int heightRes);
@@ -1016,6 +1020,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	buffer[1] = alutCreateBufferFromFile("../sounds/geiser.wav");
 	buffer[2] = alutCreateBufferFromFile("../sounds/antorcha.wav");
 	buffer[3] = alutCreateBufferFromFile("../sounds/JurassicParkMainTheme.wav");
+	buffer[4] = alutCreateBufferFromFile("../sounds/camara.wav");
 	int errorAlut = alutGetError();
 	if (errorAlut != ALUT_ERROR_NO_ERROR){
 		printf("- Error open files with alut %d !!\n", errorAlut);
@@ -1068,6 +1073,15 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	alSourcei(source[3], AL_BUFFER, buffer[3]);
 	alSourcei(source[3], AL_LOOPING, AL_TRUE);
 	alSourcef(source[3], AL_MAX_DISTANCE, 500);
+
+	//Sonido de cámara
+	alSourcef(source[4], AL_PITCH, 1.0f);
+	alSourcef(source[4], AL_GAIN, 1.0f);
+	alSourcefv(source[4], AL_POSITION, sourceCamPos);
+	alSourcefv(source[4], AL_VELOCITY, sourceCamVel);
+	alSourcei(source[4], AL_BUFFER, buffer[4]);
+	alSourcei(source[4], AL_LOOPING, AL_TRUE);
+	alSourcef(source[4], AL_MAX_DISTANCE, 100);
 }
 
 void destroy() {
@@ -1224,18 +1238,14 @@ bool processInput(bool continueApplication) {
 
 		//Movimiento exclusivo de las cámaras
 		if (stateCamera == 3) {
-			//if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			//	cameraFPSpersonaje->moveFrontCamera(true, deltaTime);
-			//if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			//	cameraFPSpersonaje->moveFrontCamera(false, deltaTime);
-			//if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-			//	cameraFPSpersonaje->moveRightCamera(false, deltaTime);
-			//if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-			//	cameraFPSpersonaje->moveRightCamera(true, deltaTime);
-			//if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-			//	cameraFPSpersonaje->mouseMoveCamera(offsetX, offsetY, deltaTime);
-			//offsetX = 0;
-			//offsetY = 0;
+			//Reproducir el sonido de la cámara
+			if (enableCountSelected && glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+				enableCountSelected = false;
+				sourcesPlay[4] = true;
+			}
+			else if (glfwGetKey(window, GLFW_KEY_P) == GLFW_RELEASE) {
+				enableCountSelected = true;
+			}
 		}
 		else if (stateCamera == 2) {
 			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -1400,7 +1410,14 @@ void gamePad() {
 		/*Botón B*/
 		if (GLFW_PRESS == buttons[1])
 		{
-			std::cout << "B button presed: " + std::to_string(cameraFPS->getPosition().x) + ", " + std::to_string(cameraFPS->getPosition().z) << std::endl;
+			if (stateCamera == 2) {
+				std::cout << "B button presed: " 
+					+ std::to_string(cameraFPS->getPosition().x) 
+					+ ", " + std::to_string(cameraFPS->getPosition().z) << std::endl;
+			}
+			else if (stateCamera == 3){
+				sourcesPlay[4] = true;
+			}						
 		}
 		if (GLFW_RELEASE == buttons[1])
 		{
@@ -2142,16 +2159,24 @@ void applicationLoop() {
 		/****************************+
 		 * Open AL sound data
 		 */
-
+		
+		//Pisadas
 		source0Pos[0] = modelMatrixMayow[3].x;
 		source0Pos[1] = modelMatrixMayow[3].y;
 		source0Pos[2] = modelMatrixMayow[3].z;
 		alSourcefv(source[0], AL_POSITION, source0Pos);
 
+		//Antorcha
 		source2Pos[0] = modelMatrixDoor[3].x;
 		source2Pos[1] = modelMatrixDoor[3].y;
 		source2Pos[2] = modelMatrixDoor[3].z;
 		alSourcefv(source[2], AL_POSITION, source2Pos);
+
+		//Obturador
+		sourceCamPos[0] = modelMatrixMayow[3].x;
+		sourceCamPos[1] = modelMatrixMayow[3].y + 2.0;
+		sourceCamPos[2] = modelMatrixMayow[3].z;
+		alSourcefv(source[4], AL_POSITION, sourceCamPos);
 
 		//Poner la escucha dependiendo de la posición de la cámara
 		if (stateCamera == 1) {
