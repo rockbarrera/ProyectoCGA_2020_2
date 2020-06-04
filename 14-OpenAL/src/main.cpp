@@ -89,6 +89,7 @@ Shader shaderDepth;
 
 std::shared_ptr<Camera> camera(new ThirdPersonCamera());
 std::shared_ptr<FirstPersonCamera> cameraFPS(new FirstPersonCamera()); //Cámara en primera persona
+std::shared_ptr<FirstPersonCamera> cameraFPSpersonaje(new FirstPersonCamera()); //Cámara personaje principal
 
 int stateCamera = 1; //1 para la TPS y 2 para la FPS
 
@@ -370,7 +371,7 @@ ALenum format;
 ALvoid *data;
 int ch;
 ALboolean loop;
-std::vector<bool> sourcesPlay = {false, true, true, true};
+std::vector<bool> sourcesPlay = {false, true, true, false};
 
 // Se definen todos las funciones.
 void reshapeCallback(GLFWwindow *Window, int widthRes, int heightRes);
@@ -659,6 +660,8 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 
 	cameraFPS->setPosition(glm::vec3(0.0, 6.0, 0.0));
 
+	cameraFPSpersonaje->setPosition(modelMatrixMayow[3]);
+
 	// Definimos el tamanio de la imagen
 	int imageWidth, imageHeight;
 	FIBITMAP *bitmap;
@@ -785,7 +788,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	textureTerrainR.freeImage(bitmap);
 
 	// Definiendo la textura a utilizar
-	Texture textureTerrainG("../Textures/lava.jpg");
+	Texture textureTerrainG("../Textures/agua.png");
 	// Carga el mapa de bits (FIBITMAP es el tipo de dato de la libreria)
 	bitmap = textureTerrainG.loadImage();
 	// Convertimos el mapa de bits en un arreglo unidimensional de tipo unsigned char
@@ -1206,16 +1209,35 @@ bool processInput(bool continueApplication) {
 	}
 	
 	if (!inputMethod) {
-		//Seleccionar cámara TPS ó FPS
+		//Seleccionar cámara TPS ó FPS o FPS del personaje
 		if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
 			stateCamera = 1;
 		}
 		if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
 			stateCamera = 2;
 		}
+		if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
+			stateCamera = 3;
+			cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3]) + glm::vec3(0.0, 2.0, 0.0));
+		}
 		//Fin de selección de cámara TPS ó FPS
 
-		if (stateCamera == 2) {
+		//Movimiento exclusivo de las cámaras
+		if (stateCamera == 3) {
+			//if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+			//	cameraFPSpersonaje->moveFrontCamera(true, deltaTime);
+			//if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+			//	cameraFPSpersonaje->moveFrontCamera(false, deltaTime);
+			//if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+			//	cameraFPSpersonaje->moveRightCamera(false, deltaTime);
+			//if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+			//	cameraFPSpersonaje->moveRightCamera(true, deltaTime);
+			//if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+			//	cameraFPSpersonaje->mouseMoveCamera(offsetX, offsetY, deltaTime);
+			//offsetX = 0;
+			//offsetY = 0;
+		}
+		else if (stateCamera == 2) {
 			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 				cameraFPS->moveFrontCamera(true, deltaTime);
 			if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -1237,7 +1259,7 @@ bool processInput(bool continueApplication) {
 			offsetX = 0;
 			offsetY = 0;
 		}
-
+		//Fin Movimiento exclusivo de las cámaras
 
 
 		// Seleccionar modelo
@@ -1254,7 +1276,7 @@ bool processInput(bool continueApplication) {
 		else if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_RELEASE)
 			enableCountSelected = true;
 
-
+		//Mover al personaje con las teclas de dirección y su cámara de personaje
 		if (stateCamera == 1) {
 			if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
 				modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(1.0f), glm::vec3(0, 1, 0));
@@ -1265,10 +1287,14 @@ bool processInput(bool continueApplication) {
 				animationIndex = 1;
 			}if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
 				modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, 0.02));
+				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
+												+ glm::vec3(0.0, 2.0, 0.0));
 				animationIndex = 1;
 			}
 			else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
 				modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, -0.02));
+				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
+												+ glm::vec3(0.0, 2.0, 0.0));
 				animationIndex = 1;
 			}
 
@@ -1278,6 +1304,7 @@ bool processInput(bool continueApplication) {
 									   glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_RELEASE)) 
 				animationIndex = 0;
 		}
+		//Fin Mover al personaje con las teclas de dirección y su cámara de personaje
 	}
 	else {
 		gamePad();
@@ -1329,6 +1356,8 @@ void gamePad() {
 				}
 				
 				camera->mouseMoveCamera(axes[2], axes[3], deltaTime);
+				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
+												+ glm::vec3(0.0, 2.0, 0.0));
 
 				break;
 			}
@@ -1339,6 +1368,14 @@ void gamePad() {
 			cameraFPS->mouseMoveCamera(axes[2]*2.0, axes[3]*2.0, deltaTime);
 			offsetX = 0;
 			offsetY = 0;
+		}
+		else if (stateCamera == 3) { //Mover tanto cámara como personaje
+
+			//cameraFPSpersonaje->moveFrontCamera(true, axes[1] * 0.05);
+			//cameraFPSpersonaje->moveRightCamera(true, axes[0] * 0.05);
+			//cameraFPSpersonaje->mouseMoveCamera(axes[2] * 2.0, axes[3] * 2.0, deltaTime);
+			//offsetX = 0;
+			//offsetY = 0;
 		}
 		//------------------------------------ Fin de rotación y traslación de los modelos
 
@@ -1420,7 +1457,9 @@ void gamePad() {
 			std::cout << "Select button presed" << std::endl;
 			enableCountSelectedGamePad = false; //Controlar la selección de la cámara
 			stateCamera++;
-			if (stateCamera > 2) stateCamera = 1;
+			/*if (stateCamera == 3) cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3]) 
+																+ glm::vec3(0.0, 2.0, 0.0));*/
+			if (stateCamera > 3) stateCamera = 1;
 
 		}
 		else if (GLFW_RELEASE == buttons[6])
@@ -1620,13 +1659,17 @@ void applicationLoop() {
 		camera->setAngleTarget(angleTarget);
 		camera->updateCamera();
 
-		if (stateCamera == 1) { //La matriz de vista varía dependiendo de la selección de la cámara
+		//Se asigna la matriz de vista dependiendo de la cámara seleccionada
+		if (stateCamera == 1) { 
 			view = camera->getViewMatrix();
 		}
-
-		if (stateCamera == 2) {
+		else if (stateCamera == 2) {
 			view = cameraFPS->getViewMatrix();
 		}
+		else if (stateCamera == 3) {
+			view = cameraFPSpersonaje->getViewMatrix();
+		}
+		//Fin de asignación la matriz de vista dependiendo de la cámara seleccionada
 
 		shadowBox->update(screenWidth, screenHeight);
 		glm::vec3 centerBox = shadowBox->getCenter();
@@ -2110,6 +2153,7 @@ void applicationLoop() {
 		source2Pos[2] = modelMatrixDoor[3].z;
 		alSourcefv(source[2], AL_POSITION, source2Pos);
 
+		//Poner la escucha dependiendo de la posición de la cámara
 		if (stateCamera == 1) {
 
 			// Listener for the Thris person camera
@@ -2141,6 +2185,20 @@ void applicationLoop() {
 			listenerOri[4] = cameraFPS->getUp().y;
 			listenerOri[5] = cameraFPS->getUp().z;
 		}
+		else if (stateCamera == 3) {
+			// Listener for the First person camera
+			listenerPos[0] = cameraFPSpersonaje->getPosition().x;
+			listenerPos[1] = cameraFPSpersonaje->getPosition().y;
+			listenerPos[2] = cameraFPSpersonaje->getPosition().z;
+			alListenerfv(AL_POSITION, listenerPos);
+			listenerOri[0] = cameraFPSpersonaje->getFront().x;
+			listenerOri[1] = cameraFPSpersonaje->getFront().y;
+			listenerOri[2] = cameraFPSpersonaje->getFront().z;
+			listenerOri[3] = cameraFPSpersonaje->getUp().x;
+			listenerOri[4] = cameraFPSpersonaje->getUp().y;
+			listenerOri[5] = cameraFPSpersonaje->getUp().z;
+		}
+		//Fin Poner la escucha dependiendo de la posición de la cámara
 		
 		alListenerfv(AL_ORIENTATION, listenerOri);
 
