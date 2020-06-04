@@ -174,6 +174,15 @@ bool enableCountSelected = true;
 bool enableCountSelectedGamePad = true;
 bool inputMethod = false;
 
+//Movimientos del triceratop
+int state = 0;
+float advanceCount = 0.0;
+float rotCount = 0.0;
+float rotTriceratop = 0.0;
+float rotWheelsY = 0.0;
+int numberAdvance = 0;
+int maxAdvance = 0.0;
+
 // Variables to animations keyframes
 
 // Var animate helicopter
@@ -270,6 +279,34 @@ std::vector<glm::vec3> grassPositionsGeiser = { glm::vec3(0.0, 0.0, -80.0),
 												glm::vec3(31.72, 0, 54.92),
 												glm::vec3(37.88, 0, 49.03),
 												glm::vec3(44.55, 0, 44.53)
+};
+
+//Grass Position hervivioros
+std::vector<glm::vec3> grassPositionHerv{ glm::vec3(-32.51, 0.0, 54.26), 
+										  glm::vec3(-41.93, 0.0, 57.12),
+										  glm::vec3(-37.38, 0.0, 64.56),
+										  glm::vec3(-35.86, 0.0, 73.61),
+										  glm::vec3(-40.73, 0.0, 69.65),
+										  glm::vec3(-49.53, 0.0, 64.62),
+										  glm::vec3(-44.16, 0.0, 63.46),
+										  glm::vec3(-42.10, 0.0, 75.70),
+										  glm::vec3(-45.85, 0.0, 83.56),
+										  glm::vec3(-48.02, 0.0, 70.80),
+										  glm::vec3(-53.75, 0.0, 65.34),
+										  glm::vec3(-54.64, 0.0, 56.12),
+										  glm::vec3(-60.04, 0.0, 59.47),
+										  glm::vec3(-62.07, 0.0, 66.25),
+										  glm::vec3(-55.47, 0.0, 70.46),
+										  glm::vec3(-58.44, 0.0, 76.89),
+										  glm::vec3(-55.48, 0.0, 79.77),
+										  glm::vec3(-52.31, 0.0, 84.54),
+										  glm::vec3(-59.35, 0.0, 86.18),
+										  glm::vec3(-63.36, 0.0, 81.82),
+										  glm::vec3(-68.33, 0.0, 73.97),
+										  glm::vec3(-66.45, 0.0, 58.48),
+										  glm::vec3(-68.85, 0.0, 52.90),
+										  glm::vec3(-76.80, 0.0, 55.22),
+										  glm::vec3(-77.08, 0.0, 65.01)
 };
 
 // Blending model unsorted
@@ -1611,7 +1648,8 @@ void applicationLoop() {
 	modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0f, 0.05f, -90.0f));
 	modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f), glm::vec3(0, 1, 0));
 
-	modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(-59.42f, 0.0f, 75.72f));
+	modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(-29.97f, 0.0f, 65.74f));
+	//modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(-0.0f, 0.0f, 0.0f));
 	modelMatrixTriceratop = glm::rotate(modelMatrixTriceratop, glm::radians(-90.0f), glm::vec3(0, 1, 0));
 
 	/*modelMatrixFountain = glm::translate(modelMatrixFountain, glm::vec3(5.0, 0.0, -40.0));
@@ -2098,69 +2136,56 @@ void applicationLoop() {
 		/*******************************************
 		 * Interpolation key frames with disconect objects
 		 *******************************************/
-		/*if(record && modelSelected == 1){
-			matrixDartJoints.push_back(rotDartHead);
-			matrixDartJoints.push_back(rotDartLeftArm);
-			matrixDartJoints.push_back(rotDartLeftHand);
-			matrixDartJoints.push_back(rotDartRightArm);
-			matrixDartJoints.push_back(rotDartRightHand);
-			matrixDartJoints.push_back(rotDartLeftLeg);
-			matrixDartJoints.push_back(rotDartRightLeg);
-			if (saveFrame) {
-				appendFrame(myfile, matrixDartJoints);
-				saveFrame = false;
-			}
-		}
-		else if(keyFramesDartJoints.size() > 0){
-			// Para reproducir el frame
-			interpolationDartJoints = numPasosDartJoints / (float) maxNumPasosDartJoints;
-			numPasosDartJoints++;
-			if (interpolationDartJoints > 1.0) {
-				numPasosDartJoints = 0;
-				interpolationDartJoints = 0;
-				indexFrameDartJoints = indexFrameDartJointsNext;
-				indexFrameDartJointsNext++;
-			}
-			if (indexFrameDartJointsNext > keyFramesDartJoints.size() - 1)
-				indexFrameDartJointsNext = 0;
-			rotDartHead = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 0, interpolationDartJoints);
-			rotDartLeftArm = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 1, interpolationDartJoints);
-			rotDartLeftHand = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 2, interpolationDartJoints);
-			rotDartRightArm = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 3, interpolationDartJoints);
-			rotDartRightHand = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 4, interpolationDartJoints);
-			rotDartLeftLeg = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 5, interpolationDartJoints);
-			rotDartRightLeg = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 6, interpolationDartJoints);
-		}*/
 
-		/*if (record && modelSelected == 2) {
-			matrixDart.push_back(modelMatrixDart);
-			if (saveFrame) {
-				appendFrame(myfile, matrixDart);
-				saveFrame = false;
-			}
-		}
-		else if (keyFramesDart.size() > 0) {
-			// Para reproducir el frame
-			interpolationDart = numPasosDart / (float)maxNumPasosDart;
-			numPasosDart++;
-			if (interpolationDart > 1.0) {
-				numPasosDart = 0;
-				interpolationDart = 0;
-				indexFrameDart = indexFrameDartNext;
-				indexFrameDartNext++;
-			}
-			if (indexFrameDartNext > keyFramesDart.size() - 1)
-				indexFrameDartNext = 0;
-			modelMatrixDart = interpolate(keyFramesDart, indexFrameDart, indexFrameDartNext, 0, interpolationDart);
-		}*/
-
-		// Constantes de animaciones
-		//rotHelHelY += 0.5;
-		//animationIndex = 1;
 
 		/*******************************************
 		 * State machines
 		 *******************************************/
+
+		 // State machine for Triceratop
+		switch (state) {//Solo es 0,1,2 y 3
+		case 0:
+			if (numberAdvance == 0)
+				maxAdvance = 30.0;
+			else if (numberAdvance == 1)
+				maxAdvance = 15.0;
+			else if (numberAdvance == 2)
+				maxAdvance = 10.5;
+			else if (numberAdvance == 3)
+				maxAdvance = 15.0;
+			else if (numberAdvance == 4)
+				maxAdvance = 10.5;
+			state = 1;
+			break;
+		case 1: //Avanzar
+			modelMatrixTriceratop = glm::translate(modelMatrixTriceratop/*matriz acumulable*/, glm::vec3(0.0, 0.0, 0.1));
+			advanceCount += 0.1;
+			rotTriceratop += 0.05;
+			rotWheelsY -= 0.02;
+			if (rotWheelsY < 0)
+				rotWheelsY = 0;
+			if (advanceCount > maxAdvance) {
+				advanceCount = 0;
+				numberAdvance++;
+				state = 2;
+			}
+			break;
+		case 2: //Girar
+			modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(0.0, 0.0, 0.025));
+			modelMatrixTriceratop = glm::rotate(modelMatrixTriceratop, glm::radians(0.5f), glm::vec3(0, 1, 0));
+			rotCount += 0.5f;
+			rotTriceratop += 0.05;
+			rotWheelsY += 0.02;
+			if (rotWheelsY > 0.25)
+				rotWheelsY = 0.25;
+			if (rotCount >= 90.0) {
+				rotCount = 0;
+				state = 0;
+				if (numberAdvance > 4)
+					numberAdvance = 1;
+			}
+			break;
+		}
 
 		// State machine for the lambo car
 		switch(stateDoor){
@@ -2177,6 +2202,8 @@ void applicationLoop() {
 			}
 			break;
 		}
+
+
 
 		glfwSwapBuffers(window);
 
@@ -2371,6 +2398,15 @@ void renderScene(bool renderParticles){
 	}
 	glEnable(GL_CULL_FACE);
 
+	glDisable(GL_CULL_FACE);
+	for (int i = 0; i < grassPositionHerv.size(); i++) {
+		grassPositionHerv[i].y = terrain.getHeightTerrain(grassPositionHerv[i].x, grassPositionHerv[i].z);
+		modelGrass.setPosition(grassPositionHerv[i]);
+		modelGrass.setScale(glm::vec3(0.5, 0.5, 0.5));
+		modelGrass.render();
+	}
+	glEnable(GL_CULL_FACE);
+
 	//Geiser
 	glDisable(GL_CULL_FACE);
 	for (int i = 0; i < geiserPositions.size(); i++) {
@@ -2411,6 +2447,7 @@ void renderScene(bool renderParticles){
 
 	modelMatrixTriceratop[3][1] = terrain.getHeightTerrain(modelMatrixTriceratop[3][0], modelMatrixTriceratop[3][2]);
 	glm::mat4 modelMatrixTriceratopBody = glm::mat4(modelMatrixTriceratop);
+	modelMatrixTriceratopBody = glm::rotate(modelMatrixTriceratopBody, rotTriceratop, glm::vec3(0, 1, 0));
 	modelMatrixTriceratopBody = glm::scale(modelMatrixTriceratopBody, glm::vec3(0.01, 0.01, 0.01));
 	triceratopModelAnimate.setAnimationIndex(1);
 	triceratopModelAnimate.render(modelMatrixTriceratopBody);
