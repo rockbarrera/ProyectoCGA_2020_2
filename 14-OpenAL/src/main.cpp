@@ -1450,7 +1450,7 @@ void gamePad() {
 		}
 		if (GLFW_RELEASE == buttons[0])
 		{
-			std::cout << "B button is released" << std::endl;
+			//std::cout << "B button is released" << std::endl;
 			if (stateCamera == 1)
 				velModel = 1; //Disminuir la velocidad
 		}
@@ -1467,9 +1467,9 @@ void gamePad() {
 				sourcesPlay[4] = true;
 			}						
 		}
-		if (GLFW_RELEASE == buttons[2])
+		if (GLFW_RELEASE == buttons[1])
 		{
-			std::cout << "A button is released" << std::endl;
+			//std::cout << "A button is released" << std::endl;
 		}
 
 		/*Botón X*/
@@ -1967,9 +1967,9 @@ void applicationLoop() {
 			glm::vec3(triceratopModelAnimate.getObb().c.x,
 				triceratopModelAnimate.getObb().c.y,
 				triceratopModelAnimate.getObb().c.z));
-		triceratopCollider.e = triceratopModelAnimate.getObb().e * glm::vec3(0.5, 0.5, 0.5); 
+		triceratopCollider.e = triceratopModelAnimate.getObb().e * glm::vec3(0.01, 0.01, 0.01) 
 																 /** glm::vec3(0.787401574, 0.787401574, 0.787401574);*/
-																	//* glm::vec3(1.4, 1.4, 1.4);
+																	* glm::vec3(1.4, 1.4, 1.4);
 		triceratopCollider.c = glm::vec3(modelmatrixColliderTriceratops[3]);
 		addOrUpdateColliders(collidersOBB, "triceratop", triceratopCollider, modelMatrixTriceratop);
 
@@ -2179,42 +2179,17 @@ void applicationLoop() {
 			stateTriceratops = 1;
 			break;
 		case 1: //Avanzar
-<<<<<<< HEAD
-			modelMatrixTriceratop = glm::translate(modelMatrixTriceratop/*matriz acumulable*/, glm::vec3(0.0, 0.0, 0.1));
-			advanceCount += 0.1;
-			//rotTriceratop += 0.05;
-			rotWheelsY -= 0.02;
-			if (rotWheelsY < 0)
-				rotWheelsY = 0;
-			if (advanceCount > maxAdvance) {
-				advanceCount = 0;
-				numberAdvance++;
-				state = 2;
-=======
 			modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(0.0, 0.0, 0.1));
 			advanceCountTriceratops += 0.1;
 			rotTriceratop += 0.05;
 			if (advanceCountTriceratops > maxAdvanceTriceratops) {
 				advanceCountTriceratops = 0;
 				stateTriceratops = 2;
->>>>>>> RodrigoBarrera
 			}
 			break;
 		case 2: //Girar
 			//modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(0.0, 0.0, 0.025));
 			modelMatrixTriceratop = glm::rotate(modelMatrixTriceratop, glm::radians(0.5f), glm::vec3(0, 1, 0));
-<<<<<<< HEAD
-			rotCount += 0.5f;
-			//rotTriceratop += 0.05;
-			rotWheelsY += 0.02;
-			if (rotWheelsY > 0.25)
-				rotWheelsY = 0.25;
-			if (rotCount >= 90.0) {
-				rotCount = 0;
-				state = 0;
-				if (numberAdvance > 4)
-					numberAdvance = 1;
-=======
 			rotCountTriceratops += 0.5f;
 			rotTriceratop += 0.05;
 			if (rotCountTriceratops >= maxRotTriceratops) {
@@ -2223,7 +2198,6 @@ void applicationLoop() {
 				numberAdvanceTriceratops++;
 				if (numberAdvanceTriceratops > 6)
 					numberAdvanceTriceratops = 0;
->>>>>>> RodrigoBarrera
 			}
 			break;
 		}
