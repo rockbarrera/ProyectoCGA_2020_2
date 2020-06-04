@@ -126,6 +126,10 @@ Model modelTree;
 // Model animate instance
 // Mayow
 Model mayowModelAnimate;
+
+//Triceratop
+Model triceratopModelAnimate;
+
 // Terrain model instance
 Terrain terrain(-1, -1, 200, 16, "../Textures/terrenoJurassic2.png");
 
@@ -161,6 +165,7 @@ glm::mat4 modelMatrixFountain1 = glm::mat4(1.0f);
 glm::mat4 modelMatrixGeiser = glm::mat4(1.0f);
 glm::mat4 modelMatrixDoor = glm::mat4(1.0f);
 glm::mat4 modelMatrixMountain = glm::mat4(1.0f);
+glm::mat4 modelMatrixTriceratop = glm::mat4(1.0f);
 
 int animationIndex = 0;
 int velModel = 1;
@@ -658,6 +663,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	mayowModelAnimate.loadModel("../models/Walk/Walk.fbx");
 	mayowModelAnimate.setShader(&shaderMulLighting);
 
+	//Triceratop
+	triceratopModelAnimate.loadModel("../models/Dinosaur/Triceratop.fbx");
+	triceratopModelAnimate.setShader(&shaderMulLighting);
+
 	camera->setPosition(glm::vec3(0.0, 0.0, 10.0));
 	camera->setDistanceFromTarget(distanceFromTarget);
 	camera->setSensitivity(1.0);
@@ -1117,6 +1126,7 @@ void destroy() {
 
 	// Custom objects animate
 	mayowModelAnimate.destroy();
+	triceratopModelAnimate.destroy();
 
 	// Textures Delete
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -1598,10 +1608,11 @@ void applicationLoop() {
 	glm::vec3 target;
 	float angleTarget;
 
-	//modelMatrixDart = glm::translate(modelMatrixDart, glm::vec3(3.0, 0.0, 20.0));
-
 	modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0f, 0.05f, -90.0f));
 	modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f), glm::vec3(0, 1, 0));
+
+	modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(-59.42f, 0.0f, 75.72f));
+	modelMatrixTriceratop = glm::rotate(modelMatrixTriceratop, glm::radians(-90.0f), glm::vec3(0, 1, 0));
 
 	/*modelMatrixFountain = glm::translate(modelMatrixFountain, glm::vec3(5.0, 0.0, -40.0));
 	modelMatrixFountain[3][1] = terrain.getHeightTerrain(modelMatrixFountain[3][0] , modelMatrixFountain[3][2]) + 0.2;
@@ -1618,11 +1629,6 @@ void applicationLoop() {
 	modelMatrixMountain[3][1] = terrain.getHeightTerrain(modelMatrixMountain[3][0], modelMatrixMountain[3][2]);
 	//modelMatrixMountain = glm::rotate(modelMatrixMountain, glm::radians(90.0f), glm::vec3(0, 1, 0));
 	modelMatrixMountain = glm::scale(modelMatrixMountain, glm::vec3(0.2f, 0.2f, 0.2f));
-
-	// Variables to interpolation key frames
-	/*fileName = "../animaciones/animation_dart_joints.txt";
-	keyFramesDartJoints = getKeyRotFrames(fileName);
-	keyFramesDart = getKeyFrames("../animaciones/animation_dart.txt");*/
 
 	lastTime = TimeManager::Instance().GetTime();
 
@@ -1907,9 +1913,27 @@ void applicationLoop() {
 				glm::vec3(mayowModelAnimate.getObb().c.x,
 						mayowModelAnimate.getObb().c.y,
 						mayowModelAnimate.getObb().c.z));
-		mayowCollider.e = mayowModelAnimate.getObb().e * glm::vec3(2.0, 2.0, 2.0);
+		mayowCollider.e = mayowModelAnimate.getObb().e * glm::vec3(2.0, 2.0, 2.0) * glm::vec3(0.787401574, 0.787401574, 0.787401574);
 		mayowCollider.c = glm::vec3(modelmatrixColliderMayow[3]);
 		addOrUpdateColliders(collidersOBB, "mayow", mayowCollider, modelMatrixMayow);
+
+		// Collider Triceratop
+		AbstractModel::OBB triceratopCollider;
+		glm::mat4 modelmatrixColliderTriceratops = glm::mat4(modelMatrixTriceratop);
+		modelmatrixColliderTriceratops = glm::rotate(modelmatrixColliderTriceratops,
+													glm::radians(-90.0f), glm::vec3(1, 0, 0));
+		// Set the orientation of collider before doing the scale
+		triceratopCollider.u = glm::quat_cast(modelmatrixColliderTriceratops);
+		modelmatrixColliderTriceratops = glm::scale(modelmatrixColliderTriceratops, glm::vec3(0.01, 0.01, 0.01));
+		modelmatrixColliderTriceratops = glm::translate(modelmatrixColliderTriceratops,
+			glm::vec3(triceratopModelAnimate.getObb().c.x,
+				triceratopModelAnimate.getObb().c.y,
+				triceratopModelAnimate.getObb().c.z));
+		triceratopCollider.e = triceratopModelAnimate.getObb().e * glm::vec3(0.01, 0.01, 0.01) 
+																 /** glm::vec3(0.787401574, 0.787401574, 0.787401574);*/
+																	* glm::vec3(1.4, 1.4, 1.4);
+		triceratopCollider.c = glm::vec3(modelmatrixColliderTriceratops[3]);
+		addOrUpdateColliders(collidersOBB, "triceratop", triceratopCollider, modelMatrixTriceratop);
 
 		// Collider palms
 		for (int i = 0; i < palmPositions.size(); i++) {
@@ -2254,6 +2278,9 @@ void prepareScene(){
 	//Mayow
 	mayowModelAnimate.setShader(&shaderMulLighting);
 
+	//Triceratops
+	triceratopModelAnimate.setShader(&shaderMulLighting);
+
 	//Door
 	modelDoor.setShader(&shaderMulLighting);
 
@@ -2278,6 +2305,9 @@ void prepareDepthScene(){
 
 	//Mayow
 	mayowModelAnimate.setShader(&shaderDepth);
+
+	//Triceratops
+	triceratopModelAnimate.setShader(&shaderDepth);
 
 	//Door
 	modelDoor.setShader(&shaderDepth);
@@ -2378,6 +2408,12 @@ void renderScene(bool renderParticles){
 	modelMatrixMayowBody = glm::scale(modelMatrixMayowBody, glm::vec3(2.0, 2.0, 2.0));
 	mayowModelAnimate.setAnimationIndex(0);
 	mayowModelAnimate.render(modelMatrixMayowBody);
+
+	modelMatrixTriceratop[3][1] = terrain.getHeightTerrain(modelMatrixTriceratop[3][0], modelMatrixTriceratop[3][2]);
+	glm::mat4 modelMatrixTriceratopBody = glm::mat4(modelMatrixTriceratop);
+	modelMatrixTriceratopBody = glm::scale(modelMatrixTriceratopBody, glm::vec3(0.01, 0.01, 0.01));
+	triceratopModelAnimate.setAnimationIndex(1);
+	triceratopModelAnimate.render(modelMatrixTriceratopBody);
 
 	/**********
 	 * Update the position with alpha objects
