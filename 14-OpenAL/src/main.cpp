@@ -693,8 +693,9 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelDoor.setShader(&shaderMulLighting);
 
 	//Mountain
-	modelMountain.loadModel("../models/Mountain/Volcano2.obj");
+	modelMountain.loadModel("../models/Mountain/Mountain.obj");
 	modelMountain.setShader(&shaderMulLighting);
+	//modelMountain.setPosition(glm::vec3(0, 0, 0));
 
 	//Mayow
 	mayowModelAnimate.loadModel("../models/Walk/Walk.fbx");
@@ -1399,7 +1400,7 @@ void gamePad() {
 			case 2:
 
 				modelMatrixMayow = glm::translate(modelMatrixMayow,
-					glm::vec3(0, 0, 0.02 * velModel * axes[1]));
+					glm::vec3(0, 0, 0.5 * velModel * axes[1]));
 				modelMatrixMayow = glm::rotate(modelMatrixMayow,
 					glm::radians(-0.8f * axes[0]),
 					glm::vec3(0, 1, 0));
@@ -1420,8 +1421,8 @@ void gamePad() {
 			}
 		}
 		else if (stateCamera == 2) { //Cámara FPS
-			cameraFPS->moveFrontCamera(true, axes[1] * 0.05);
-			cameraFPS->moveRightCamera(true, axes[0] * 0.05);
+			cameraFPS->moveFrontCamera(true, axes[1] * 0.5);
+			cameraFPS->moveRightCamera(true, axes[0] * 0.5);
 			cameraFPS->mouseMoveCamera(axes[2]*2.0, axes[3]*2.0, deltaTime);
 			offsetX = 0;
 			offsetY = 0;
@@ -1442,14 +1443,14 @@ void gamePad() {
 		/*Botón A*/
 		if (GLFW_PRESS == buttons[0])
 		{
-			//std::cout << "A button presed" << std::endl;
+			std::cout << "B button presed" << std::endl;
 			//camera->moveFrontCamera(true, deltaTime);
 			if (stateCamera == 1)
 				velModel = 2; //Aumentar la velocidad
 		}
 		if (GLFW_RELEASE == buttons[0])
 		{
-			//std::cout << "A button is released" << std::endl;
+			std::cout << "B button is released" << std::endl;
 			if (stateCamera == 1)
 				velModel = 1; //Disminuir la velocidad
 		}
@@ -1458,7 +1459,7 @@ void gamePad() {
 		if (GLFW_PRESS == buttons[1])
 		{
 			if (stateCamera == 2) {
-				std::cout << "B button presed: " 
+				std::cout << "A button presed: " 
 					+ std::to_string(cameraFPS->getPosition().x) 
 					+ ", " + std::to_string(cameraFPS->getPosition().z) << std::endl;
 			}
@@ -1466,9 +1467,9 @@ void gamePad() {
 				sourcesPlay[4] = true;
 			}						
 		}
-		if (GLFW_RELEASE == buttons[1])
+		if (GLFW_RELEASE == buttons[2])
 		{
-			//std::cout << "B button is released" << std::endl;
+			std::cout << "A button is released" << std::endl;
 		}
 
 		/*Botón X*/
@@ -1958,8 +1959,7 @@ void applicationLoop() {
 		// Collider Triceratop
 		AbstractModel::OBB triceratopCollider;
 		glm::mat4 modelmatrixColliderTriceratops = glm::mat4(modelMatrixTriceratop);
-		modelmatrixColliderTriceratops = glm::rotate(modelmatrixColliderTriceratops,
-													glm::radians(-90.0f), glm::vec3(1, 0, 0));
+		modelmatrixColliderTriceratops = glm::rotate(modelmatrixColliderTriceratops, glm::radians(-90.0f), glm::vec3(1, 0, 0));
 		// Set the orientation of collider before doing the scale
 		triceratopCollider.u = glm::quat_cast(modelmatrixColliderTriceratops);
 		modelmatrixColliderTriceratops = glm::scale(modelmatrixColliderTriceratops, glm::vec3(0.01, 0.01, 0.01));
@@ -1967,9 +1967,9 @@ void applicationLoop() {
 			glm::vec3(triceratopModelAnimate.getObb().c.x,
 				triceratopModelAnimate.getObb().c.y,
 				triceratopModelAnimate.getObb().c.z));
-		triceratopCollider.e = triceratopModelAnimate.getObb().e * glm::vec3(0.01, 0.01, 0.01) 
+		triceratopCollider.e = triceratopModelAnimate.getObb().e * glm::vec3(0.5, 0.5, 0.5); 
 																 /** glm::vec3(0.787401574, 0.787401574, 0.787401574);*/
-																	* glm::vec3(1.4, 1.4, 1.4);
+																	//* glm::vec3(1.4, 1.4, 1.4);
 		triceratopCollider.c = glm::vec3(modelmatrixColliderTriceratops[3]);
 		addOrUpdateColliders(collidersOBB, "triceratop", triceratopCollider, modelMatrixTriceratop);
 
@@ -2160,7 +2160,7 @@ void applicationLoop() {
 		case 1: //Avanzar
 			modelMatrixTriceratop = glm::translate(modelMatrixTriceratop/*matriz acumulable*/, glm::vec3(0.0, 0.0, 0.1));
 			advanceCount += 0.1;
-			rotTriceratop += 0.05;
+			//rotTriceratop += 0.05;
 			rotWheelsY -= 0.02;
 			if (rotWheelsY < 0)
 				rotWheelsY = 0;
@@ -2174,7 +2174,7 @@ void applicationLoop() {
 			modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(0.0, 0.0, 0.025));
 			modelMatrixTriceratop = glm::rotate(modelMatrixTriceratop, glm::radians(0.5f), glm::vec3(0, 1, 0));
 			rotCount += 0.5f;
-			rotTriceratop += 0.05;
+			//rotTriceratop += 0.05;
 			rotWheelsY += 0.02;
 			if (rotWheelsY > 0.25)
 				rotWheelsY = 0.25;
