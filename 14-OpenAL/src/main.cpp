@@ -175,13 +175,13 @@ bool enableCountSelectedGamePad = true;
 bool inputMethod = false;
 
 //Movimientos del triceratop
-int state = 0;
-float advanceCount = 0.0;
-float rotCount = 0.0;
+int stateTriceratops = 0;
+float advanceCountTriceratops = 0.0;
+float rotCountTriceratops = 0.0;
 float rotTriceratop = 0.0;
-float rotWheelsY = 0.0;
-int numberAdvance = 0;
-int maxAdvance = 0.0;
+int numberAdvanceTriceratops = 0;
+int maxAdvanceTriceratops = 0.0;
+int maxRotTriceratops = 0.0;
 
 // Variables to animations keyframes
 
@@ -190,7 +190,7 @@ float rotHelHelY = 0.0;
 
 // Var animate lambo dor
 int stateDoor = 0;
-float dorRotCount = 0.0;
+float dorrotCountTriceratops = 0.0;
 
 // Palm positions
 std::vector<glm::vec3> palmPositions = { glm::vec3(-91.42f, 0.0f, 94.41f),
@@ -709,7 +709,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	camera->setDistanceFromTarget(distanceFromTarget);
 	camera->setSensitivity(1.0);
 
-	cameraFPS->setPosition(glm::vec3(0.0, 6.0, 0.0));
+	cameraFPS->setPosition(glm::vec3(-75.67, 6.0, 65.4));
 
 	cameraFPSpersonaje->setPosition(modelMatrixMayow[3]);
 
@@ -1649,9 +1649,9 @@ void applicationLoop() {
 	modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0f, 0.05f, -90.0f));
 	modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f), glm::vec3(0, 1, 0));
 
-	modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(-29.97f, 0.0f, 65.74f));
+	modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(-66.95f, 0.0f, 59.76f));
 	//modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(-0.0f, 0.0f, 0.0f));
-	modelMatrixTriceratop = glm::rotate(modelMatrixTriceratop, glm::radians(-90.0f), glm::vec3(0, 1, 0));
+	modelMatrixTriceratop = glm::rotate(modelMatrixTriceratop, glm::radians(-90.0f + 32.89f), glm::vec3(0, 1, 0));
 
 	/*modelMatrixFountain = glm::translate(modelMatrixFountain, glm::vec3(5.0, 0.0, -40.0));
 	modelMatrixFountain[3][1] = terrain.getHeightTerrain(modelMatrixFountain[3][0] , modelMatrixFountain[3][2]) + 0.2;
@@ -2143,21 +2143,43 @@ void applicationLoop() {
 		 *******************************************/
 
 		 // State machine for Triceratop
-		switch (state) {//Solo es 0,1,2 y 3
+		switch (stateTriceratops) {//Solo es 0,1,2 y 3
 		case 0:
-			if (numberAdvance == 0)
-				maxAdvance = 30.0;
-			else if (numberAdvance == 1)
-				maxAdvance = 15.0;
-			else if (numberAdvance == 2)
-				maxAdvance = 10.5;
-			else if (numberAdvance == 3)
-				maxAdvance = 15.0;
-			else if (numberAdvance == 4)
-				maxAdvance = 10.5;
-			state = 1;
+			switch (numberAdvanceTriceratops)
+			{
+			case 0:
+				maxAdvanceTriceratops = 10.38;
+				maxRotTriceratops = 68.75;
+				break;
+			case 1:
+				maxAdvanceTriceratops = 22.44;
+				maxRotTriceratops = 91.10;
+				break;
+			case 2:
+				maxAdvanceTriceratops = 11.37;
+				maxRotTriceratops = 1.18;
+				break;
+			case 3:
+				maxAdvanceTriceratops = 13.36;
+				maxRotTriceratops = 33.08;
+				break;
+			case 4:
+				maxAdvanceTriceratops = 14.0;
+				maxRotTriceratops = 32.66;
+				break;
+			case 5:
+				maxAdvanceTriceratops = 13.43;
+				maxRotTriceratops = 103.58;
+				break;
+			case 6:
+				maxAdvanceTriceratops = 32.9;
+				maxRotTriceratops = 31.98;
+				break;
+			}
+			stateTriceratops = 1;
 			break;
 		case 1: //Avanzar
+<<<<<<< HEAD
 			modelMatrixTriceratop = glm::translate(modelMatrixTriceratop/*matriz acumulable*/, glm::vec3(0.0, 0.0, 0.1));
 			advanceCount += 0.1;
 			//rotTriceratop += 0.05;
@@ -2168,11 +2190,20 @@ void applicationLoop() {
 				advanceCount = 0;
 				numberAdvance++;
 				state = 2;
+=======
+			modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(0.0, 0.0, 0.1));
+			advanceCountTriceratops += 0.1;
+			rotTriceratop += 0.05;
+			if (advanceCountTriceratops > maxAdvanceTriceratops) {
+				advanceCountTriceratops = 0;
+				stateTriceratops = 2;
+>>>>>>> RodrigoBarrera
 			}
 			break;
 		case 2: //Girar
-			modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(0.0, 0.0, 0.025));
+			//modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(0.0, 0.0, 0.025));
 			modelMatrixTriceratop = glm::rotate(modelMatrixTriceratop, glm::radians(0.5f), glm::vec3(0, 1, 0));
+<<<<<<< HEAD
 			rotCount += 0.5f;
 			//rotTriceratop += 0.05;
 			rotWheelsY += 0.02;
@@ -2183,27 +2214,19 @@ void applicationLoop() {
 				state = 0;
 				if (numberAdvance > 4)
 					numberAdvance = 1;
+=======
+			rotCountTriceratops += 0.5f;
+			rotTriceratop += 0.05;
+			if (rotCountTriceratops >= maxRotTriceratops) {
+				rotCountTriceratops = 0;
+				stateTriceratops = 0;
+				numberAdvanceTriceratops++;
+				if (numberAdvanceTriceratops > 6)
+					numberAdvanceTriceratops = 0;
+>>>>>>> RodrigoBarrera
 			}
 			break;
 		}
-
-		// State machine for the lambo car
-		switch(stateDoor){
-		case 0:
-			dorRotCount += 0.5;
-			if(dorRotCount > 75)
-				stateDoor = 1;
-			break;
-		case 1:
-			dorRotCount -= 0.5;
-			if(dorRotCount < 0){
-				dorRotCount = 0.0;
-				stateDoor = 0;
-			}
-			break;
-		}
-
-
 
 		glfwSwapBuffers(window);
 
@@ -2447,7 +2470,7 @@ void renderScene(bool renderParticles){
 
 	modelMatrixTriceratop[3][1] = terrain.getHeightTerrain(modelMatrixTriceratop[3][0], modelMatrixTriceratop[3][2]);
 	glm::mat4 modelMatrixTriceratopBody = glm::mat4(modelMatrixTriceratop);
-	modelMatrixTriceratopBody = glm::rotate(modelMatrixTriceratopBody, rotTriceratop, glm::vec3(0, 1, 0));
+	//modelMatrixTriceratopBody = glm::rotate(modelMatrixTriceratopBody, rotTriceratop, glm::vec3(0, 1, 0));
 	modelMatrixTriceratopBody = glm::scale(modelMatrixTriceratopBody, glm::vec3(0.01, 0.01, 0.01));
 	triceratopModelAnimate.setAnimationIndex(1);
 	triceratopModelAnimate.render(modelMatrixTriceratopBody);
