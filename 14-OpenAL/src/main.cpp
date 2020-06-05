@@ -1270,8 +1270,10 @@ void mouseCallback(GLFWwindow *window, double xpos, double ypos) {
 }
 
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset){
-	distanceFromTarget -= yoffset;
-	camera->setDistanceFromTarget(distanceFromTarget);
+	if (stateCamera == 1) {
+		distanceFromTarget -= yoffset;
+		camera->setDistanceFromTarget(distanceFromTarget);
+	}
 }
 
 void mouseButtonCallback(GLFWwindow *window, int button, int state, int mod) {
@@ -1330,6 +1332,20 @@ bool processInput(bool continueApplication) {
 		}
 		//Fin de selección de cámara TPS ó FPS
 
+		// Seleccionar modelo
+		if (enableCountSelected && glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
+			enableCountSelected = false;
+			modelSelected++;
+			if (modelSelected > 2)
+				modelSelected = 0;
+			if (modelSelected == 1)
+
+				if (modelSelected == 2)
+					std::cout << "modelSelected:" << modelSelected << std::endl;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_RELEASE)
+			enableCountSelected = true;
+
 		//Movimiento exclusivo de las cámaras
 		if (stateCamera == 3) {
 			//Reproducir el sonido de la cámara
@@ -1363,26 +1379,8 @@ bool processInput(bool continueApplication) {
 				camera->mouseMoveCamera(0.0, offsetY, deltaTime);
 			offsetX = 0;
 			offsetY = 0;
-		}
-		//Fin Movimiento exclusivo de las cámaras
 
-
-		// Seleccionar modelo
-		if (enableCountSelected && glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
-			enableCountSelected = false;
-			modelSelected++;
-			if (modelSelected > 2)
-				modelSelected = 0;
-			if (modelSelected == 1)
-
-				if (modelSelected == 2)
-					std::cout << "modelSelected:" << modelSelected << std::endl;
-		}
-		else if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_RELEASE)
-			enableCountSelected = true;
-
-		//Mover al personaje con las teclas de dirección y su cámara de personaje
-		if (stateCamera == 1) {
+			//Mover al personaje con las teclas de dirección, cámara de personaje y acciones
 			if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
 				modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(1.0f), glm::vec3(0, 1, 0));
 				animationIndex = 1;
@@ -1393,23 +1391,35 @@ bool processInput(bool continueApplication) {
 			}if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
 				modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, 0.02));
 				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
-												+ glm::vec3(0.0, 2.0, 0.0));
+					+ glm::vec3(0.0, 2.0, 0.0));
 				animationIndex = 1;
 			}
 			else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
 				modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, -0.02));
 				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
-												+ glm::vec3(0.0, 2.0, 0.0));
+					+ glm::vec3(0.0, 2.0, 0.0));
 				animationIndex = 1;
 			}
 
 			if (modelSelected == 2 && (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_RELEASE &&
-									   glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_RELEASE &&
-									   glfwGetKey(window, GLFW_KEY_UP) == GLFW_RELEASE &&
-									   glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_RELEASE)) 
+				glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_RELEASE &&
+				glfwGetKey(window, GLFW_KEY_UP) == GLFW_RELEASE &&
+				glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_RELEASE))
 				animationIndex = 0;
+
+			//Lanzar la carne
+			if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS && enableCountSelected) {
+				enableCountSelectedGamePad = false;
+				//Lanzar la carne
+				meatLaunch = true;
+			}
+			else if (glfwGetKey(window, GLFW_KEY_M) == GLFW_RELEASE) {
+				enableCountSelected = true;
+			}
+			//Fin lanzar la carne
+			//Fin Mover al personaje con las teclas de dirección y su cámara de personaje
 		}
-		//Fin Mover al personaje con las teclas de dirección y su cámara de personaje
+		//Fin Movimiento exclusivo de las cámaras
 	}
 	else {
 		gamePad();
