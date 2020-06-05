@@ -1126,7 +1126,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 
 	//Sonido de cámara
 	alSourcef(source[4], AL_PITCH, 1.0f);
-	alSourcef(source[4], AL_GAIN, 1.0f);
+	alSourcef(source[4], AL_GAIN, 0.3f);
 	alSourcefv(source[4], AL_POSITION, sourceCamPos);
 	alSourcefv(source[4], AL_VELOCITY, sourceCamVel);
 	alSourcei(source[4], AL_BUFFER, buffer[4]);
@@ -1481,11 +1481,10 @@ void gamePad() {
 		if (GLFW_PRESS == buttons[2])
 		{
 			std::cout << "X button presed" << std::endl;
-			//camera->moveFrontCamera(true, deltaTime);
+			//Lanzar la carne
 		}
 		if (GLFW_RELEASE == buttons[2])
 		{
-			//std::cout << "B button is released" << std::endl;
 		}
 
 		/*Botón Y*/
@@ -1667,9 +1666,13 @@ void replaceAll(std::string& source, const std::string& from, const std::string&
 
 void savePhoto() {
 	// Make the BYTE array, factor of 3 because it's RBG.
-	BYTE* pixels = new BYTE[3 * screenWidth * screenHeight];
+	int width = 0;
+	int height = 0;
+	glfwGetWindowSize(window, &width, &height);
+	BYTE* pixels = new BYTE[3 * width * height];
 	// current date/time based on current system
 	time_t now = time(0);
+	
 
 	// convert now to string form
 	char* dt = ctime(&now);
@@ -1678,17 +1681,16 @@ void savePhoto() {
 	replaceAll(date, ":", "");
 	std::string title = "../Jurassic_Phothos/Photo_" + date.substr(0, date.size() - 1) + ".jpg";
 	const char* title_ch = title.c_str();
-	const char* title_ch2 = "../Jurassic_Phothos/Photo.jpg";
 
 	std::cout << title_ch << std::endl;
 
-	glReadPixels(0, 0, screenWidth, screenHeight, GL_BGR, GL_UNSIGNED_BYTE, pixels);
+	glReadPixels(0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, pixels);
 
 	// Convert to FreeImage format & save to file
 	FIBITMAP* image = FreeImage_ConvertFromRawBits(pixels, 
-													screenWidth,
-													screenHeight,
-													3 * screenWidth, 
+													width,
+													height,
+													3 * width, 
 													24, 
 													FI_RGBA_RED_MASK, FI_RGBA_GREEN_MASK, FI_RGBA_BLUE_MASK, false);
 	FreeImage_Save(FIF_JPEG, image, title_ch , 0);
