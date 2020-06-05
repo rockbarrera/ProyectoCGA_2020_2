@@ -124,6 +124,9 @@ Model modelMountain;
 //Tree
 Model modelTree;
 
+//Meat
+Model modelMeat;
+
 // Model animate instance
 // Mayow
 Model mayowModelAnimate;
@@ -167,6 +170,7 @@ glm::mat4 modelMatrixGeiser = glm::mat4(1.0f);
 glm::mat4 modelMatrixDoor = glm::mat4(1.0f);
 glm::mat4 modelMatrixMountain = glm::mat4(1.0f);
 glm::mat4 modelMatrixTriceratop = glm::mat4(1.0f);
+glm::mat4 modelMatrixMeat = glm::mat4(1.0f);
 
 int animationIndex = 0;
 int velModel = 1;
@@ -183,6 +187,13 @@ float rotTriceratop = 0.0;
 int numberAdvanceTriceratops = 0;
 int maxAdvanceTriceratops = 0.0;
 int maxRotTriceratops = 0.0;
+
+//Lanzamiento de la carne (Meat)
+bool meatLaunch = false;
+float vInit = 2.0;
+float theta = 30;
+float gravity = 9.81;
+float timeMeat = 0.0;
 
 // Variables to animations keyframes
 
@@ -700,6 +711,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelMountain.setShader(&shaderMulLighting);
 	//modelMountain.setPosition(glm::vec3(0, 0, 0));
 
+	//Meat
+	modelMeat.loadModel("../models/Meat/Meat.obj");
+	modelMeat.setShader(&shaderMulLighting);
+
 	//Mayow
 	mayowModelAnimate.loadModel("../models/Walk/Walk.fbx");
 	mayowModelAnimate.setShader(&shaderMulLighting);
@@ -1164,6 +1179,7 @@ void destroy() {
 	modelPalm.destroy();
 	modelDoor.destroy();
 	modelMountain.destroy();
+	modelMeat.destroy();
 
 	// Custom objects animate
 	mayowModelAnimate.destroy();
@@ -1478,13 +1494,16 @@ void gamePad() {
 		}
 
 		/*Botón X*/
-		if (GLFW_PRESS == buttons[2])
+		if (enableCountSelectedGamePad && GLFW_PRESS == buttons[2])
 		{
 			std::cout << "X button presed" << std::endl;
+			enableCountSelectedGamePad = false;
 			//Lanzar la carne
+			meatLaunch = true;
 		}
 		if (GLFW_RELEASE == buttons[2])
 		{
+			//enableCountSelectedGamePad = true;
 		}
 
 		/*Botón Y*/
@@ -1712,7 +1731,6 @@ void applicationLoop() {
 	//modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f), glm::vec3(0, 1, 0));
 
 	modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(-66.95f, 0.0f, 59.76f));
-	//modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(-0.0f, 0.0f, 0.0f));
 	modelMatrixTriceratop = glm::rotate(modelMatrixTriceratop, glm::radians(-90.0f + 32.89f), glm::vec3(0, 1, 0));
 
 	/*modelMatrixFountain = glm::translate(modelMatrixFountain, glm::vec3(5.0, 0.0, -40.0));
@@ -1730,6 +1748,10 @@ void applicationLoop() {
 	modelMatrixMountain[3][1] = terrain.getHeightTerrain(modelMatrixMountain[3][0], modelMatrixMountain[3][2]);
 	//modelMatrixMountain = glm::rotate(modelMatrixMountain, glm::radians(90.0f), glm::vec3(0, 1, 0));
 	modelMatrixMountain = glm::scale(modelMatrixMountain, glm::vec3(0.2f, 0.2f, 0.2f));
+
+	modelMatrixMeat = glm::translate(modelMatrixMeat, glm::vec3(0.0, 0.0, -40.0));
+	modelMatrixMeat[3][1] = terrain.getHeightTerrain(modelMatrixMeat[3][0], modelMatrixMeat[3][2]) + 2.0;
+	modelMatrixMeat = glm::scale(modelMatrixMeat, glm::vec3(1.0f, 1.0f, 1.0f));
 
 	lastTime = TimeManager::Instance().GetTime();
 
@@ -2069,7 +2091,15 @@ void applicationLoop() {
 			geiserCollider.e = modelGeiser.getObb().e * glm::vec3(1.0, 1.0, 1.0);
 			std::get<0>(collidersOBB.find("geiser-" + std::to_string(i))->second) = geiserCollider;
 		}
-	
+		
+		// Collider Meat
+		AbstractModel::SBB meatCollider;
+		glm::mat4 modelMatrixColliderMeat = glm::mat4(modelMatrixMeat);
+		modelMatrixColliderMeat = glm::scale(modelMatrixColliderMeat, glm::vec3(1.0, 1.0, 1.0));
+		modelMatrixColliderMeat = glm::translate(modelMatrixColliderMeat, modelMeat.getSbb().c);
+		meatCollider.c = glm::vec3(modelMatrixColliderMeat[3]);
+		meatCollider.ratio = modelMeat.getSbb().ratio * 1.0;
+		addOrUpdateColliders(collidersSBB, "meat", meatCollider, modelMatrixMeat);
 
 		/*******************************************
 		 * Render de colliders
@@ -2267,6 +2297,19 @@ void applicationLoop() {
 			break;
 		}
 
+		//StateMachine for Meat launched
+		if (meatLaunch) {
+			timeMeat += 0.001;
+			float zMov = vInit * cos(glm::radians(theta)) * timeMeat;
+			float yMov = vInit * sin(glm::radians(theta)) * timeMeat - 0.5 * gravity * timeMeat * timeMeat;
+			modelMatrixMeat = glm::translate(modelMatrixMeat, glm::vec3(0.0, yMov, zMov));
+			if (modelMatrixMeat[3].y <= terrain.getHeightTerrain(modelMatrixMeat[3].x, modelMatrixMeat[3].z)) {
+				meatLaunch = false;
+			}
+		}
+		
+		
+
 		glfwSwapBuffers(window);
 
 		/****************************+
@@ -2381,6 +2424,9 @@ void prepareScene(){
 
 	//Palm
 	modelPalm.setShader(&shaderMulLighting);
+
+	//Meat
+	modelMeat.setShader(&shaderMulLighting);
 }
 
 void prepareDepthScene(){
@@ -2409,6 +2455,9 @@ void prepareDepthScene(){
 
 	//Palm
 	modelPalm.setShader(&shaderDepth);
+
+	//Meat
+	modelMeat.setShader(&shaderDepth);
 }
 
 void renderScene(bool renderParticles){
@@ -2496,6 +2545,11 @@ void renderScene(bool renderParticles){
 	//Mountanin
 	glDisable(GL_CULL_FACE);
 	modelMountain.render(modelMatrixMountain);
+	glEnable(GL_CULL_FACE);
+
+	//Meat
+	glDisable(GL_CULL_FACE);
+	modelMeat.render(modelMatrixMeat);
 	glEnable(GL_CULL_FACE);
 
 	/*******************************************
