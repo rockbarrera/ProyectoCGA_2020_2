@@ -1,4 +1,5 @@
 #define _USE_MATH_DEFINES
+#define _CRT_SECURE_NO_WARNINGS
 #include <cmath>
 //glew include
 #include <GL/glew.h>
@@ -131,7 +132,7 @@ Model mayowModelAnimate;
 Model triceratopModelAnimate;
 
 // Terrain model instance
-Terrain terrain(-1, -1, 200, 16, "../Textures/terrenoJurassic.png");
+Terrain terrain(-1, -1, 200, 16, "../Textures/terrenoJurassic2.png");
 
 GLuint textureCespedID;
 GLuint textureTerrainBackgroundID, textureTerrainRID, textureTerrainGID, textureTerrainBID, textureTerrainBlendMapID;
@@ -431,6 +432,8 @@ void init(int width, int height, std::string strTitle, bool bFullScreen);
 void destroy();
 bool processInput(bool continueApplication = true);
 void gamePad(); //Para operaciones específicas con el gamePad
+void savePhoto(); //Guardar la captura de pantalla
+void replaceAll(std::string& source, const std::string& from, const std::string& to);
 void prepareScene();
 void prepareDepthScene();
 void renderScene(bool renderParticles = true);
@@ -1127,7 +1130,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	alSourcefv(source[4], AL_POSITION, sourceCamPos);
 	alSourcefv(source[4], AL_VELOCITY, sourceCamVel);
 	alSourcei(source[4], AL_BUFFER, buffer[4]);
-	alSourcei(source[4], AL_LOOPING, AL_TRUE);
+	alSourcei(source[4], AL_LOOPING, AL_FALSE);
 	alSourcef(source[4], AL_MAX_DISTANCE, 100);
 }
 
@@ -1290,6 +1293,7 @@ bool processInput(bool continueApplication) {
 			if (enableCountSelected && glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
 				enableCountSelected = false;
 				sourcesPlay[4] = true;
+				savePhoto();
 			}
 			else if (glfwGetKey(window, GLFW_KEY_P) == GLFW_RELEASE) {
 				enableCountSelected = true;
@@ -1465,6 +1469,7 @@ void gamePad() {
 			}
 			else if (stateCamera == 3){
 				sourcesPlay[4] = true;
+				savePhoto();
 			}						
 		}
 		if (GLFW_RELEASE == buttons[1])
@@ -1636,6 +1641,61 @@ void gamePad() {
 		glfwSetWindowTitle(window, "Window GLFW - GamePad No hay GamePad conectado");
 	}
 	//--------------------Fin gamepad
+}
+
+void replaceAll(std::string& source, const std::string& from, const std::string& to)
+{
+	std::string newString;
+	newString.reserve(source.length());  // avoids a few memory allocations
+
+	std::string::size_type lastPos = 0;
+	std::string::size_type findPos;
+
+	while (std::string::npos != (findPos = source.find(from, lastPos)))
+	{
+		newString.append(source, lastPos, findPos - lastPos);
+		newString += to;
+		lastPos = findPos + from.length();
+	}
+
+	// Care for the rest after last occurrence
+	newString += source.substr(lastPos);
+
+	source.swap(newString);
+}
+
+
+void savePhoto() {
+	// Make the BYTE array, factor of 3 because it's RBG.
+	BYTE* pixels = new BYTE[3 * screenWidth * screenHeight];
+	// current date/time based on current system
+	time_t now = time(0);
+
+	// convert now to string form
+	char* dt = ctime(&now);
+	std::string date(dt);
+	replaceAll(date, " ", "");
+	replaceAll(date, ":", "");
+	std::string title = "../Jurassic_Phothos/Photo_" + date.substr(0, date.size() - 1) + ".jpg";
+	const char* title_ch = title.c_str();
+	const char* title_ch2 = "../Jurassic_Phothos/Photo.jpg";
+
+	std::cout << title_ch << std::endl;
+
+	glReadPixels(0, 0, screenWidth, screenHeight, GL_BGR, GL_UNSIGNED_BYTE, pixels);
+
+	// Convert to FreeImage format & save to file
+	FIBITMAP* image = FreeImage_ConvertFromRawBits(pixels, 
+													screenWidth,
+													screenHeight,
+													3 * screenWidth, 
+													24, 
+													FI_RGBA_RED_MASK, FI_RGBA_GREEN_MASK, FI_RGBA_BLUE_MASK, false);
+	FreeImage_Save(FIF_JPEG, image, title_ch , 0);
+
+	// Free resources
+	FreeImage_Unload(image);
+	delete[] pixels;
 }
 
 void applicationLoop() {
