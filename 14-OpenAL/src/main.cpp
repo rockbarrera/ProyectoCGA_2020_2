@@ -127,12 +127,18 @@ Model modelTree;
 //Meat
 Model modelMeat;
 
+//Cactus
+Model modelCactus;
+
 // Model animate instance
 // Mayow
 Model mayowModelAnimate;
 
 //Triceratop
 Model triceratopModelAnimate;
+
+//Trex
+Model tRexModelAnimate;
 
 // Terrain model instance
 Terrain terrain(-1, -1, 200, 16, "../Textures/terrenoJurassic2.png");
@@ -171,6 +177,7 @@ glm::mat4 modelMatrixDoor = glm::mat4(1.0f);
 glm::mat4 modelMatrixMountain = glm::mat4(1.0f);
 glm::mat4 modelMatrixTriceratop = glm::mat4(1.0f);
 glm::mat4 modelMatrixMeat = glm::mat4(1.0f);
+glm::mat4 modelMatrixTRex = glm::mat4(1.0f);
 
 int animationIndex = 0;
 int velModel = 1;
@@ -319,6 +326,22 @@ std::vector<glm::vec3> grassPositionHerv{ glm::vec3(-32.51, 0.0, 54.26),
 										  glm::vec3(-68.85, 0.0, 52.90),
 										  glm::vec3(-76.80, 0.0, 55.22),
 										  glm::vec3(-77.08, 0.0, 65.01)
+};
+
+//Cactus positions
+
+std::vector<glm::vec3> cactusPositions{
+	glm::vec3(55.86, 0.0, 97.35),
+	glm::vec3(55.87, 0.0, 82.55),
+	glm::vec3(45.94, 0.0, 71.45),
+	glm::vec3(70.51, 0.0, 66.83),
+};
+
+std::vector<glm::vec3> cactusScale{
+	glm::vec3(0.3, 0.3, 0.3),
+	glm::vec3(0.3, 0.3, 0.3),
+	glm::vec3(0.3, 0.3, 0.3),
+	glm::vec3(0.3, 0.3, 0.3),
 };
 
 // Blending model unsorted
@@ -709,7 +732,6 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	//Mountain
 	modelMountain.loadModel("../models/Mountain/Mountain.obj");
 	modelMountain.setShader(&shaderMulLighting);
-	//modelMountain.setPosition(glm::vec3(0, 0, 0));
 
 	//Meat
 	modelMeat.loadModel("../models/Meat/Meat.obj");
@@ -722,6 +744,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	//Triceratop
 	triceratopModelAnimate.loadModel("../models/Dinosaur/Triceratop.fbx");
 	triceratopModelAnimate.setShader(&shaderMulLighting);
+
+	//Cactus
+	modelCactus.loadModel("../models/Cactus/CACTUS.obj");
+	modelCactus.setShader(&shaderMulLighting);
 
 	camera->setPosition(glm::vec3(0.0, 0.0, 10.0));
 	camera->setDistanceFromTarget(distanceFromTarget);
@@ -1180,6 +1206,7 @@ void destroy() {
 	modelDoor.destroy();
 	modelMountain.destroy();
 	modelMeat.destroy();
+	modelCactus.destroy();
 
 	// Custom objects animate
 	mayowModelAnimate.destroy();
@@ -2091,6 +2118,22 @@ void applicationLoop() {
 			geiserCollider.e = modelGeiser.getObb().e * glm::vec3(1.0, 1.0, 1.0);
 			std::get<0>(collidersOBB.find("geiser-" + std::to_string(i))->second) = geiserCollider;
 		}
+
+		// Collider Cactus
+		for (int i = 0; i < cactusPositions.size(); i++) {
+			AbstractModel::OBB cactusCollider;
+			glm::mat4 modelMatrixColliderCactus = glm::mat4(1.0f);
+			modelMatrixColliderCactus = glm::translate(modelMatrixColliderCactus, cactusPositions[i] 
+														+ glm::vec3(0.013777, 0.027554, -5.26767));
+			addOrUpdateColliders(collidersOBB, "cactus-" + std::to_string(i), cactusCollider, modelMatrixColliderCactus);
+			// Set the orientation of collider before doing the scale
+			cactusCollider.u = glm::quat_cast(modelMatrixColliderCactus);
+			modelMatrixColliderCactus = glm::scale(modelMatrixColliderCactus, cactusScale[i]);
+			modelMatrixColliderCactus = glm::translate(modelMatrixColliderCactus, modelCactus.getObb().c);
+			cactusCollider.c = glm::vec3(modelMatrixColliderCactus[3]);
+			cactusCollider.e = modelCactus.getObb().e * cactusScale[i];
+			std::get<0>(collidersOBB.find("cactus-" + std::to_string(i))->second) = cactusCollider;
+		}
 		
 		// Collider Meat
 		AbstractModel::SBB meatCollider;
@@ -2427,6 +2470,9 @@ void prepareScene(){
 
 	//Meat
 	modelMeat.setShader(&shaderMulLighting);
+
+	//Cactus
+	modelCactus.setShader(&shaderMulLighting);
 }
 
 void prepareDepthScene(){
@@ -2458,6 +2504,9 @@ void prepareDepthScene(){
 
 	//Meat
 	modelMeat.setShader(&shaderDepth);
+
+	//Cactus
+	modelCactus.setShader(&shaderDepth);
 }
 
 void renderScene(bool renderParticles){
@@ -2534,6 +2583,16 @@ void renderScene(bool renderParticles){
 		palmPositions[i].y = terrain.getHeightTerrain(palmPositions[i].x, palmPositions[i].z);
 		modelPalm.setPosition(palmPositions[i]);
 		modelPalm.render();
+	}
+	glEnable(GL_CULL_FACE);
+
+	//Cactus
+	glDisable(GL_CULL_FACE);
+	for (int i = 0; i < cactusPositions.size(); i++) {
+		cactusPositions[i].y = terrain.getHeightTerrain(cactusPositions[i].x, cactusPositions[i].z);
+		modelCactus.setPosition(cactusPositions[i] + glm::vec3(0.013777, 0.027554, -5.26767));
+		modelCactus.setScale(cactusScale[i]);
+		modelCactus.render();
 	}
 	glEnable(GL_CULL_FACE);
 
