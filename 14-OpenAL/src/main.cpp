@@ -748,7 +748,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelMeat.setShader(&shaderMulLighting);
 
 	//Mayow
-	mayowModelAnimate.loadModel("../models/Walk/Walk.fbx");
+	mayowModelAnimate.loadModel("../models/Walk/Mixamo.fbx");
 	mayowModelAnimate.setShader(&shaderMulLighting);
 
 	//Triceratop
@@ -1786,7 +1786,7 @@ void applicationLoop() {
 	modelMatrixTriceratop = glm::rotate(modelMatrixTriceratop, glm::radians(-90.0f + 32.89f), glm::vec3(0, 1, 0));
 
 	modelMatrixTRex = glm::translate(modelMatrixTRex, glm::vec3(-61.5, 0, -56.0));
-	modelMatrixTRex	= glm::rotate(modelMatrixTRex, glm::radians(3.43f), glm::vec3(0, 1, 0));
+	modelMatrixTRex	= glm::rotate(modelMatrixTRex, glm::radians(3.4797f), glm::vec3(0, 1, 0));
 
 	/*modelMatrixFountain = glm::translate(modelMatrixFountain, glm::vec3(5.0, 0.0, -40.0));
 	modelMatrixFountain[3][1] = terrain.getHeightTerrain(modelMatrixFountain[3][0] , modelMatrixFountain[3][2]) + 0.2;
@@ -2391,63 +2391,63 @@ void applicationLoop() {
 		case 0:
 			switch (numberAdvanceTRex) {
 			case 0:
-				maxAdvanceTRex = 28.5;
-				maxRotTRex = 66.66;
+				maxAdvanceTRex = 28.5043;
+				maxRotTRex = 66.6655;
 				derechaTRex = true;
 				break;
 			case 1:
-				maxAdvanceTRex = 20.7;
-				maxRotTRex = 95.42;
+				maxAdvanceTRex = 20.7062;
+				maxRotTRex = 95.4201;
 				derechaTRex = false;
 				break;
 			case 2:
-				maxAdvanceTRex = 6.71;
-				maxRotTRex = 16.25;
+				maxAdvanceTRex = 6.7194;
+				maxRotTRex = 16.2537;
 				derechaTRex = false;
 				break;
 			case 3:
-				maxAdvanceTRex = 11.76;
-				maxRotTRex = 44.86;
+				maxAdvanceTRex = 11.7676;
+				maxRotTRex = 44.8614;
 				derechaTRex = true;
 				break;
 			case 4:
-				maxAdvanceTRex = 12.59;
-				maxRotTRex = 53.38;
+				maxAdvanceTRex = 12.5960;
+				maxRotTRex = 53.3841;
 				derechaTRex = false;
 				break;
 			case 5:
-				maxAdvanceTRex = 4.8;
-				maxRotTRex = 91.85;
+				maxAdvanceTRex = 4.8013;
+				maxRotTRex = 180.0 - 91.8541;
 				derechaTRex = false;
 				break;
 			case 6:
-				maxAdvanceTRex = 18.59;
-				maxRotTRex = 16.09;
+				maxAdvanceTRex = 18.5990;
+				maxRotTRex = 16.0912;
 				derechaTRex = false;
 				break;
 			case 7:
-				maxAdvanceTRex = 17.01;
-				maxRotTRex = 21.15;
-				derechaTRex = false;
-				break;
-			case 8:
-				maxAdvanceTRex = 14.32;
-				maxRotTRex = 55.11;
+				maxAdvanceTRex = 17.0186;
+				maxRotTRex = 21.1585;
 				derechaTRex = true;
 				break;
+			case 8:
+				maxAdvanceTRex = 14.3271;
+				maxRotTRex = 55.1172;
+				derechaTRex = false;
+				break;
 			case 9:
-				maxAdvanceTRex = 7.04;
-				maxRotTRex = 7.88;
+				maxAdvanceTRex = 7.0427;
+				maxRotTRex = 7.8819;
 				derechaTRex = false;
 				break;
 			case 10:
-				maxAdvanceTRex = 21.05;
-				maxRotTRex = 77.76;
+				maxAdvanceTRex = 21.0506;
+				maxRotTRex = 77.7678;
 				derechaTRex = false;
 				break;
 			case 11:
-				maxAdvanceTRex = 11.56;
-				maxRotTRex = 78.91;
+				maxAdvanceTRex = 11.5647;
+				maxRotTRex = 78.9149;
 				derechaTRex = false;
 				break;
 			}
@@ -2769,7 +2769,7 @@ void renderScene(bool renderParticles){
 	modelMatrixMayow[3][1] = terrain.getHeightTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2]);
 	glm::mat4 modelMatrixMayowBody = glm::mat4(modelMatrixMayow);
 	modelMatrixMayowBody = glm::scale(modelMatrixMayowBody, glm::vec3(2.0, 2.0, 2.0));
-	mayowModelAnimate.setAnimationIndex(0);
+	mayowModelAnimate.setAnimationIndex(1);
 	mayowModelAnimate.render(modelMatrixMayowBody);
 
 	modelMatrixTriceratop[3][1] = terrain.getHeightTerrain(modelMatrixTriceratop[3][0], modelMatrixTriceratop[3][2]);
