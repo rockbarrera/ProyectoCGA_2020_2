@@ -140,6 +140,9 @@ Model triceratopModelAnimate;
 //Trex
 Model tRexModelAnimate;
 
+//Dinoraur Lake
+Model dinoraurLakeModelAnimate;
+
 // Terrain model instance
 Terrain terrain(-1, -1, 200, 16, "../Textures/terrenoJurassic2.png");
 
@@ -178,6 +181,7 @@ glm::mat4 modelMatrixMountain = glm::mat4(1.0f);
 glm::mat4 modelMatrixTriceratop = glm::mat4(1.0f);
 glm::mat4 modelMatrixMeat = glm::mat4(1.0f);
 glm::mat4 modelMatrixTRex = glm::mat4(1.0f);
+glm::mat4 modelMatrixDinosaurLake = glm::mat4(1.0f);
 
 int animationIndex = 0; //0 Quieto, 1 lanzar, 2 caminar
 int velModel = 1;
@@ -204,6 +208,15 @@ int numberAdvanceTRex = 0;
 int maxAdvanceTRex = 0.0;
 int maxRotTRex = 0.0;
 bool derechaTRex = false;
+
+//Movimientos dinoraur lake
+bool activar = false;
+float aDinosaurLake = 10.0;
+float bDinoszurLake = 10.0f;
+float angleDinosaurLake = 0.0f;
+float rotDinisaurLake = 0.0f;
+
+
 
 //Lanzamiento de la carne (Meat)
 bool meatLaunch = false;
@@ -755,6 +768,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	triceratopModelAnimate.loadModel("../models/Dinosaur/Triceratop.fbx");
 	triceratopModelAnimate.setShader(&shaderMulLighting);
 
+	//Dinosaur Lake
+	dinoraurLakeModelAnimate.loadModel("../models/Dinosaur/Triceratop.fbx");
+	dinoraurLakeModelAnimate.setShader(&shaderMulLighting);
+
 	//TRex
 	tRexModelAnimate.loadModel("../models/Dinosaur/Triceratop.fbx");
 	tRexModelAnimate.setShader(&shaderMulLighting);
@@ -1226,6 +1243,7 @@ void destroy() {
 	mayowModelAnimate.destroy();
 	triceratopModelAnimate.destroy();
 	tRexModelAnimate.destroy();
+	dinoraurLakeModelAnimate.destroy();
 
 	// Textures Delete
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -1346,6 +1364,13 @@ bool processInput(bool continueApplication) {
 			cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3]) + glm::vec3(0.0, 2.0, 0.0));
 		}
 		//Fin de selección de cámara TPS ó FPS
+
+		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+			activar = true;
+		}
+		//else if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE) {
+		//	!activar;
+		//}
 
 		// Seleccionar modelo
 		if (enableCountSelected && glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
@@ -1795,6 +1820,9 @@ void applicationLoop() {
 	modelMatrixTRex = glm::translate(modelMatrixTRex, glm::vec3(-61.5, 0, -56.0));
 	modelMatrixTRex	= glm::rotate(modelMatrixTRex, glm::radians(3.4797f), glm::vec3(0, 1, 0));
 
+	modelMatrixDinosaurLake = glm::translate(modelMatrixDinosaurLake, glm::vec3(55.83, 0.0, -65.49));
+	modelMatrixDinosaurLake = glm::rotate(modelMatrixDinosaurLake, glm::radians(0.0f), glm::vec3(0, 1, 0));
+
 	/*modelMatrixFountain = glm::translate(modelMatrixFountain, glm::vec3(5.0, 0.0, -40.0));
 	modelMatrixFountain[3][1] = terrain.getHeightTerrain(modelMatrixFountain[3][0] , modelMatrixFountain[3][2]) + 0.2;
 	modelMatrixFountain = glm::scale(modelMatrixFountain, glm::vec3(10.0f, 10.0f, 10.0f));*/
@@ -2135,6 +2163,27 @@ void applicationLoop() {
 			* glm::vec3(1.4, 1.4, 1.4);
 		rRexCollider.c = glm::vec3(modelmatrixColliderTrex[3]);
 		addOrUpdateColliders(collidersOBB, "trex", rRexCollider, modelMatrixTRex);
+
+		// Collider Dinosaur Lake
+
+		AbstractModel::OBB dinosaurLakeCollider;
+		glm::mat4 modelMatrixColliderDinosaurLake = glm::mat4(modelMatrixDinosaurLake);
+		modelMatrixColliderDinosaurLake = glm::rotate(modelMatrixColliderDinosaurLake, glm::radians(-90.0f), glm::vec3(1, 0, 0));
+		//modelMatrixColliderDinosaurLake = glm::translate(modelMatrixColliderDinosaurLake, glm::vec3(0.7298, 0.0, 0.9299));
+		//modelMatrixColliderDinosaurLake = glm::translate(modelMatrixColliderDinosaurLake, glm::vec3(-0.7298, 0.0, 0.9299));
+		modelMatrixColliderDinosaurLake = glm::rotate(modelMatrixColliderDinosaurLake, (-1) * rotDinisaurLake, glm::vec3(0, 0, 1));
+		// Set the orientarion of collider before doing the scale
+		dinosaurLakeCollider.u = glm::quat_cast(modelMatrixColliderDinosaurLake);
+		modelMatrixColliderDinosaurLake = glm::scale(modelMatrixColliderDinosaurLake, glm::vec3(0.01, 0.01, 0.01));
+		modelMatrixColliderDinosaurLake = glm::translate(modelMatrixColliderDinosaurLake,
+			glm::vec3(dinoraurLakeModelAnimate.getObb().c.x,
+				dinoraurLakeModelAnimate.getObb().c.y,
+				dinoraurLakeModelAnimate.getObb().c.z));
+		dinosaurLakeCollider.e = dinoraurLakeModelAnimate.getObb().e * glm::vec3(0.01, 0.01, 0.01)
+			/** glm::vec3(0.787401574, 0.787401574, 0.787401574);*/
+			* glm::vec3(1.4, 1.4, 1.4);
+		dinosaurLakeCollider.c = glm::vec3(modelMatrixColliderDinosaurLake[3]);
+		addOrUpdateColliders(collidersOBB, "dinolake", dinosaurLakeCollider, modelMatrixDinosaurLake);
 
 		// Collider palms
 		for (int i = 0; i < palmPositions.size(); i++) {
@@ -2499,6 +2548,24 @@ void applicationLoop() {
 			break;
 		}
 
+		//StateMachine for dinosaur Lake
+
+		if (activar) {
+			angleDinosaurLake += 0.01;
+			rotDinisaurLake += 0.005;
+			modelMatrixDinosaurLake = glm::translate(modelMatrixDinosaurLake
+				, glm::vec3(aDinosaurLake * glm::radians(cos(angleDinosaurLake))
+					, 0.0
+					, aDinosaurLake * glm::radians(sin(angleDinosaurLake))));
+			/*modelMatrixDinosaurLake = glm::rotate(modelMatrixDinosaurLake
+					, glm::radians((-1) * angleDinosaurLake)
+					, glm::vec3(0, 1, 0));*/
+			if (angleDinosaurLake >= 360.0f) {
+				angleDinosaurLake = 0.0f;
+			}
+		
+		}
+		
 
 		//StateMachine for Meat launched
 		if (meatLaunch) {
@@ -2617,6 +2684,12 @@ void prepareScene(){
 	//Triceratops
 	triceratopModelAnimate.setShader(&shaderMulLighting);
 
+	//Trex
+	tRexModelAnimate.setShader(&shaderMulLighting);
+
+	//Dinosaur Lake
+	dinoraurLakeModelAnimate.setShader(&shaderMulLighting);
+
 	//Door
 	modelDoor.setShader(&shaderMulLighting);
 
@@ -2650,6 +2723,12 @@ void prepareDepthScene(){
 
 	//Triceratops
 	triceratopModelAnimate.setShader(&shaderDepth);
+
+	//TRex
+	tRexModelAnimate.setShader(&shaderDepth);
+
+	//Dinosaur Lake
+	dinoraurLakeModelAnimate.setShader(&shaderDepth);
 
 	//Door
 	modelDoor.setShader(&shaderDepth);
@@ -2794,6 +2873,15 @@ void renderScene(bool renderParticles){
 	modelMatrixTRexBody = glm::scale(modelMatrixTRexBody, glm::vec3(0.01, 0.01, 0.01));
 	tRexModelAnimate.setAnimationIndex(1);
 	tRexModelAnimate.render(modelMatrixTRexBody);
+
+	modelMatrixDinosaurLake[3][1] = terrain.getHeightTerrain(modelMatrixDinosaurLake[3].x, modelMatrixDinosaurLake[3].z);
+	glm::mat4 modelMatrixDinoraurLakeBody = glm::mat4(modelMatrixDinosaurLake);
+	modelMatrixDinoraurLakeBody = glm::translate(modelMatrixDinoraurLakeBody, glm::vec3(0.7298, 0.0, 0.9299));
+	modelMatrixDinoraurLakeBody = glm::translate(modelMatrixDinoraurLakeBody, glm::vec3(-0.7298, 0.0, 0.9299));
+	modelMatrixDinoraurLakeBody = glm::rotate(modelMatrixDinoraurLakeBody, (-1)* rotDinisaurLake, glm::vec3(0, 1, 0));
+	modelMatrixDinoraurLakeBody = glm::scale(modelMatrixDinoraurLakeBody, glm::vec3(0.01, 0.01, 0.01));
+	dinoraurLakeModelAnimate.setAnimationIndex(1);
+	dinoraurLakeModelAnimate.render(modelMatrixDinoraurLakeBody);
 
 	/**********
 	 * Update the position with alpha objects
