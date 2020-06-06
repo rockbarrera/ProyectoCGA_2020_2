@@ -195,6 +195,15 @@ int numberAdvanceTriceratops = 0;
 int maxAdvanceTriceratops = 0.0;
 int maxRotTriceratops = 0.0;
 
+//Movimientos del TRex
+int stateTRex = 0;
+float advanceCountTRex = 0.0;
+float rotCountTRex = 0.0;
+float rotTRex = 0.0;
+int numberAdvanceTRex = 0;
+int maxAdvanceTRex = 0.0;
+int maxRotTRex = 0.0;
+
 //Lanzamiento de la carne (Meat)
 bool meatLaunch = false;
 float vInit = 2.0;
@@ -745,6 +754,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	triceratopModelAnimate.loadModel("../models/Dinosaur/Triceratop.fbx");
 	triceratopModelAnimate.setShader(&shaderMulLighting);
 
+	//TRex
+	tRexModelAnimate.loadModel("../models/Dinosaur/Triceratop.fbx");
+	tRexModelAnimate.setShader(&shaderMulLighting);
+
 	//Cactus
 	modelCactus.loadModel("../models/Cactus/CACTUS.obj");
 	modelCactus.setShader(&shaderMulLighting);
@@ -1211,6 +1224,7 @@ void destroy() {
 	// Custom objects animate
 	mayowModelAnimate.destroy();
 	triceratopModelAnimate.destroy();
+	tRexModelAnimate.destroy();
 
 	// Textures Delete
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -1770,6 +1784,9 @@ void applicationLoop() {
 	modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(-66.95f, 0.0f, 59.76f));
 	modelMatrixTriceratop = glm::rotate(modelMatrixTriceratop, glm::radians(-90.0f + 32.89f), glm::vec3(0, 1, 0));
 
+	modelMatrixTRex = glm::translate(modelMatrixTRex, glm::vec3(-61.5, 0, -56.0));
+	modelMatrixTRex	= glm::rotate(modelMatrixTRex, glm::radians(3.43f), glm::vec3(0, 1, 0));
+
 	/*modelMatrixFountain = glm::translate(modelMatrixFountain, glm::vec3(5.0, 0.0, -40.0));
 	modelMatrixFountain[3][1] = terrain.getHeightTerrain(modelMatrixFountain[3][0] , modelMatrixFountain[3][2]) + 0.2;
 	modelMatrixFountain = glm::scale(modelMatrixFountain, glm::vec3(10.0f, 10.0f, 10.0f));*/
@@ -2094,6 +2111,23 @@ void applicationLoop() {
 		triceratopCollider.c = glm::vec3(modelmatrixColliderTriceratops[3]);
 		addOrUpdateColliders(collidersOBB, "triceratop", triceratopCollider, modelMatrixTriceratop);
 
+		// Collider TRex
+		AbstractModel::OBB rRexCollider;
+		glm::mat4 modelmatrixColliderTrex = glm::mat4(modelMatrixTRex);
+		modelmatrixColliderTrex = glm::rotate(modelmatrixColliderTrex, glm::radians(-90.0f), glm::vec3(1, 0, 0));
+		// Set the orientation of collider before doing the scale
+		rRexCollider.u = glm::quat_cast(modelmatrixColliderTrex);
+		modelmatrixColliderTrex = glm::scale(modelmatrixColliderTrex, glm::vec3(0.01, 0.01, 0.01));
+		modelmatrixColliderTrex = glm::translate(modelmatrixColliderTrex,
+				glm::vec3(tRexModelAnimate.getObb().c.x,
+				tRexModelAnimate.getObb().c.y,
+				tRexModelAnimate.getObb().c.z));
+		rRexCollider.e = tRexModelAnimate.getObb().e * glm::vec3(0.01, 0.01, 0.01)
+			/** glm::vec3(0.787401574, 0.787401574, 0.787401574);*/
+			* glm::vec3(1.4, 1.4, 1.4);
+		rRexCollider.c = glm::vec3(modelmatrixColliderTrex[3]);
+		addOrUpdateColliders(collidersOBB, "trex", rRexCollider, modelMatrixTRex);
+
 		// Collider palms
 		for (int i = 0; i < palmPositions.size(); i++) {
 			AbstractModel::OBB palmCollider;
@@ -2349,6 +2383,9 @@ void applicationLoop() {
 			}
 			break;
 		}
+
+		//StateMachine fro TRex
+
 
 		//StateMachine for Meat launched
 		if (meatLaunch) {
@@ -2636,6 +2673,13 @@ void renderScene(bool renderParticles){
 	modelMatrixTriceratopBody = glm::scale(modelMatrixTriceratopBody, glm::vec3(0.01, 0.01, 0.01));
 	triceratopModelAnimate.setAnimationIndex(1);
 	triceratopModelAnimate.render(modelMatrixTriceratopBody);
+
+	modelMatrixTRex[3][1] = terrain.getHeightTerrain(modelMatrixTRex[3][0], modelMatrixTRex[3][2]);
+	glm::mat4 modelMatrixTRexBody = glm::mat4(modelMatrixTRex);
+	//modelMatrixTRexBody = glm::rotate(modelMatrixTRexBody, rotTriceratop, glm::vec3(0, 1, 0));
+	modelMatrixTRexBody = glm::scale(modelMatrixTRexBody, glm::vec3(0.01, 0.01, 0.01));
+	tRexModelAnimate.setAnimationIndex(1);
+	tRexModelAnimate.render(modelMatrixTRexBody);
 
 	/**********
 	 * Update the position with alpha objects
