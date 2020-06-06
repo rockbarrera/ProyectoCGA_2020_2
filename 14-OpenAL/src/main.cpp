@@ -203,6 +203,7 @@ float rotTRex = 0.0;
 int numberAdvanceTRex = 0;
 int maxAdvanceTRex = 0.0;
 int maxRotTRex = 0.0;
+bool derechaTRex = false;
 
 //Lanzamiento de la carne (Meat)
 bool meatLaunch = false;
@@ -2386,6 +2387,110 @@ void applicationLoop() {
 
 		//StateMachine fro TRex
 
+		switch (stateTRex) {
+		case 0:
+			switch (numberAdvanceTRex) {
+			case 0:
+				maxAdvanceTRex = 28.5;
+				maxRotTRex = 66.66;
+				derechaTRex = true;
+				break;
+			case 1:
+				maxAdvanceTRex = 20.7;
+				maxRotTRex = 95.42;
+				derechaTRex = false;
+				break;
+			case 2:
+				maxAdvanceTRex = 6.71;
+				maxRotTRex = 16.25;
+				derechaTRex = false;
+				break;
+			case 3:
+				maxAdvanceTRex = 11.76;
+				maxRotTRex = 44.86;
+				derechaTRex = true;
+				break;
+			case 4:
+				maxAdvanceTRex = 12.59;
+				maxRotTRex = 53.38;
+				derechaTRex = false;
+				break;
+			case 5:
+				maxAdvanceTRex = 4.8;
+				maxRotTRex = 91.85;
+				derechaTRex = false;
+				break;
+			case 6:
+				maxAdvanceTRex = 18.59;
+				maxRotTRex = 16.09;
+				derechaTRex = false;
+				break;
+			case 7:
+				maxAdvanceTRex = 17.01;
+				maxRotTRex = 21.15;
+				derechaTRex = false;
+				break;
+			case 8:
+				maxAdvanceTRex = 14.32;
+				maxRotTRex = 55.11;
+				derechaTRex = true;
+				break;
+			case 9:
+				maxAdvanceTRex = 7.04;
+				maxRotTRex = 7.88;
+				derechaTRex = false;
+				break;
+			case 10:
+				maxAdvanceTRex = 21.05;
+				maxRotTRex = 77.76;
+				derechaTRex = false;
+				break;
+			case 11:
+				maxAdvanceTRex = 11.56;
+				maxRotTRex = 78.91;
+				derechaTRex = false;
+				break;
+			}
+
+			stateTRex = 1;
+			break;
+		case 1:
+			modelMatrixTRex = glm::translate(modelMatrixTRex, glm::vec3(0.0, 0.0, 0.1));
+			advanceCountTRex += 0.1;
+			rotTRex += 0.05;
+			if (advanceCountTRex > maxAdvanceTRex) {
+				advanceCountTRex = 0;
+				stateTRex = 2;
+			}
+			break;
+		case 2:
+			//modelMatrixTRex = glm::rotate(modelMatrixTRex, glm::radians(0.5f), glm::vec3(0, 1, 0));
+			//rotCountTRex += 0.5f;
+			rotTRex += 0.05;
+			if (!derechaTRex) {
+				modelMatrixTRex = glm::rotate(modelMatrixTRex, glm::radians(0.5f), glm::vec3(0, 1, 0));
+				rotCountTRex += 0.5f;
+				if (rotCountTRex >= maxRotTRex) {
+					rotCountTRex = 0;
+					stateTRex = 0;
+					numberAdvanceTRex++;
+					if (numberAdvanceTRex > 11)
+						numberAdvanceTRex = 0;
+				}
+			}
+			else {
+				modelMatrixTRex = glm::rotate(modelMatrixTRex, glm::radians(-0.5f), glm::vec3(0, 1, 0));
+				rotCountTRex -= 0.5f;
+				if (rotCountTRex <= maxRotTRex*(-1)) {
+					rotCountTRex = 0;
+					stateTRex = 0;
+					numberAdvanceTRex++;
+					if (numberAdvanceTRex > 11)
+						numberAdvanceTRex = 0;
+				}
+			}
+			break;
+		}
 
 		//StateMachine for Meat launched
 		if (meatLaunch) {
