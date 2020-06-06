@@ -179,7 +179,7 @@ glm::mat4 modelMatrixTriceratop = glm::mat4(1.0f);
 glm::mat4 modelMatrixMeat = glm::mat4(1.0f);
 glm::mat4 modelMatrixTRex = glm::mat4(1.0f);
 
-int animationIndex = 0;
+int animationIndex = 0; //0 Quieto, 1 lanzar, 2 caminar
 int velModel = 1;
 int modelSelected = 2;
 bool enableCountSelected = true;
@@ -748,7 +748,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelMeat.setShader(&shaderMulLighting);
 
 	//Mayow
-	mayowModelAnimate.loadModel("../models/Walk/Mixamo.fbx");
+	mayowModelAnimate.loadModel("../models/Walk/PrincipalCharacter.fbx");
 	mayowModelAnimate.setShader(&shaderMulLighting);
 
 	//Triceratop
@@ -1398,22 +1398,22 @@ bool processInput(bool continueApplication) {
 			//Mover al personaje con las teclas de dirección, cámara de personaje y acciones
 			if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
 				modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(1.0f), glm::vec3(0, 1, 0));
-				animationIndex = 1;
+				animationIndex = 2;
 			}
 			else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
 				modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-1.0f), glm::vec3(0, 1, 0));
-				animationIndex = 1;
+				animationIndex = 2;
 			}if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
 				modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, 0.02));
 				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
 					+ glm::vec3(0.0, 2.0, 0.0));
-				animationIndex = 1;
+				animationIndex = 2;
 			}
 			else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
 				modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, -0.02));
 				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
 					+ glm::vec3(0.0, 2.0, 0.0));
-				animationIndex = 1;
+				animationIndex = 2;
 			}
 
 			if (modelSelected == 2 && (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_RELEASE &&
@@ -1426,7 +1426,10 @@ bool processInput(bool continueApplication) {
 			if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS && enableCountSelected) {
 				enableCountSelectedGamePad = false;
 				//Lanzar la carne
-				meatLaunch = true;
+				if (stateCamera == 1) {
+					meatLaunch = true;
+					animationIndex = 1;
+				}
 			}
 			else if (glfwGetKey(window, GLFW_KEY_M) == GLFW_RELEASE) {
 				enableCountSelected = true;
@@ -1482,7 +1485,7 @@ void gamePad() {
 					animationIndex = 0; //Detenido
 				}
 				else {
-					animationIndex = 1; //Caminando
+					animationIndex = 2; //Caminando
 				}
 				
 				camera->mouseMoveCamera(axes[2], axes[3], deltaTime);
@@ -1551,7 +1554,10 @@ void gamePad() {
 			std::cout << "X button presed" << std::endl;
 			enableCountSelectedGamePad = false;
 			//Lanzar la carne
-			meatLaunch = true;
+			if (stateCamera == 1) {
+				meatLaunch = true;
+				animationIndex = 1;
+			}
 		}
 		if (GLFW_RELEASE == buttons[2])
 		{
@@ -1781,6 +1787,7 @@ void applicationLoop() {
 
 	modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0f, 0.05f, -90.0f));
 	//modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f), glm::vec3(0, 1, 0));
+	//modelMatrixMayow = glm::scale(modelMatrixMayow, glm::vec3(0.01, 0.01, 0.01));
 
 	modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(-66.95f, 0.0f, 59.76f));
 	modelMatrixTriceratop = glm::rotate(modelMatrixTriceratop, glm::radians(-90.0f + 32.89f), glm::vec3(0, 1, 0));
@@ -2086,12 +2093,12 @@ void applicationLoop() {
 		//		glm::radians(-90.0f), glm::vec3(1, 0, 0));
 		// Set the orientation of collider before doing the scale
 		mayowCollider.u = glm::quat_cast(modelmatrixColliderMayow);
-		modelmatrixColliderMayow = glm::scale(modelmatrixColliderMayow, glm::vec3(2.0, 2.0, 2.0));
+		modelmatrixColliderMayow = glm::scale(modelmatrixColliderMayow, glm::vec3(1.0, 1.0, 1.0));
 		modelmatrixColliderMayow = glm::translate(modelmatrixColliderMayow,
 				glm::vec3(mayowModelAnimate.getObb().c.x,
 						mayowModelAnimate.getObb().c.y,
 						mayowModelAnimate.getObb().c.z));
-		mayowCollider.e = mayowModelAnimate.getObb().e * glm::vec3(2.0, 2.0, 2.0) * glm::vec3(0.787401574, 0.787401574, 0.787401574);
+		mayowCollider.e = mayowModelAnimate.getObb().e * glm::vec3(1.0, 1.0, 1.0) * glm::vec3(0.787401574, 0.787401574, 0.787401574);
 		mayowCollider.c = glm::vec3(modelmatrixColliderMayow[3]);
 		addOrUpdateColliders(collidersOBB, "mayow", mayowCollider, modelMatrixMayow);
 
@@ -2492,6 +2499,7 @@ void applicationLoop() {
 			break;
 		}
 
+
 		//StateMachine for Meat launched
 		if (meatLaunch) {
 			timeMeat += 0.001;
@@ -2500,6 +2508,7 @@ void applicationLoop() {
 			modelMatrixMeat = glm::translate(modelMatrixMeat, glm::vec3(0.0, yMov, zMov));
 			if (modelMatrixMeat[3].y <= terrain.getHeightTerrain(modelMatrixMeat[3].x, modelMatrixMeat[3].z)) {
 				meatLaunch = false;
+				animationIndex = 0;
 			}
 		}
 		
@@ -2582,7 +2591,7 @@ void applicationLoop() {
 			if(sourcesPlay[i]){ //Para que lo reproduzca todo el tiempo
 				sourcesPlay[i] = false;
 				alSourcePlay(source[i]);
-				if (animationIndex == 1 && i == 0)
+				if (animationIndex == 2 && i == 0)
 					alSourcePlay(source[i]);
 			}
 			if (animationIndex == 0 && i == 0) {
@@ -2768,8 +2777,8 @@ void renderScene(bool renderParticles){
 	 *******************************************/
 	modelMatrixMayow[3][1] = terrain.getHeightTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2]);
 	glm::mat4 modelMatrixMayowBody = glm::mat4(modelMatrixMayow);
-	modelMatrixMayowBody = glm::scale(modelMatrixMayowBody, glm::vec3(2.0, 2.0, 2.0));
-	mayowModelAnimate.setAnimationIndex(1);
+	modelMatrixMayowBody = glm::scale(modelMatrixMayowBody, glm::vec3(0.01, 0.01, 0.01));
+	mayowModelAnimate.setAnimationIndex(animationIndex);
 	mayowModelAnimate.render(modelMatrixMayowBody);
 
 	modelMatrixTriceratop[3][1] = terrain.getHeightTerrain(modelMatrixTriceratop[3][0], modelMatrixTriceratop[3][2]);
