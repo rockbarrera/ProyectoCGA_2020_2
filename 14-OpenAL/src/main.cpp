@@ -1398,6 +1398,33 @@ bool processInput(bool continueApplication) {
 			else if (glfwGetKey(window, GLFW_KEY_P) == GLFW_RELEASE) {
 				enableCountSelected = true;
 			}
+
+			//Mover al personaje con las teclas de dirección, cámara de personaje y acciones
+			if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+				modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(1.0f), glm::vec3(0, 1, 0));
+				animationIndex = 2;
+			}
+			else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+				modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-1.0f), glm::vec3(0, 1, 0));
+				animationIndex = 2;
+			}if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+				modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, 0.02));
+				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
+					+ glm::vec3(0.0, 2.0, 0.0));
+				animationIndex = 2;
+			}
+			else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+				modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, -0.02));
+				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
+					+ glm::vec3(0.0, 2.0, 0.0));
+				animationIndex = 2;
+			}
+
+			if (modelSelected == 2 && (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_RELEASE &&
+				glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_RELEASE &&
+				glfwGetKey(window, GLFW_KEY_UP) == GLFW_RELEASE &&
+				glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_RELEASE))
+				animationIndex = 0;
 		}
 		else if (stateCamera == 2) {
 			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -1530,11 +1557,26 @@ void gamePad() {
 		}
 		else if (stateCamera == 3) { //Mover tanto cámara como personaje
 
-			//cameraFPSpersonaje->moveFrontCamera(true, axes[1] * 0.05);
-			//cameraFPSpersonaje->moveRightCamera(true, axes[0] * 0.05);
-			//cameraFPSpersonaje->mouseMoveCamera(axes[2] * 2.0, axes[3] * 2.0, deltaTime);
-			//offsetX = 0;
-			//offsetY = 0;
+			modelMatrixMayow = glm::translate(modelMatrixMayow,
+				glm::vec3(0, 0, 0.5 * velModel * axes[1]));
+			modelMatrixMayow = glm::rotate(modelMatrixMayow,
+				glm::radians(-0.8f * axes[0]),
+				glm::vec3(0, 1, 0));
+			float ax = axes[0];
+			float ay = axes[1];
+			if (ax == 0.000000000 && ay == 0.000000000) {
+				animationIndex = 0; //Detenido
+			}
+			else {
+				animationIndex = 2; //Caminando
+			}
+
+			camera->mouseMoveCamera(axes[2], axes[3], deltaTime);
+			cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
+				+ glm::vec3(0.0, 2.0, 0.0));
+
+			//Apuntar la cámara a donde está viendo el personaje
+
 		}
 		//------------------------------------ Fin de rotación y traslación de los modelos
 
