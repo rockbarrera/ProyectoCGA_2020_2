@@ -210,7 +210,7 @@ int maxRotTRex = 0.0;
 bool derechaTRex = false;
 
 //Movimientos dinoraur lake
-bool activar = false;
+bool activar = true;
 float aDinosaurLake = 10.0;
 float bDinoszurLake = 10.0f;
 float angleDinosaurLake = 0.0f;
@@ -224,6 +224,7 @@ float vInit = 10.0;
 float theta = 45;
 float gravity = 200.81;
 float timeMeat = 0.0;
+bool actUnVezMeat = true;
 
 // Variables to animations keyframes
 
@@ -1811,9 +1812,18 @@ void meatLauncher() {
 			if (modelMatrixMeat[3].y <= terrain.getHeightTerrain(modelMatrixMeat[3].x, modelMatrixMeat[3].z)) {
 				meatLaunch = false;
 				timeMeat = 0.0;
+				actUnVezMeat = true;
 				//animationIndex = 0;
 			}
 		}
+}
+
+void updateMatrix() {
+	//modelMatrixMeat = glm::mat4(1.0f);
+	modelMatrixMeat = modelMatrixMayow;
+	//modelMatrixMeat = glm::translate(modelMatrixMeat, glm::vec3(modelMatrixMayow[3]));
+	modelMatrixMeat[3][1] = terrain.getHeightTerrain(modelMatrixMeat[3][0], modelMatrixMeat[3][2]) + 2.5;
+	modelMatrixMeat = glm::scale(modelMatrixMeat, glm::vec3(0.25f, 0.25f, 0.25f));
 }
 
 void applicationLoop() {
@@ -1853,9 +1863,10 @@ void applicationLoop() {
 	//modelMatrixMountain = glm::rotate(modelMatrixMountain, glm::radians(90.0f), glm::vec3(0, 1, 0));
 	modelMatrixMountain = glm::scale(modelMatrixMountain, glm::vec3(0.2f, 0.2f, 0.2f));
 
-	modelMatrixMeat = glm::translate(modelMatrixMeat, glm::vec3(modelMatrixMayow[3]));
-	modelMatrixMeat[3][1] = terrain.getHeightTerrain(modelMatrixMeat[3][0], modelMatrixMeat[3][2]) + 2.0;
-	modelMatrixMeat = glm::scale(modelMatrixMeat, glm::vec3(0.25f, 0.25f, 0.25f));
+	//modelMatrixMeat = glm::translate(modelMatrixMeat, glm::vec3(modelMatrixMayow[3]));
+	//modelMatrixMeat[3][1] = terrain.getHeightTerrain(modelMatrixMeat[3][0], modelMatrixMeat[3][2]) + 2.0;
+	//modelMatrixMeat = glm::scale(modelMatrixMeat, glm::vec3(0.25f, 0.25f, 0.25f));
+	updateMatrix();
 
 	lastTime = TimeManager::Instance().GetTime();
 
@@ -2869,7 +2880,15 @@ void renderScene(bool renderParticles){
 	//Meat
 	if (meatLaunch) {
 		glDisable(GL_CULL_FACE);
-		modelMeat.render(modelMatrixMeat);
+		if (actUnVezMeat) {
+			updateMatrix();
+			actUnVezMeat = false;
+		}
+		glm::mat4 modelMatrixMeatBody = glm::mat4(1.0f);
+		modelMatrixMeatBody = modelMatrixMeat;
+		//modelMatrixMeatBody = glm::translate(modelMatrixMeatBody, glm::vec3(modelMatrixMeat[3]));
+		//modelMatrixMeatBody = glm::scale(modelMatrixMeatBody, glm::vec3(0.25, 0.25, 0.25));
+		modelMeat.render(modelMatrixMeatBody);
 		glEnable(GL_CULL_FACE);
 	}
 	
