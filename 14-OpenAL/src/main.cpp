@@ -220,9 +220,9 @@ float rotDinisaurLake = 0.0f;
 
 //Lanzamiento de la carne (Meat)
 bool meatLaunch = false;
-float vInit = 2.0;
-float theta = 30;
-float gravity = 9.81;
+float vInit = 10.0;
+float theta = 45;
+float gravity = 200.81;
 float timeMeat = 0.0;
 
 // Variables to animations keyframes
@@ -1802,6 +1802,20 @@ void savePhoto() {
 	delete[] pixels;
 }
 
+void meatLauncher() {
+	if (meatLaunch) {
+			timeMeat += 0.001;
+			float zMov = vInit * cos(glm::radians(theta)) * timeMeat;
+			float yMov = vInit * sin(glm::radians(theta)) * timeMeat - 0.5 * gravity * timeMeat * timeMeat;
+			modelMatrixMeat = glm::translate(modelMatrixMeat, glm::vec3(0.0, yMov, zMov));
+			if (modelMatrixMeat[3].y <= terrain.getHeightTerrain(modelMatrixMeat[3].x, modelMatrixMeat[3].z)) {
+				meatLaunch = false;
+				timeMeat = 0.0;
+				//animationIndex = 0;
+			}
+		}
+}
+
 void applicationLoop() {
 	bool psi = true;
 
@@ -1839,9 +1853,9 @@ void applicationLoop() {
 	//modelMatrixMountain = glm::rotate(modelMatrixMountain, glm::radians(90.0f), glm::vec3(0, 1, 0));
 	modelMatrixMountain = glm::scale(modelMatrixMountain, glm::vec3(0.2f, 0.2f, 0.2f));
 
-	modelMatrixMeat = glm::translate(modelMatrixMeat, glm::vec3(0.0, 0.0, -40.0));
+	modelMatrixMeat = glm::translate(modelMatrixMeat, glm::vec3(modelMatrixMayow[3]));
 	modelMatrixMeat[3][1] = terrain.getHeightTerrain(modelMatrixMeat[3][0], modelMatrixMeat[3][2]) + 2.0;
-	modelMatrixMeat = glm::scale(modelMatrixMeat, glm::vec3(1.0f, 1.0f, 1.0f));
+	modelMatrixMeat = glm::scale(modelMatrixMeat, glm::vec3(0.25f, 0.25f, 0.25f));
 
 	lastTime = TimeManager::Instance().GetTime();
 
@@ -2237,13 +2251,16 @@ void applicationLoop() {
 		}
 		
 		// Collider Meat
-		AbstractModel::SBB meatCollider;
-		glm::mat4 modelMatrixColliderMeat = glm::mat4(modelMatrixMeat);
-		modelMatrixColliderMeat = glm::scale(modelMatrixColliderMeat, glm::vec3(1.0, 1.0, 1.0));
-		modelMatrixColliderMeat = glm::translate(modelMatrixColliderMeat, modelMeat.getSbb().c);
-		meatCollider.c = glm::vec3(modelMatrixColliderMeat[3]);
-		meatCollider.ratio = modelMeat.getSbb().ratio * 1.0;
-		addOrUpdateColliders(collidersSBB, "meat", meatCollider, modelMatrixMeat);
+		if (meatLaunch) {
+			AbstractModel::SBB meatCollider;
+			glm::mat4 modelMatrixColliderMeat = glm::mat4(modelMatrixMeat);
+			modelMatrixColliderMeat = glm::scale(modelMatrixColliderMeat, glm::vec3(0.25, 0.25, 0.25));
+			modelMatrixColliderMeat = glm::translate(modelMatrixColliderMeat, modelMeat.getSbb().c);
+			meatCollider.c = glm::vec3(modelMatrixColliderMeat[3]);
+			meatCollider.ratio = modelMeat.getSbb().ratio * 0.25;
+			addOrUpdateColliders(collidersSBB, "meat", meatCollider, modelMatrixMeat);
+		}
+		
 
 		/*******************************************
 		 * Render de colliders
@@ -2568,16 +2585,19 @@ void applicationLoop() {
 		
 
 		//StateMachine for Meat launched
-		if (meatLaunch) {
+
+		meatLauncher();
+		/*if (meatLaunch) {
 			timeMeat += 0.001;
 			float zMov = vInit * cos(glm::radians(theta)) * timeMeat;
 			float yMov = vInit * sin(glm::radians(theta)) * timeMeat - 0.5 * gravity * timeMeat * timeMeat;
 			modelMatrixMeat = glm::translate(modelMatrixMeat, glm::vec3(0.0, yMov, zMov));
 			if (modelMatrixMeat[3].y <= terrain.getHeightTerrain(modelMatrixMeat[3].x, modelMatrixMeat[3].z)) {
 				meatLaunch = false;
-				animationIndex = 0;
+				timeMeat = 0.0;
+				//animationIndex = 0;
 			}
-		}
+		}*/
 		
 		
 
@@ -2847,9 +2867,12 @@ void renderScene(bool renderParticles){
 	glEnable(GL_CULL_FACE);
 
 	//Meat
-	glDisable(GL_CULL_FACE);
-	modelMeat.render(modelMatrixMeat);
-	glEnable(GL_CULL_FACE);
+	if (meatLaunch) {
+		glDisable(GL_CULL_FACE);
+		modelMeat.render(modelMatrixMeat);
+		glEnable(GL_CULL_FACE);
+	}
+	
 
 	/*******************************************
 	 * Custom Anim objects obj
