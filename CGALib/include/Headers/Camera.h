@@ -61,7 +61,7 @@ public:
 		return this->up;
 	}
 
-	void setUp(glm::vec3 up){
+	void setUp(glm::vec3 up) {
 		this->up = up;
 	}
 
@@ -89,7 +89,7 @@ public:
 		this->speed = speed;
 	}
 
-	void setCameraTarget(glm::vec3 cameraTarget){
+	void setCameraTarget(glm::vec3 cameraTarget) {
 		this->cameraTarget = cameraTarget;
 		this->updateCamera();
 	}
@@ -105,6 +105,10 @@ public:
 
 	void setDistanceFromTarget(float distanceFromTarget) {
 		this->distanceFromTarget = distanceFromTarget;
+	}
+
+	void setAngleYaw(float yaw) {
+		this->yaw = yaw;
 	}
 
 protected:

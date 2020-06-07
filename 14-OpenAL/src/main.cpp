@@ -216,8 +216,6 @@ float bDinoszurLake = 10.0f;
 float angleDinosaurLake = 0.0f;
 float rotDinisaurLake = 0.0f;
 
-
-
 //Lanzamiento de la carne (Meat)
 bool meatLaunch = false;
 float vInit = 10.0;
@@ -225,6 +223,10 @@ float theta = 45;
 float gravity = 200.81;
 float timeMeat = 0.0;
 bool actUnVezMeat = true;
+
+//Posición del ángulo de la cámara fotográgica
+glm::vec3 axisCamPersonaje = glm::vec3(0.0, 0.0, 0.0);
+float angleCamPersonaje = 0.0;
 
 // Variables to animations keyframes
 
@@ -1524,7 +1526,7 @@ void gamePad() {
 		//----------------------Para el movimiento traslación y rotación del personaje con el gamepad
 		if (stateCamera == 1) { //Cámara TPS
 
-			switch (modelSelected) { 
+			switch (modelSelected) {
 			case 2:
 
 				modelMatrixMayow = glm::translate(modelMatrixMayow,
@@ -1540,10 +1542,10 @@ void gamePad() {
 				else {
 					animationIndex = 2; //Caminando
 				}
-				
+
 				camera->mouseMoveCamera(axes[2], axes[3], deltaTime);
 				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
-												+ glm::vec3(0.0, 2.0, 0.0));
+					+ glm::vec3(0.0, 2.0, 0.3));
 
 				break;
 			}
@@ -1551,32 +1553,43 @@ void gamePad() {
 		else if (stateCamera == 2) { //Cámara FPS
 			cameraFPS->moveFrontCamera(true, axes[1] * 0.5);
 			cameraFPS->moveRightCamera(true, axes[0] * 0.5);
-			cameraFPS->mouseMoveCamera(axes[2]*2.0, axes[3]*2.0, deltaTime);
+			cameraFPS->mouseMoveCamera(axes[2] * 2.0, axes[3] * 2.0, deltaTime);
 			offsetX = 0;
 			offsetY = 0;
 		}
 		else if (stateCamera == 3) { //Mover tanto cámara como personaje
 
-			modelMatrixMayow = glm::translate(modelMatrixMayow,
-				glm::vec3(0, 0, 0.5 * velModel * axes[1]));
-			modelMatrixMayow = glm::rotate(modelMatrixMayow,
-				glm::radians(-0.8f * axes[0]),
-				glm::vec3(0, 1, 0));
-			float ax = axes[0];
-			float ay = axes[1];
-			if (ax == 0.000000000 && ay == 0.000000000) {
-				animationIndex = 0; //Detenido
-			}
-			else {
-				animationIndex = 2; //Caminando
-			}
+			//modelMatrixMayow = glm::translate(modelMatrixMayow,
+			//	glm::vec3(0, 0, 0.5 * velModel * axes[1]));
+			//modelMatrixMayow = glm::rotate(modelMatrixMayow,
+			//	glm::radians(-0.8f * axes[0]),
+			//	glm::vec3(0, 1, 0));
+			//float ax = axes[0];
+			//float ay = axes[1];
+			//if (ax == 0.000000000 && ay == 0.000000000) {
+			//	animationIndex = 0; //Detenido
+			//}
+			//else {
+			//	animationIndex = 2; //Caminando
+			//}
 
-			camera->mouseMoveCamera(axes[2], axes[3], deltaTime);
-			cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
-				+ glm::vec3(0.0, 2.0, 0.0));
-
+			//camera->mouseMoveCamera(axes[2], axes[3], deltaTime);
 			//Apuntar la cámara a donde está viendo el personaje
-
+			//axisCamPersonaje = glm::axis(glm::quat_cast(modelMatrixMayow));
+			//angleCamPersonaje = glm::angle(glm::quat_cast(modelMatrixMayow));
+			//angleCamPersonaje = angleCamPersonaje * (180 / M_PI);
+			//angleCamPersonaje += 90.0f;
+			//std::cout << angleCamPersonaje << std::endl;
+			//if (std::isnan(angleCamPersonaje))
+			//	angleCamPersonaje = 90.0;
+			//if (angleCamPersonaje > 179.0f)
+			//	angleCamPersonaje = 179.0f;
+			/*if (axisCamPersonaje.y < 0)
+				angleCamPersonaje = -angleCamPersonaje;*/
+			//cameraFPSpersonaje->setAngleYaw(angleCamPersonaje);
+			cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
+				+ glm::vec3(0.0, 2.0, 0.3));
+			cameraFPSpersonaje->mouseMoveCamera(axes[2] * 4.0, axes[3] * 4.0, deltaTime);
 		}
 		//------------------------------------ Fin de rotación y traslación de los modelos
 
@@ -1875,6 +1888,7 @@ void applicationLoop() {
 	glm::vec3 axis;
 	glm::vec3 target;
 	float angleTarget;
+
 
 	modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0f, 0.05f, -90.0f));
 	//modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f), glm::vec3(0, 1, 0));
