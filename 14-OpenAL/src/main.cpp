@@ -130,6 +130,9 @@ Model modelMeat;
 //Cactus
 Model modelCactus;
 
+//Rock
+Model modelRock;
+
 // Model animate instance
 // Mayow
 Model mayowModelAnimate;
@@ -386,6 +389,45 @@ std::vector<glm::vec3> cactusScale{
 	glm::vec3(0.3, 0.3, 0.3),
 };
 
+std::vector<glm::vec3> rockPositions{
+	glm::vec3(0.0, 0.0, -20.0),
+	glm::vec3(81.37, 0.0, -14.56),
+	glm::vec3(84.98, 0.0, 9.34),
+	glm::vec3(29.12, 0.0, 7.24),
+	glm::vec3(84.78, 0.0, 80.81),
+	glm::vec3(19.45, 0.0, -11.08),
+	glm::vec3(62.93, 1.0, 17.76),
+	glm::vec3(9.33, 1.0, 82.80),
+	glm::vec3(-4.01, 1.0, 92.19),
+	glm::vec3(-88.81, 1.0, 83.07),
+	glm::vec3(10.97, 1.0, -86.15),
+	glm::vec3(19.06, 1.0, -90.87),
+	glm::vec3(25.44, 1.0, -53.45),
+	glm::vec3(25.37, 1.0, -70.06),
+	glm::vec3(-92.85, 1.0, 33.37),
+	glm::vec3(-16.60, 1.0, -76.55),
+};
+
+std::vector<glm::vec3> rockScale{
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+};
+
 // Blending model unsorted
 std::map<std::string, glm::vec3> blendingUnsorted = {
 		{"geiser0", geiserPositions[0]},
@@ -510,7 +552,7 @@ ALenum format;
 ALvoid *data;
 int ch;
 ALboolean loop;
-std::vector<bool> sourcesPlay = {false, true, true, true, false, true, true, true, true};
+std::vector<bool> sourcesPlay = {false, true, true, false, false, true, true, true, true};
 
 // Se definen todos las funciones.
 void reshapeCallback(GLFWwindow *Window, int widthRes, int heightRes);
@@ -814,6 +856,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	//Cactus
 	modelCactus.loadModel("../models/Cactus/CACTUS.obj");
 	modelCactus.setShader(&shaderMulLighting);
+
+	//Rock
+	modelRock.loadModel("../models/Rock/ROCK.obj");
+	modelRock.setShader(&shaderMulLighting);
 
 	camera->setPosition(glm::vec3(0.0, 0.0, 10.0));
 	camera->setDistanceFromTarget(distanceFromTarget);
@@ -1263,12 +1309,12 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	alSourcef(source[6], AL_MAX_DISTANCE, 100);
 
 	alSourcef(source[7], AL_PITCH, 1.0f);
-	alSourcef(source[7], AL_GAIN, 0.08f);
+	alSourcef(source[7], AL_GAIN, 1.0f);
 	alSourcefv(source[7], AL_POSITION, sourceTRexPos);
 	alSourcefv(source[7], AL_VELOCITY, sourceTRexVel);
 	alSourcei(source[7], AL_BUFFER, buffer[7]);
 	alSourcei(source[7], AL_LOOPING, AL_TRUE);
-	alSourcef(source[7], AL_MAX_DISTANCE, 10);
+	alSourcef(source[7], AL_MAX_DISTANCE, 100);
 
 	alSourcef(source[8], AL_PITCH, 1.0f);
 	alSourcef(source[8], AL_GAIN, 1.0f);
@@ -1311,6 +1357,7 @@ void destroy() {
 	modelMountain.destroy();
 	modelMeat.destroy();
 	modelCactus.destroy();
+	modelRock.destroy();
 
 	// Custom objects animate
 	mayowModelAnimate.destroy();
@@ -1960,7 +2007,7 @@ void applicationLoop() {
 	float angleTarget;
 
 
-	modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0f, 0.05f, -90.0f));
+	modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0f, 0.05f, -95.0f));
 	//modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f), glm::vec3(0, 1, 0));
 	//modelMatrixMayow = glm::scale(modelMatrixMayow, glm::vec3(0.01, 0.01, 0.01));
 
@@ -1980,7 +2027,7 @@ void applicationLoop() {
 	modelMatrixGeiser = glm::translate(modelMatrixGeiser, glm::vec3(20.0f, 0.0f, 30.0f));
 	modelMatrixGeiser[3][1] = terrain.getHeightTerrain(modelMatrixGeiser[3][0], modelMatrixGeiser[3][2]);
 
-	modelMatrixDoor = glm::translate(modelMatrixDoor, glm::vec3(0.0, 0.0, -95.0));
+	modelMatrixDoor = glm::translate(modelMatrixDoor, glm::vec3(0.73, 0.0, -87.88));
 	modelMatrixDoor[3][1] = terrain.getHeightTerrain(modelMatrixDoor[3][0], modelMatrixDoor[3][2]);
 	modelMatrixDoor = glm::rotate(modelMatrixDoor, glm::radians(180.0f), glm::vec3(0, 1, 0));
 
@@ -2385,6 +2432,21 @@ void applicationLoop() {
 			cactusCollider.c = glm::vec3(modelMatrixColliderCactus[3]);
 			cactusCollider.e = modelCactus.getObb().e * cactusScale[i];
 			std::get<0>(collidersOBB.find("cactus-" + std::to_string(i))->second) = cactusCollider;
+		}
+
+		// Collider rock
+		for (int i = 0; i < rockPositions.size(); i++) {
+			AbstractModel::OBB rockCollider;
+			glm::mat4 modelMatrixColliderRock = glm::mat4(1.0f);
+			modelMatrixColliderRock = glm::translate(modelMatrixColliderRock, rockPositions[i]);
+			addOrUpdateColliders(collidersOBB, "rock-" + std::to_string(i), rockCollider, modelMatrixColliderRock);
+			// Set the orientation of collider before doing the scale
+			rockCollider.u = glm::quat_cast(modelMatrixColliderRock);
+			modelMatrixColliderRock = glm::scale(modelMatrixColliderRock, rockScale[i]);
+			modelMatrixColliderRock = glm::translate(modelMatrixColliderRock, modelRock.getObb().c);
+			rockCollider.c = glm::vec3(modelMatrixColliderRock[3]);
+			rockCollider.e = modelRock.getObb().e * rockScale[i];
+			std::get<0>(collidersOBB.find("rock-" + std::to_string(i))->second) = rockCollider;
 		}
 		
 		// Collider Meat
@@ -2886,6 +2948,9 @@ void prepareScene(){
 
 	//Cactus
 	modelCactus.setShader(&shaderMulLighting);
+
+	//Rock
+	modelRock.setShader(&shaderMulLighting);
 }
 
 void prepareDepthScene(){
@@ -2926,6 +2991,9 @@ void prepareDepthScene(){
 
 	//Cactus
 	modelCactus.setShader(&shaderDepth);
+
+	//Rock
+	modelRock.setShader(&shaderDepth);
 }
 
 void renderScene(bool renderParticles){
@@ -3012,6 +3080,16 @@ void renderScene(bool renderParticles){
 		modelCactus.setPosition(cactusPositions[i] + glm::vec3(0.013777, 0.027554, -5.26767));
 		modelCactus.setScale(cactusScale[i]);
 		modelCactus.render();
+	}
+	glEnable(GL_CULL_FACE);
+
+	//Rock
+	glDisable(GL_CULL_FACE);
+	for (int i = 0; i < rockPositions.size(); i++) {
+		rockPositions[i].y = terrain.getHeightTerrain(rockPositions[i].x, rockPositions[i].z);
+		modelRock.setPosition(rockPositions[i]);
+		modelRock.setScale(rockScale[i]);
+		modelRock.render();
 	}
 	glEnable(GL_CULL_FACE);
 
