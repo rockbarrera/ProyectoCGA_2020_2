@@ -137,8 +137,8 @@ Model modelRock;
 Model modelWall;
 
 // Model animate instance
-// Mayow
-Model mayowModelAnimate;
+// Personaje
+Model personajeModelAnimate;
 
 //Triceratop
 Model triceratopModelAnimate;
@@ -178,8 +178,7 @@ int lastMousePosX, offsetX = 0;
 int lastMousePosY, offsetY = 0;
 
 // Model matrix definitions
-//glm::mat4 modelMatrixDart = glm::mat4(1.0f);
-glm::mat4 modelMatrixMayow = glm::mat4(1.0f);
+glm::mat4 modelMatrixPersonaje = glm::mat4(1.0f);
 glm::mat4 modelMatrixFountain1 = glm::mat4(1.0f);
 glm::mat4 modelMatrixGeiser = glm::mat4(1.0f);
 glm::mat4 modelMatrixDoor = glm::mat4(1.0f);
@@ -927,8 +926,8 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelMeat.setShader(&shaderMulLighting);
 
 	//Mayow
-	mayowModelAnimate.loadModel("../models/Walk/PrincipalCharacter.fbx");
-	mayowModelAnimate.setShader(&shaderMulLighting);
+	personajeModelAnimate.loadModel("../models/Walk/PrincipalCharacter.fbx");
+	personajeModelAnimate.setShader(&shaderMulLighting);
 
 	//Triceratop
 	triceratopModelAnimate.loadModel("../models/Dinosaur/Triceratop.fbx");
@@ -960,7 +959,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 
 	cameraFPS->setPosition(glm::vec3(-75.67, 6.0, 65.4));
 
-	cameraFPSpersonaje->setPosition(modelMatrixMayow[3]);
+	cameraFPSpersonaje->setPosition(modelMatrixPersonaje[3]);
 
 	// Definimos el tamanio de la imagen
 	int imageWidth, imageHeight;
@@ -1453,7 +1452,7 @@ void destroy() {
 	modelRock.destroy();
 
 	// Custom objects animate
-	mayowModelAnimate.destroy();
+	personajeModelAnimate.destroy();
 	triceratopModelAnimate.destroy();
 	tRexModelAnimate.destroy();
 	dinoraurLakeModelAnimate.destroy();
@@ -1574,7 +1573,7 @@ bool processInput(bool continueApplication) {
 		}
 		if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
 			stateCamera = 3;
-			cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
+			cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixPersonaje[3])
 				+ glm::vec3(0.0, 2.0, 0.3));
 		}
 		//Fin de selección de cámara TPS ó FPS
@@ -1641,21 +1640,21 @@ bool processInput(bool continueApplication) {
 
 			//Mover al personaje con las teclas de dirección, cámara de personaje y acciones
 			if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-				modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(1.0f), glm::vec3(0, 1, 0));
+				modelMatrixPersonaje = glm::rotate(modelMatrixPersonaje, glm::radians(1.0f), glm::vec3(0, 1, 0));
 				animationIndex = 2;
 			}
 			else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-				modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-1.0f), glm::vec3(0, 1, 0));
+				modelMatrixPersonaje = glm::rotate(modelMatrixPersonaje, glm::radians(-1.0f), glm::vec3(0, 1, 0));
 				animationIndex = 2;
 			}if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-				modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, 0.02));
-				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
+				modelMatrixPersonaje = glm::translate(modelMatrixPersonaje, glm::vec3(0, 0, 0.02));
+				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixPersonaje[3])
 					+ glm::vec3(0.0, 2.0, 0.0));
 				animationIndex = 2;
 			}
 			else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-				modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, -0.02));
-				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
+				modelMatrixPersonaje = glm::translate(modelMatrixPersonaje, glm::vec3(0, 0, -0.02));
+				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixPersonaje[3])
 					+ glm::vec3(0.0, 2.0, 0.0));
 				animationIndex = 2;
 			}
@@ -1718,9 +1717,9 @@ void gamePad() {
 			switch (modelSelected) {
 			case 2:
 
-				modelMatrixMayow = glm::translate(modelMatrixMayow,
+				modelMatrixPersonaje = glm::translate(modelMatrixPersonaje,
 					glm::vec3(0, 0, 0.5 * velModel * axes[1]));
-				modelMatrixMayow = glm::rotate(modelMatrixMayow,
+				modelMatrixPersonaje = glm::rotate(modelMatrixPersonaje,
 					glm::radians(-0.8f * axes[0]),
 					glm::vec3(0, 1, 0));
 				float ax = axes[0];
@@ -1733,7 +1732,7 @@ void gamePad() {
 				}
 
 				camera->mouseMoveCamera(axes[2], axes[3], deltaTime);
-				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
+				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixPersonaje[3])
 					+ glm::vec3(0.0, 2.0, 0.3));
 
 				break;
@@ -1748,9 +1747,9 @@ void gamePad() {
 		}
 		else if (stateCamera == 3) { //Mover tanto cámara como personaje
 
-			//modelMatrixMayow = glm::translate(modelMatrixMayow,
+			//modelMatrixPersonaje = glm::translate(modelMatrixPersonaje,
 			//	glm::vec3(0, 0, 0.5 * velModel * axes[1]));
-			//modelMatrixMayow = glm::rotate(modelMatrixMayow,
+			//modelMatrixPersonaje = glm::rotate(modelMatrixPersonaje,
 			//	glm::radians(-0.8f * axes[0]),
 			//	glm::vec3(0, 1, 0));
 			//float ax = axes[0];
@@ -1764,8 +1763,8 @@ void gamePad() {
 
 			//camera->mouseMoveCamera(axes[2], axes[3], deltaTime);
 			//Apuntar la cámara a donde está viendo el personaje
-			//axisCamPersonaje = glm::axis(glm::quat_cast(modelMatrixMayow));
-			//angleCamPersonaje = glm::angle(glm::quat_cast(modelMatrixMayow));
+			//axisCamPersonaje = glm::axis(glm::quat_cast(modelMatrixPersonaje));
+			//angleCamPersonaje = glm::angle(glm::quat_cast(modelMatrixPersonaje));
 			//angleCamPersonaje = angleCamPersonaje * (180 / M_PI);
 			//angleCamPersonaje += 90.0f;
 			//std::cout << angleCamPersonaje << std::endl;
@@ -1776,7 +1775,7 @@ void gamePad() {
 			/*if (axisCamPersonaje.y < 0)
 				angleCamPersonaje = -angleCamPersonaje;*/
 			//cameraFPSpersonaje->setAngleYaw(angleCamPersonaje);
-			cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
+			cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixPersonaje[3])
 				+ glm::vec3(0.0, 2.0, 0.3));
 			cameraFPSpersonaje->mouseMoveCamera(axes[2] * 4.0, axes[3] * 4.0, deltaTime);
 		}
@@ -1873,7 +1872,7 @@ void gamePad() {
 			std::cout << "Select button presed" << std::endl;
 			enableCountSelectedGamePad = false; //Controlar la selección de la cámara
 			stateCamera++;
-			/*if (stateCamera == 3) cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3]) 
+			/*if (stateCamera == 3) cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixPersonaje[3]) 
 																+ glm::vec3(0.0, 2.0, 0.0));*/
 			if (stateCamera > 3) stateCamera = 1;
 
@@ -2064,8 +2063,8 @@ void meatLauncher() {
 
 void updateMatrix() {
 	//modelMatrixMeat = glm::mat4(1.0f);
-	modelMatrixMeat = modelMatrixMayow;
-	//modelMatrixMeat = glm::translate(modelMatrixMeat, glm::vec3(modelMatrixMayow[3]));
+	modelMatrixMeat = modelMatrixPersonaje;
+	//modelMatrixMeat = glm::translate(modelMatrixMeat, glm::vec3(modelMatrixPersonaje[3]));
 	modelMatrixMeat[3][1] = terrain.getHeightTerrain(modelMatrixMeat[3][0], modelMatrixMeat[3][2]) + 2.5;
 	modelMatrixMeat = glm::scale(modelMatrixMeat, glm::vec3(0.25f, 0.25f, 0.25f));
 }
@@ -2079,9 +2078,9 @@ void applicationLoop() {
 	float angleTarget;
 
 
-	modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0f, 0.05f, -95.0f));
-	//modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f), glm::vec3(0, 1, 0));
-	//modelMatrixMayow = glm::scale(modelMatrixMayow, glm::vec3(0.01, 0.01, 0.01));
+	modelMatrixPersonaje = glm::translate(modelMatrixPersonaje, glm::vec3(0.0f, 0.05f, -95.0f));
+	//modelMatrixPersonaje = glm::rotate(modelMatrixPersonaje, glm::radians(-90.0f), glm::vec3(0, 1, 0));
+	//modelMatrixPersonaje = glm::scale(modelMatrixPersonaje, glm::vec3(0.01, 0.01, 0.01));
 
 	modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(-66.95f, 0.0f, 59.76f));
 	modelMatrixTriceratop = glm::rotate(modelMatrixTriceratop, glm::radians(-90.0f + 32.89f), glm::vec3(0, 1, 0));
@@ -2108,7 +2107,7 @@ void applicationLoop() {
 	//modelMatrixMountain = glm::rotate(modelMatrixMountain, glm::radians(90.0f), glm::vec3(0, 1, 0));
 	modelMatrixMountain = glm::scale(modelMatrixMountain, glm::vec3(0.2f, 0.2f, 0.2f));
 
-	//modelMatrixMeat = glm::translate(modelMatrixMeat, glm::vec3(modelMatrixMayow[3]));
+	//modelMatrixMeat = glm::translate(modelMatrixMeat, glm::vec3(modelMatrixPersonaje[3]));
 	//modelMatrixMeat[3][1] = terrain.getHeightTerrain(modelMatrixMeat[3][0], modelMatrixMeat[3][2]) + 2.0;
 	//modelMatrixMeat = glm::scale(modelMatrixMeat, glm::vec3(0.25f, 0.25f, 0.25f));
 	updateMatrix();
@@ -2147,9 +2146,9 @@ void applicationLoop() {
 				(float) screenWidth / (float) screenHeight, 0.1f, 100.0f);
 
 		if(modelSelected == 2){
-			axis = glm::axis(glm::quat_cast(modelMatrixMayow));
-			angleTarget = glm::angle(glm::quat_cast(modelMatrixMayow));
-			target = modelMatrixMayow[3];
+			axis = glm::axis(glm::quat_cast(modelMatrixPersonaje));
+			angleTarget = glm::angle(glm::quat_cast(modelMatrixPersonaje));
+			target = modelMatrixPersonaje[3];
 		}
 		else{
 			
@@ -2386,19 +2385,19 @@ void applicationLoop() {
 
 		// Collider de mayow
 		AbstractModel::OBB mayowCollider;
-		glm::mat4 modelmatrixColliderMayow = glm::mat4(modelMatrixMayow);
+		glm::mat4 modelmatrixColliderMayow = glm::mat4(modelMatrixPersonaje);
 		//modelmatrixColliderMayow = glm::rotate(modelmatrixColliderMayow,
 		//		glm::radians(-90.0f), glm::vec3(1, 0, 0));
 		// Set the orientation of collider before doing the scale
 		mayowCollider.u = glm::quat_cast(modelmatrixColliderMayow);
 		modelmatrixColliderMayow = glm::scale(modelmatrixColliderMayow, glm::vec3(1.0, 1.0, 1.0));
 		modelmatrixColliderMayow = glm::translate(modelmatrixColliderMayow,
-				glm::vec3(mayowModelAnimate.getObb().c.x,
-						mayowModelAnimate.getObb().c.y,
-						mayowModelAnimate.getObb().c.z));
-		mayowCollider.e = mayowModelAnimate.getObb().e * glm::vec3(1.0, 1.0, 1.0) * glm::vec3(0.787401574, 0.787401574, 0.787401574);
+				glm::vec3(personajeModelAnimate.getObb().c.x,
+						personajeModelAnimate.getObb().c.y,
+						personajeModelAnimate.getObb().c.z));
+		mayowCollider.e = personajeModelAnimate.getObb().e * glm::vec3(1.0, 1.0, 1.0) * glm::vec3(0.787401574, 0.787401574, 0.787401574);
 		mayowCollider.c = glm::vec3(modelmatrixColliderMayow[3]);
-		addOrUpdateColliders(collidersOBB, "mayow", mayowCollider, modelMatrixMayow);
+		addOrUpdateColliders(collidersOBB, "mayow", mayowCollider, modelMatrixPersonaje);
 
 		// Collider Triceratop
 		AbstractModel::OBB triceratopCollider;
@@ -2670,7 +2669,7 @@ void applicationLoop() {
 					addOrUpdateColliders(collidersOBB, jt->first);
 				else {
 					if (jt->first.compare("mayow") == 0)
-						modelMatrixMayow = std::get<1>(jt->second);
+						modelMatrixPersonaje = std::get<1>(jt->second);
 					/*if (jt->first.compare("dart") == 0)
 						modelMatrixDart = std::get<1>(jt->second);*/
 				}
@@ -2877,15 +2876,15 @@ void applicationLoop() {
 		meatLauncher();
 		
 		//Delimiter
-		if (modelMatrixMayow[3].x >= 99)
-			modelMatrixMayow[3].x = 99;
-		if(modelMatrixMayow[3].x <= -99)
-			modelMatrixMayow[3].x = -99;
+		if (modelMatrixPersonaje[3].x >= 99)
+			modelMatrixPersonaje[3].x = 99;
+		if(modelMatrixPersonaje[3].x <= -99)
+			modelMatrixPersonaje[3].x = -99;
 
-		if (modelMatrixMayow[3].z >= 99)
-			modelMatrixMayow[3].z = 99;
-		if (modelMatrixMayow[3].z <= -99)
-			modelMatrixMayow[3].z = -99;
+		if (modelMatrixPersonaje[3].z >= 99)
+			modelMatrixPersonaje[3].z = 99;
+		if (modelMatrixPersonaje[3].z <= -99)
+			modelMatrixPersonaje[3].z = -99;
 
 		glfwSwapBuffers(window);
 
@@ -2894,9 +2893,9 @@ void applicationLoop() {
 		 */
 		
 		//Pisadas
-		source0Pos[0] = modelMatrixMayow[3].x;
-		source0Pos[1] = modelMatrixMayow[3].y;
-		source0Pos[2] = modelMatrixMayow[3].z;
+		source0Pos[0] = modelMatrixPersonaje[3].x;
+		source0Pos[1] = modelMatrixPersonaje[3].y;
+		source0Pos[2] = modelMatrixPersonaje[3].z;
 		alSourcefv(source[0], AL_POSITION, source0Pos);
 
 		//Antorcha
@@ -2906,15 +2905,15 @@ void applicationLoop() {
 		alSourcefv(source[2], AL_POSITION, source2Pos);
 
 		//Obturador
-		sourceCamPos[0] = modelMatrixMayow[3].x;
-		sourceCamPos[1] = modelMatrixMayow[3].y + 2.0;
-		sourceCamPos[2] = modelMatrixMayow[3].z;
+		sourceCamPos[0] = modelMatrixPersonaje[3].x;
+		sourceCamPos[1] = modelMatrixPersonaje[3].y + 2.0;
+		sourceCamPos[2] = modelMatrixPersonaje[3].z;
 		alSourcefv(source[4], AL_POSITION, sourceCamPos);
 
 		//Agua
-		/*sourceAguaPos[0] = modelMatrixMayow[3].x;
-		sourceAguaPos[1] = modelMatrixMayow[3].y + 2.0;
-		sourceAguaPos[2] = modelMatrixMayow[3].z;
+		/*sourceAguaPos[0] = modelMatrixPersonaje[3].x;
+		sourceAguaPos[1] = modelMatrixPersonaje[3].y + 2.0;
+		sourceAguaPos[2] = modelMatrixPersonaje[3].z;
 		alSourcefv(source[5], AL_POSITION, sourceAguaPos);*/
 
 		//Triceratops
@@ -2939,13 +2938,13 @@ void applicationLoop() {
 		if (stateCamera == 1) {
 
 			// Listener for the Thris person camera
-			listenerPos[0] = modelMatrixMayow[3].x;
-			listenerPos[1] = modelMatrixMayow[3].y;
-			listenerPos[2] = modelMatrixMayow[3].z;
+			listenerPos[0] = modelMatrixPersonaje[3].x;
+			listenerPos[1] = modelMatrixPersonaje[3].y;
+			listenerPos[2] = modelMatrixPersonaje[3].z;
 			alListenerfv(AL_POSITION, listenerPos);
 
-			glm::vec3 upModel = glm::normalize(modelMatrixMayow[1]);
-			glm::vec3 frontModel = glm::normalize(modelMatrixMayow[2]);
+			glm::vec3 upModel = glm::normalize(modelMatrixPersonaje[1]);
+			glm::vec3 frontModel = glm::normalize(modelMatrixPersonaje[2]);
 
 			listenerOri[0] = frontModel.x;
 			listenerOri[1] = frontModel.y;
@@ -3009,7 +3008,7 @@ void prepareScene(){
 	modelGrass.setShader(&shaderMulLighting);
 
 	//Mayow
-	mayowModelAnimate.setShader(&shaderMulLighting);
+	personajeModelAnimate.setShader(&shaderMulLighting);
 
 	//Triceratops
 	triceratopModelAnimate.setShader(&shaderMulLighting);
@@ -3055,7 +3054,7 @@ void prepareDepthScene(){
 	modelGrass.setShader(&shaderDepth);
 
 	//Mayow
-	mayowModelAnimate.setShader(&shaderDepth);
+	personajeModelAnimate.setShader(&shaderDepth);
 
 	//Triceratops
 	triceratopModelAnimate.setShader(&shaderDepth);
@@ -3228,11 +3227,11 @@ void renderScene(bool renderParticles) {
 	/*******************************************
 	 * Custom Anim objects obj
 	 *******************************************/
-	modelMatrixMayow[3][1] = terrain.getHeightTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2]);
-	glm::mat4 modelMatrixMayowBody = glm::mat4(modelMatrixMayow);
-	modelMatrixMayowBody = glm::scale(modelMatrixMayowBody, glm::vec3(0.01, 0.01, 0.01));
-	mayowModelAnimate.setAnimationIndex(animationIndex);
-	mayowModelAnimate.render(modelMatrixMayowBody);
+	modelMatrixPersonaje[3][1] = terrain.getHeightTerrain(modelMatrixPersonaje[3][0], modelMatrixPersonaje[3][2]);
+	glm::mat4 modelMatrixPersonajeBody = glm::mat4(modelMatrixPersonaje);
+	modelMatrixPersonajeBody = glm::scale(modelMatrixPersonajeBody, glm::vec3(0.01, 0.01, 0.01));
+	personajeModelAnimate.setAnimationIndex(animationIndex);
+	personajeModelAnimate.render(modelMatrixPersonajeBody);
 
 	modelMatrixTriceratop[3][1] = terrain.getHeightTerrain(modelMatrixTriceratop[3][0], modelMatrixTriceratop[3][2]);
 	glm::mat4 modelMatrixTriceratopBody = glm::mat4(modelMatrixTriceratop);
