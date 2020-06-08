@@ -133,6 +133,9 @@ Model modelCactus;
 //Rock
 Model modelRock;
 
+//Wall
+Model modelWall;
+
 // Model animate instance
 // Mayow
 Model mayowModelAnimate;
@@ -241,7 +244,7 @@ int stateDoor = 0;
 float dorrotCountTriceratops = 0.0;
 
 // Palm positions
-std::vector<glm::vec3> palmPositions = { glm::vec3(-91.42f, 0.0f, 94.41f),
+std::vector<glm::vec3> palmPositions = { glm::vec3(-91.42f, 0.0f, 91.41f),
 										 glm::vec3(-94.55f, 0.0f, 72.92f),
 										 glm::vec3(-92.75f, 0.0f, 60.11f),
 										 glm::vec3(-96.89f, 0.0f, 45.54f),
@@ -389,6 +392,8 @@ std::vector<glm::vec3> cactusScale{
 	glm::vec3(0.3, 0.3, 0.3),
 };
 
+//Rock positions and scales
+
 std::vector<glm::vec3> rockPositions{
 	glm::vec3(0.0, 0.0, -20.0),
 	glm::vec3(81.37, 0.0, -14.56),
@@ -400,8 +405,8 @@ std::vector<glm::vec3> rockPositions{
 	glm::vec3(9.33, 1.0, 82.80),
 	glm::vec3(-4.01, 1.0, 92.19),
 	glm::vec3(-88.81, 1.0, 83.07),
-	glm::vec3(10.97, 1.0, -86.15),
-	glm::vec3(19.06, 1.0, -90.87),
+	glm::vec3(10.97, 1.0, -76.15),
+	glm::vec3(19.06, 1.0, -80.87),
 	glm::vec3(25.44, 1.0, -53.45),
 	glm::vec3(25.37, 1.0, -70.06),
 	glm::vec3(-92.85, 1.0, 33.37),
@@ -426,6 +431,90 @@ std::vector<glm::vec3> rockScale{
 	glm::vec3(1.0, 1.0, 1.0),
 	glm::vec3(1.0, 1.0, 1.0),
 	glm::vec3(1.0, 1.0, 1.0),
+};
+
+//Wall Positions and scales
+
+std::vector<glm::vec3> wallPositions{
+	/*Front wall*/
+	glm::vec3(14.20, 0.0, -89.82),
+	glm::vec3(28.806, 0.0, -89.82),
+	glm::vec3(43.312, 1.0, -89.82),
+	glm::vec3(58.018, 1.0, -89.82),
+	glm::vec3(72.624, 1.0, -89.82),
+	glm::vec3(87.23, 1.0, -89.82),
+	glm::vec3(97.3, 1.0, -89.82),//
+	glm::vec3(-12.923, 1.0, -89.82),
+	glm::vec3(-27.529, 1.0, -89.82),
+	glm::vec3(-42.135, 1.0, -89.82),
+	glm::vec3(-56.741, 1.0, -89.82),
+	glm::vec3(-71.347, 1.0, -89.82),
+	glm::vec3(-85.95, 1.0, -89.82),
+	glm::vec3(-96.553, 1.0, -89.82),
+	/*Back wall*/
+	glm::vec3(14.20, 0.0,  98.82),
+	glm::vec3(28.806, 0.0, 98.82),
+	glm::vec3(43.312, 1.0, 98.82),
+	glm::vec3(58.018, 1.0, 98.82),
+	glm::vec3(72.624, 1.0, 98.82),
+	glm::vec3(87.23, 1.0,  98.82),
+	glm::vec3(97.3, 1.0,   98.82),//
+	glm::vec3(0.5, 1.0,   98.82),
+	glm::vec3(-12.923, 1.0,98.82),
+	glm::vec3(-27.529, 1.0,98.82),
+	glm::vec3(-42.135, 1.0,98.82),
+	glm::vec3(-56.741, 1.0,98.82),
+	glm::vec3(-71.347, 1.0,98.82),
+	glm::vec3(-85.95, 1.0, 98.82),
+	glm::vec3(-96.553, 1.0,98.82),
+	/*Left Wall*/
+};
+
+std::vector<glm::vec3> wallScales{
+	/*Front wall*/
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(0.39, 1.0, 1.0), 
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(0.46, 1.0, 1.0),
+	/*Back wall*/
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(0.39, 1.0, 1.0),
+	glm::vec3(0.85, 1.0, 1.0),// Muro central
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(0.46, 1.0, 1.0),
+	/*Left Wall*/
+
+
+};
+
+std::vector<float> wallOrientarion{
+	/*No meter orientación*/
+	0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+	0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+	0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+	/*No meter orientación*/
+	/*Meter orientación*/
+	90.0, 
 };
 
 // Blending model unsorted
@@ -850,7 +939,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	dinoraurLakeModelAnimate.setShader(&shaderMulLighting);
 
 	//TRex
-	tRexModelAnimate.loadModel("../models/Dinosaur/Triceratop.fbx");
+	tRexModelAnimate.loadModel("../models/Dinosaur/TrexAnimation.fbx");
 	tRexModelAnimate.setShader(&shaderMulLighting);
 
 	//Cactus
@@ -860,6 +949,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	//Rock
 	modelRock.loadModel("../models/Rock/ROCK.obj");
 	modelRock.setShader(&shaderMulLighting);
+
+	//Wall
+	modelWall.loadModel("../models/WALL/Wall.obj");
+	modelWall.setShader(&shaderMulLighting);
 
 	camera->setPosition(glm::vec3(0.0, 0.0, 10.0));
 	camera->setDistanceFromTarget(distanceFromTarget);
@@ -1309,7 +1402,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	alSourcef(source[6], AL_MAX_DISTANCE, 100);
 
 	alSourcef(source[7], AL_PITCH, 1.0f);
-	alSourcef(source[7], AL_GAIN, 1.0f);
+	alSourcef(source[7], AL_GAIN, 3.0f);
 	alSourcefv(source[7], AL_POSITION, sourceTRexPos);
 	alSourcefv(source[7], AL_VELOCITY, sourceTRexVel);
 	alSourcei(source[7], AL_BUFFER, buffer[7]);
@@ -1481,7 +1574,8 @@ bool processInput(bool continueApplication) {
 		}
 		if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
 			stateCamera = 3;
-			cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3]) + glm::vec3(0.0, 2.0, 0.0));
+			cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
+				+ glm::vec3(0.0, 2.0, 0.3));
 		}
 		//Fin de selección de cámara TPS ó FPS
 
@@ -1518,32 +1612,10 @@ bool processInput(bool continueApplication) {
 				enableCountSelected = true;
 			}
 
-			//Mover al personaje con las teclas de dirección, cámara de personaje y acciones
-			if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-				modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(1.0f), glm::vec3(0, 1, 0));
-				animationIndex = 2;
-			}
-			else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-				modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-1.0f), glm::vec3(0, 1, 0));
-				animationIndex = 2;
-			}if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-				modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, 0.02));
-				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
-					+ glm::vec3(0.0, 2.0, 0.0));
-				animationIndex = 2;
-			}
-			else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-				modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, -0.02));
-				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixMayow[3])
-					+ glm::vec3(0.0, 2.0, 0.0));
-				animationIndex = 2;
-			}
-
-			if (modelSelected == 2 && (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_RELEASE &&
-				glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_RELEASE &&
-				glfwGetKey(window, GLFW_KEY_UP) == GLFW_RELEASE &&
-				glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_RELEASE))
-				animationIndex = 0;
+			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+				cameraFPSpersonaje->mouseMoveCamera(offsetX, offsetY, deltaTime);
+			offsetX = 0;
+			offsetY = 0;
 		}
 		else if (stateCamera == 2) {
 			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -2348,7 +2420,7 @@ void applicationLoop() {
 		// Collider TRex
 		AbstractModel::OBB rRexCollider;
 		glm::mat4 modelmatrixColliderTrex = glm::mat4(modelMatrixTRex);
-		modelmatrixColliderTrex = glm::rotate(modelmatrixColliderTrex, glm::radians(-90.0f), glm::vec3(1, 0, 0));
+		modelmatrixColliderTrex = glm::rotate(modelmatrixColliderTrex, glm::radians(0.0f), glm::vec3(1, 0, 0));
 		// Set the orientation of collider before doing the scale
 		rRexCollider.u = glm::quat_cast(modelmatrixColliderTrex);
 		modelmatrixColliderTrex = glm::scale(modelmatrixColliderTrex, glm::vec3(0.01, 0.01, 0.01));
@@ -2447,6 +2519,23 @@ void applicationLoop() {
 			rockCollider.c = glm::vec3(modelMatrixColliderRock[3]);
 			rockCollider.e = modelRock.getObb().e * rockScale[i];
 			std::get<0>(collidersOBB.find("rock-" + std::to_string(i))->second) = rockCollider;
+		}
+
+		//Collider Wall
+		for (int i = 0; i < wallPositions.size(); i++) {
+			AbstractModel::OBB wallCollider;
+			glm::mat4 modelMatrixColliderWall = glm::mat4(1.0f);
+			modelMatrixColliderWall = glm::translate(modelMatrixColliderWall, wallPositions[i]);
+			modelMatrixColliderWall = glm::rotate(modelMatrixColliderWall, glm::radians(wallOrientarion[i]),
+				glm::vec3(0, 1, 0));
+			addOrUpdateColliders(collidersOBB, "wall-" + std::to_string(i), wallCollider, modelMatrixColliderWall);
+			// Set the orientation of collider before doing the scale
+			wallCollider.u = glm::quat_cast(modelMatrixColliderWall);
+			modelMatrixColliderWall = glm::scale(modelMatrixColliderWall, wallScales[i]);
+			modelMatrixColliderWall = glm::translate(modelMatrixColliderWall, modelWall.getObb().c);
+			wallCollider.c = glm::vec3(modelMatrixColliderWall[3]);
+			wallCollider.e = modelWall.getObb().e * wallScales[i];
+			std::get<0>(collidersOBB.find("wall-" + std::to_string(i))->second) = wallCollider;
 		}
 		
 		// Collider Meat
@@ -2951,6 +3040,9 @@ void prepareScene(){
 
 	//Rock
 	modelRock.setShader(&shaderMulLighting);
+
+	//Wall
+	modelWall.setShader(&shaderMulLighting);
 }
 
 void prepareDepthScene(){
@@ -2994,9 +3086,12 @@ void prepareDepthScene(){
 
 	//Rock
 	modelRock.setShader(&shaderDepth);
+
+	//Wall
+	modelWall.setShader(&shaderDepth);
 }
 
-void renderScene(bool renderParticles){
+void renderScene(bool renderParticles) {
 	/*******************************************
 	 * Terrain Cesped
 	 *******************************************/
@@ -3032,7 +3127,7 @@ void renderScene(bool renderParticles){
 	 * Custom objects obj
 	 *******************************************/
 
-	// Forze to enable the unit texture to 0 always ----------------- IMPORTANT
+	 // Forze to enable the unit texture to 0 always ----------------- IMPORTANT
 	glActiveTexture(GL_TEXTURE0);
 
 	// Grass
@@ -3093,6 +3188,17 @@ void renderScene(bool renderParticles){
 	}
 	glEnable(GL_CULL_FACE);
 
+	//Wall
+	glDisable(GL_CULL_FACE);
+	for (int i = 0; i < wallPositions.size(); i++) {
+		wallPositions[i].y = terrain.getHeightTerrain(wallPositions[i].x, wallPositions[i].z);
+		modelWall.setPosition(wallPositions[i]);
+		modelWall.setOrientation(glm::vec3(0, wallOrientarion[i], 0));
+		modelWall.setScale(wallScales[i]);
+		modelWall.render();
+	}
+	glEnable(GL_CULL_FACE);
+
 	//Door
 	glDisable(GL_CULL_FACE);
 	modelDoor.render(modelMatrixDoor);
@@ -3139,7 +3245,7 @@ void renderScene(bool renderParticles){
 	glm::mat4 modelMatrixTRexBody = glm::mat4(modelMatrixTRex);
 	//modelMatrixTRexBody = glm::rotate(modelMatrixTRexBody, rotTriceratop, glm::vec3(0, 1, 0));
 	modelMatrixTRexBody = glm::scale(modelMatrixTRexBody, glm::vec3(0.01, 0.01, 0.01));
-	tRexModelAnimate.setAnimationIndex(1);
+	tRexModelAnimate.setAnimationIndex(0);
 	tRexModelAnimate.render(modelMatrixTRexBody);
 
 	modelMatrixDinosaurLake[3][1] = terrain.getHeightTerrain(modelMatrixDinosaurLake[3].x, modelMatrixDinosaurLake[3].z);
