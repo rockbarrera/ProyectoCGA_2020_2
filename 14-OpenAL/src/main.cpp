@@ -243,14 +243,21 @@ int stateDoor = 0;
 float dorrotCountTriceratops = 0.0;
 
 // Palm positions
-std::vector<glm::vec3> palmPositions = { glm::vec3(-91.42f, 0.0f, 91.41f),
-										 glm::vec3(-94.55f, 0.0f, 72.92f),
-										 glm::vec3(-92.75f, 0.0f, 60.11f),
-										 glm::vec3(-96.59f, 0.0f, 45.54f),
-										 glm::vec3(-85.11f, 0.0f, 32.74f),
-										 glm::vec3(-75.93f, 0.0f, 24.28f),
-										 glm::vec3(-96.32f, 0.0f, 22.95f),
-										 glm::vec3(-87.14f, 0.0f, 13.78f)
+std::vector<glm::vec3> palmPositions = { 
+	glm::vec3(-91.42f, 0.0f, 91.41f),
+	glm::vec3(-94.55f, 0.0f, 72.92f),
+	glm::vec3(-92.75f, 0.0f, 60.11f),
+	glm::vec3(-96.59f, 0.0f, 45.54f),
+	glm::vec3(-85.11f, 0.0f, 32.74f),
+	glm::vec3(-75.93f, 0.0f, 24.28f),
+	glm::vec3(-96.32f, 0.0f, 22.95f),
+	glm::vec3(-87.14f, 0.0f, 13.78f),
+	glm::vec3(-86.55f, 0.0f, -1.52f),
+	glm::vec3(-91.65f, 0.0f, -12.28f),
+	glm::vec3(-84.72f, 0.0f, -25.61f),
+	glm::vec3(-81.41f, 0.0f, -46.27f),
+	glm::vec3(-90.62f, 0.0f, -50.78f),
+	glm::vec3(-76.66f, 0.0f, -74.02f),
 };
 
 //Geiser positions
@@ -1633,13 +1640,7 @@ bool processInput(bool continueApplication) {
 		}
 		//Fin de selección de cámara TPS ó FPS
 
-		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-			activar = true;
-		}
-		//else if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE) {
-		//	!activar;
-		//}
-
+		
 		// Seleccionar modelo
 		if (enableCountSelected && glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
 			enableCountSelected = false;
@@ -1702,13 +1703,13 @@ bool processInput(bool continueApplication) {
 				modelMatrixPersonaje = glm::rotate(modelMatrixPersonaje, glm::radians(-1.0f), glm::vec3(0, 1, 0));
 				animationIndex = 2;
 			}if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-				modelMatrixPersonaje = glm::translate(modelMatrixPersonaje, glm::vec3(0, 0, 0.02));
+				modelMatrixPersonaje = glm::translate(modelMatrixPersonaje, glm::vec3(0, 0, 0.02 * velModel));
 				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixPersonaje[3])
 					+ glm::vec3(0.0, 2.0, 0.0));
 				animationIndex = 2;
 			}
 			else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-				modelMatrixPersonaje = glm::translate(modelMatrixPersonaje, glm::vec3(0, 0, -0.02));
+				modelMatrixPersonaje = glm::translate(modelMatrixPersonaje, glm::vec3(0, 0, -0.02 * velModel));
 				cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixPersonaje[3])
 					+ glm::vec3(0.0, 2.0, 0.0));
 				animationIndex = 2;
@@ -1733,6 +1734,13 @@ bool processInput(bool continueApplication) {
 				enableCountSelected = true;
 			}
 			//Fin lanzar la carne
+			if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+				velModel = 2;
+			}
+			else if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE) {
+				velModel = 1;
+			}
+
 			//Fin Mover al personaje con las teclas de dirección y su cámara de personaje
 		}
 		//Fin Movimiento exclusivo de las cámaras
