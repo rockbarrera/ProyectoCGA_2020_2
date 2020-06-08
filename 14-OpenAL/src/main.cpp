@@ -2724,19 +2724,17 @@ void applicationLoop() {
 		//StateMachine for Meat launched
 
 		meatLauncher();
-		/*if (meatLaunch) {
-			timeMeat += 0.001;
-			float zMov = vInit * cos(glm::radians(theta)) * timeMeat;
-			float yMov = vInit * sin(glm::radians(theta)) * timeMeat - 0.5 * gravity * timeMeat * timeMeat;
-			modelMatrixMeat = glm::translate(modelMatrixMeat, glm::vec3(0.0, yMov, zMov));
-			if (modelMatrixMeat[3].y <= terrain.getHeightTerrain(modelMatrixMeat[3].x, modelMatrixMeat[3].z)) {
-				meatLaunch = false;
-				timeMeat = 0.0;
-				//animationIndex = 0;
-			}
-		}*/
 		
-		
+		//Delimiter
+		if (modelMatrixMayow[3].x >= 99)
+			modelMatrixMayow[3].x = 99;
+		if(modelMatrixMayow[3].x <= -99)
+			modelMatrixMayow[3].x = -99;
+
+		if (modelMatrixMayow[3].z >= 99)
+			modelMatrixMayow[3].z = 99;
+		if (modelMatrixMayow[3].z <= -99)
+			modelMatrixMayow[3].z = -99;
 
 		glfwSwapBuffers(window);
 
