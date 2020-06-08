@@ -144,7 +144,7 @@ Model tRexModelAnimate;
 Model dinoraurLakeModelAnimate;
 
 // Terrain model instance
-Terrain terrain(-1, -1, 200, 16, "../Textures/terrenoJurassic2.png");
+Terrain terrain(-1, -1, 200, 16, "../Textures/terrenoJurassic.png");
 
 GLuint textureCespedID;
 GLuint textureTerrainBackgroundID, textureTerrainRID, textureTerrainGID, textureTerrainBID, textureTerrainBlendMapID;
@@ -361,9 +361,25 @@ std::vector<glm::vec3> cactusPositions{
 	glm::vec3(55.87, 0.0, 82.55),
 	glm::vec3(45.94, 0.0, 71.45),
 	glm::vec3(70.51, 0.0, 66.83),
+	glm::vec3(63.26, 0.0, 40.59),
+	glm::vec3(73.77, 0.0, 93.71),
+	glm::vec3(11.13, 0.0, 93.20),
+	glm::vec3(-1.07, 0.0, 60.20),
+	glm::vec3(20.74, 0.0, 39.45),
+	glm::vec3(5.16, 0.0, 36.92),
+	glm::vec3(19.71, 0.3, 22.71),
+	glm::vec3(16.54, 0.3, 6.65),
 };
 
 std::vector<glm::vec3> cactusScale{
+	glm::vec3(0.3, 0.3, 0.3),
+	glm::vec3(0.3, 0.3, 0.3),
+	glm::vec3(0.3, 0.3, 0.3),
+	glm::vec3(0.3, 0.3, 0.3),
+	glm::vec3(0.3, 0.3, 0.3),
+	glm::vec3(0.3, 0.3, 0.3),
+	glm::vec3(0.3, 0.3, 0.3),
+	glm::vec3(0.3, 0.3, 0.3),
 	glm::vec3(0.3, 0.3, 0.3),
 	glm::vec3(0.3, 0.3, 0.3),
 	glm::vec3(0.3, 0.3, 0.3),
@@ -441,8 +457,8 @@ GLuint depthMap, depthMapFBO;
  */
 
 // OpenAL Defines
-#define NUM_BUFFERS 5
-#define NUM_SOURCES 5
+#define NUM_BUFFERS 9
+#define NUM_SOURCES 9
 #define NUM_ENVIRONMENTS 1
 // Listener
 ALfloat listenerPos[] = { 0.0, 0.0, 4.0 };
@@ -468,6 +484,22 @@ ALfloat sourceMainThemeVel[] = { 0.0, 0.0, 0.0 };
 ALfloat sourceCamPos[] = { 0.0, 0.0, 0.0 };
 ALfloat sourceCamVel[] = { 0.0, 0.0, 0.0 };
 
+// Source agua
+ALfloat sourceAguaPos[] = { 55.83, 0.0, -65.49 };
+ALfloat sourceAguaVel[] = { 0.0, 0.0, 0.0 };
+
+// Source triceratops
+ALfloat sourceTriceratopsPos[] = { 0.0, 0.0, 0.0 };
+ALfloat sourceTriceratopsVel[] = { 0.0, 0.0, 0.0 };
+
+// Source TRex
+ALfloat sourceTRexPos[] = { 0.0, 0.0, 0.0 };
+ALfloat sourceTRexVel[] = { 0.0, 0.0, 0.0 };
+
+// Source Dinosaur Lake
+ALfloat sourceDinosaurLakePos[] = { 0.0, 0.0, 0.0 };
+ALfloat sourceDinosaurLakeVel[] = { 0.0, 0.0, 0.0 };
+
 // Buffers
 ALuint buffer[NUM_BUFFERS];
 ALuint source[NUM_SOURCES];
@@ -478,7 +510,7 @@ ALenum format;
 ALvoid *data;
 int ch;
 ALboolean loop;
-std::vector<bool> sourcesPlay = {false, true, true, false, false};
+std::vector<bool> sourcesPlay = {false, true, true, true, false, true, true, true, true};
 
 // Se definen todos las funciones.
 void reshapeCallback(GLFWwindow *Window, int widthRes, int heightRes);
@@ -1146,6 +1178,11 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	buffer[2] = alutCreateBufferFromFile("../sounds/antorcha.wav");
 	buffer[3] = alutCreateBufferFromFile("../sounds/JurassicParkMainTheme.wav");
 	buffer[4] = alutCreateBufferFromFile("../sounds/camara.wav");
+	buffer[5] = alutCreateBufferFromFile("../sounds/agua.wav");
+	buffer[6] = alutCreateBufferFromFile("../sounds/triceratops.wav");
+	buffer[7] = alutCreateBufferFromFile("../sounds/trex.wav");
+	buffer[8] = alutCreateBufferFromFile("../sounds/archaeopteryx.wav");
+
 	int errorAlut = alutGetError();
 	if (errorAlut != ALUT_ERROR_NO_ERROR){
 		printf("- Error open files with alut %d !!\n", errorAlut);
@@ -1207,6 +1244,39 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	alSourcei(source[4], AL_BUFFER, buffer[4]);
 	alSourcei(source[4], AL_LOOPING, AL_FALSE);
 	alSourcef(source[4], AL_MAX_DISTANCE, 100);
+
+	//Sonido de agua
+	alSourcef(source[5], AL_PITCH, 1.0f);
+	alSourcef(source[5], AL_GAIN, 1.0f);
+	alSourcefv(source[5], AL_POSITION, sourceAguaPos);
+	alSourcefv(source[5], AL_VELOCITY, sourceAguaVel);
+	alSourcei(source[5], AL_BUFFER, buffer[5]);
+	alSourcei(source[5], AL_LOOPING, AL_TRUE);
+	alSourcef(source[5], AL_MAX_DISTANCE, 1000);
+
+	alSourcef(source[6], AL_PITCH, 1.0f);
+	alSourcef(source[6], AL_GAIN, 1.0f);
+	alSourcefv(source[6], AL_POSITION, sourceTriceratopsPos);
+	alSourcefv(source[6], AL_VELOCITY, sourceTriceratopsVel);
+	alSourcei(source[6], AL_BUFFER, buffer[6]);
+	alSourcei(source[6], AL_LOOPING, AL_TRUE);
+	alSourcef(source[6], AL_MAX_DISTANCE, 100);
+
+	alSourcef(source[7], AL_PITCH, 1.0f);
+	alSourcef(source[7], AL_GAIN, 0.08f);
+	alSourcefv(source[7], AL_POSITION, sourceTRexPos);
+	alSourcefv(source[7], AL_VELOCITY, sourceTRexVel);
+	alSourcei(source[7], AL_BUFFER, buffer[7]);
+	alSourcei(source[7], AL_LOOPING, AL_TRUE);
+	alSourcef(source[7], AL_MAX_DISTANCE, 10);
+
+	alSourcef(source[8], AL_PITCH, 1.0f);
+	alSourcef(source[8], AL_GAIN, 1.0f);
+	alSourcefv(source[8], AL_POSITION, sourceDinosaurLakePos);
+	alSourcefv(source[8], AL_VELOCITY, sourceDinosaurLakeVel);
+	alSourcei(source[8], AL_BUFFER, buffer[8]);
+	alSourcei(source[8], AL_LOOPING, AL_TRUE);
+	alSourcef(source[8], AL_MAX_DISTANCE, 100);
 }
 
 void destroy() {
@@ -2691,6 +2761,30 @@ void applicationLoop() {
 		sourceCamPos[1] = modelMatrixMayow[3].y + 2.0;
 		sourceCamPos[2] = modelMatrixMayow[3].z;
 		alSourcefv(source[4], AL_POSITION, sourceCamPos);
+
+		//Agua
+		/*sourceAguaPos[0] = modelMatrixMayow[3].x;
+		sourceAguaPos[1] = modelMatrixMayow[3].y + 2.0;
+		sourceAguaPos[2] = modelMatrixMayow[3].z;
+		alSourcefv(source[5], AL_POSITION, sourceAguaPos);*/
+
+		//Triceratops
+		sourceTriceratopsPos[0] = modelMatrixTriceratop[3].x;
+		sourceTriceratopsPos[1] = modelMatrixTriceratop[3].y + 2.0;
+		sourceTriceratopsPos[2] = modelMatrixTriceratop[3].z;
+		alSourcefv(source[6], AL_POSITION, sourceTriceratopsPos);
+
+		//Trex
+		sourceTRexPos[0] = modelMatrixTRex[3].x;
+		sourceTRexPos[1] = modelMatrixTRex[3].y + 2.0;
+		sourceTRexPos[2] = modelMatrixTRex[3].z;
+		alSourcefv(source[7], AL_POSITION, sourceTRexPos);
+
+		//Dinosaur Lake
+		sourceDinosaurLakePos[0] = modelMatrixDinosaurLake[3].x;
+		sourceDinosaurLakePos[1] = modelMatrixDinosaurLake[3].y + 2.0;
+		sourceDinosaurLakePos[2] = modelMatrixDinosaurLake[3].z;
+		alSourcefv(source[8], AL_POSITION, sourceDinosaurLakePos);
 
 		//Poner la escucha dependiendo de la posición de la cámara
 		if (stateCamera == 1) {
