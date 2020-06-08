@@ -258,6 +258,9 @@ std::vector<glm::vec3> palmPositions = {
 	glm::vec3(-81.41f, 0.0f, -46.27f),
 	glm::vec3(-90.62f, 0.0f, -50.78f),
 	glm::vec3(-76.66f, 0.0f, -74.02f),
+	glm::vec3(-88.95f, 0.0f, -73.76f),
+	glm::vec3(-86.60f, 0.0f, -83.67f),
+	glm::vec3(-60.53f, 0.0f, -80.19f),
 };
 
 //Geiser positions
@@ -417,6 +420,7 @@ std::vector<glm::vec3> rockPositions{
 	glm::vec3(25.37, 1.0, -70.06),
 	glm::vec3(-92.85, 1.0, 33.37),
 	glm::vec3(-16.60, 1.0, -76.55),
+	glm::vec3(-83.45f, 0.0f, -61.62f),
 };
 
 std::vector<glm::vec3> rockScale{
@@ -437,6 +441,7 @@ std::vector<glm::vec3> rockScale{
 	glm::vec3(1.0, 1.0, 1.0),
 	glm::vec3(1.0, 1.0, 1.0),
 	glm::vec3(1.0, 1.0, 1.0),
+	glm::vec3(1.0f, 1.0f, 1.0f),
 };
 
 //Wall Positions and scales
