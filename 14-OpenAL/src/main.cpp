@@ -184,9 +184,10 @@ glm::mat4 modelMatrixGeiser = glm::mat4(1.0f);
 glm::mat4 modelMatrixDoor = glm::mat4(1.0f);
 glm::mat4 modelMatrixMountain = glm::mat4(1.0f);
 glm::mat4 modelMatrixTriceratop = glm::mat4(1.0f);
-glm::mat4 modelMatrixMeat = glm::mat4(1.0f);
 glm::mat4 modelMatrixTRex = glm::mat4(1.0f);
 glm::mat4 modelMatrixDinosaurLake = glm::mat4(1.0f);
+
+std::vector<glm::mat4> modelMatrixMeat = { glm::mat4(1.0f) } ;
 
 int animationIndex = 0; //0 Quieto, 1 lanzar, 2 caminar
 int velModel = 1;
@@ -225,7 +226,7 @@ float rotDinisaurLake = 0.0f;
 bool meatLaunch = false;
 float vInit = 10.0;
 float theta = 45;
-float gravity = 200.81;
+float gravity = 30.81;
 float timeMeat = 0.0;
 bool actUnVezMeat = true;
 
@@ -441,7 +442,7 @@ std::vector<glm::vec3> rockScale{
 	glm::vec3(1.0, 1.0, 1.0),
 	glm::vec3(1.0, 1.0, 1.0),
 	glm::vec3(1.0, 1.0, 1.0),
-	glm::vec3(1.0f, 1.0f, 1.0f),
+	glm::vec3(1.0, 1.0, 1.0),
 };
 
 //Wall Positions and scales
@@ -2116,11 +2117,11 @@ void savePhoto() {
 
 void meatLauncher() {
 	if (meatLaunch) {
-			timeMeat += 0.001;
+			timeMeat += deltaTime;
 			float zMov = vInit * cos(glm::radians(theta)) * timeMeat;
 			float yMov = vInit * sin(glm::radians(theta)) * timeMeat - 0.5 * gravity * timeMeat * timeMeat;
-			modelMatrixMeat = glm::translate(modelMatrixMeat, glm::vec3(0.0, yMov, zMov));
-			if (modelMatrixMeat[3].y <= terrain.getHeightTerrain(modelMatrixMeat[3].x, modelMatrixMeat[3].z)) {
+			modelMatrixMeat[0] = glm::translate(modelMatrixMeat[0], glm::vec3(0.0, yMov, zMov));
+			if (modelMatrixMeat[0][3].y <= terrain.getHeightTerrain(modelMatrixMeat[0][3].x, modelMatrixMeat[0][3].z)) {
 				meatLaunch = false;
 				timeMeat = 0.0;
 				actUnVezMeat = true;
@@ -2131,10 +2132,10 @@ void meatLauncher() {
 
 void updateMatrix() {
 	//modelMatrixMeat = glm::mat4(1.0f);
-	modelMatrixMeat = modelMatrixPersonaje;
+	modelMatrixMeat[0] = modelMatrixPersonaje;
 	//modelMatrixMeat = glm::translate(modelMatrixMeat, glm::vec3(modelMatrixPersonaje[3]));
-	modelMatrixMeat[3][1] = terrain.getHeightTerrain(modelMatrixMeat[3][0], modelMatrixMeat[3][2]) + 2.5;
-	modelMatrixMeat = glm::scale(modelMatrixMeat, glm::vec3(0.25f, 0.25f, 0.25f));
+	modelMatrixMeat[0][3].y = terrain.getHeightTerrain(modelMatrixMeat[0][3].x, modelMatrixMeat[0][3].z) + 2.5;
+	modelMatrixMeat[0] = glm::scale(modelMatrixMeat[0], glm::vec3(0.25f, 0.25f, 0.25f));
 }
 
 void applicationLoop() {
@@ -2202,6 +2203,7 @@ void applicationLoop() {
 		lastTime = currTime;
 		TimeManager::Instance().CalculateFrameRate(true);
 		deltaTime = TimeManager::Instance().DeltaTime;
+		//std::cout << deltaTime << std::endl;
 		psi = processInput(true);
 
 		std::map<std::string, bool> collisionDetection;
@@ -2607,13 +2609,16 @@ void applicationLoop() {
 		
 		// Collider Meat
 		if (meatLaunch) {
-			AbstractModel::SBB meatCollider;
-			glm::mat4 modelMatrixColliderMeat = glm::mat4(modelMatrixMeat);
-			modelMatrixColliderMeat = glm::scale(modelMatrixColliderMeat, glm::vec3(0.25, 0.25, 0.25));
-			modelMatrixColliderMeat = glm::translate(modelMatrixColliderMeat, modelMeat.getSbb().c);
-			meatCollider.c = glm::vec3(modelMatrixColliderMeat[3]);
-			meatCollider.ratio = modelMeat.getSbb().ratio * 0.25;
-			addOrUpdateColliders(collidersSBB, "meat", meatCollider, modelMatrixMeat);
+			for (int i = 0; i < modelMatrixMeat.size(); i++) {
+				AbstractModel::SBB meatCollider;
+				glm::mat4 modelMatrixColliderMeat = glm::mat4(modelMatrixMeat[i]);
+				modelMatrixColliderMeat = glm::scale(modelMatrixColliderMeat, glm::vec3(0.25, 0.25, 0.25));
+				modelMatrixColliderMeat = glm::translate(modelMatrixColliderMeat, modelMeat.getSbb().c);
+				meatCollider.c = glm::vec3(modelMatrixColliderMeat[3]);
+				meatCollider.ratio = modelMeat.getSbb().ratio * 0.25;
+				addOrUpdateColliders(collidersSBB, "meat-" + std::to_string(i), meatCollider, modelMatrixMeat[i]);
+			}
+			
 		}
 		
 
@@ -2929,9 +2934,9 @@ void applicationLoop() {
 				, glm::vec3(aDinosaurLake * glm::radians(cos(angleDinosaurLake))
 					, 0.0
 					, aDinosaurLake * glm::radians(sin(angleDinosaurLake))));
-			/*modelMatrixDinosaurLake = glm::rotate(modelMatrixDinosaurLake
+			modelMatrixDinosaurLake = glm::rotate(modelMatrixDinosaurLake
 					, glm::radians((-1) * angleDinosaurLake)
-					, glm::vec3(0, 1, 0));*/
+					, glm::vec3(0, 1, 0));
 			if (angleDinosaurLake >= 360.0f) {
 				angleDinosaurLake = 0.0f;
 			}
@@ -3279,15 +3284,18 @@ void renderScene(bool renderParticles) {
 	//Meat
 	if (meatLaunch) {
 		glDisable(GL_CULL_FACE);
-		if (actUnVezMeat) {
-			updateMatrix();
-			actUnVezMeat = false;
+		for (int i = 0; i < modelMatrixMeat.size(); i++) {
+			if (actUnVezMeat) {
+				updateMatrix();
+				actUnVezMeat = false;
+			}
+			glm::mat4 modelMatrixMeatBody = glm::mat4(1.0f);
+			modelMatrixMeatBody = modelMatrixMeat[i];
+			//modelMatrixMeatBody = glm::translate(modelMatrixMeatBody, glm::vec3(modelMatrixMeat[3]));
+			//modelMatrixMeatBody = glm::scale(modelMatrixMeatBody, glm::vec3(0.25, 0.25, 0.25));
+			modelMeat.render(modelMatrixMeatBody);
+			
 		}
-		glm::mat4 modelMatrixMeatBody = glm::mat4(1.0f);
-		modelMatrixMeatBody = modelMatrixMeat;
-		//modelMatrixMeatBody = glm::translate(modelMatrixMeatBody, glm::vec3(modelMatrixMeat[3]));
-		//modelMatrixMeatBody = glm::scale(modelMatrixMeatBody, glm::vec3(0.25, 0.25, 0.25));
-		modelMeat.render(modelMatrixMeatBody);
 		glEnable(GL_CULL_FACE);
 	}
 	
