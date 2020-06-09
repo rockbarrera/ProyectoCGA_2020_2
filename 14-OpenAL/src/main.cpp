@@ -150,7 +150,7 @@ Model tRexModelAnimate;
 Model dinoraurLakeModelAnimate;
 
 // Terrain model instance
-Terrain terrain(-1, -1, 200, 16, "../Textures/terrenoJurassic.png");
+Terrain terrain(-1, -1, 200, 16, "../Textures/terrenoJurassic2.png");
 
 GLuint textureCespedID;
 GLuint textureTerrainBackgroundID, textureTerrainRID, textureTerrainGID, textureTerrainBID, textureTerrainBlendMapID;
@@ -187,7 +187,7 @@ glm::mat4 modelMatrixTriceratop = glm::mat4(1.0f);
 glm::mat4 modelMatrixTRex = glm::mat4(1.0f);
 glm::mat4 modelMatrixDinosaurLake = glm::mat4(1.0f);
 
-std::vector<glm::mat4> modelMatrixMeat = { glm::mat4(1.0f) } ;
+std::vector<glm::mat4> modelMatrixMeat = {};
 
 int animationIndex = 0; //0 Quieto, 1 lanzar, 2 caminar
 int velModel = 1;
@@ -2115,27 +2115,38 @@ void savePhoto() {
 	delete[] pixels;
 }
 
-void meatLauncher() {
+void meatLauncher(int index) {
 	if (meatLaunch) {
-			timeMeat += deltaTime;
+			/*timeMeat += deltaTime;
 			float zMov = vInit * cos(glm::radians(theta)) * timeMeat;
 			float yMov = vInit * sin(glm::radians(theta)) * timeMeat - 0.5 * gravity * timeMeat * timeMeat;
-			modelMatrixMeat[0] = glm::translate(modelMatrixMeat[0], glm::vec3(0.0, yMov, zMov));
-			if (modelMatrixMeat[0][3].y <= terrain.getHeightTerrain(modelMatrixMeat[0][3].x, modelMatrixMeat[0][3].z)) {
+			modelMatrixMeat[index] = glm::translate(modelMatrixMeat[index], glm::vec3(0.0, yMov, zMov));*/
+			if (modelMatrixMeat[index][3].y < terrain.getHeightTerrain(modelMatrixMeat[index][3].x
+														, modelMatrixMeat[index][3].z) + 0.9) {
 				meatLaunch = false;
 				timeMeat = 0.0;
 				actUnVezMeat = true;
 				//animationIndex = 0;
 			}
+			else {
+				timeMeat += deltaTime;
+				float zMov = vInit * cos(glm::radians(theta)) * timeMeat;
+				float yMov = vInit * sin(glm::radians(theta)) * timeMeat - 0.5 * gravity * timeMeat * timeMeat;
+				modelMatrixMeat[index] = glm::translate(modelMatrixMeat[index], glm::vec3(0.0, yMov, zMov));
+			}
 		}
 }
 
-void updateMatrix() {
+void updateMatrix(int index) {
 	//modelMatrixMeat = glm::mat4(1.0f);
-	modelMatrixMeat[0] = modelMatrixPersonaje;
+	modelMatrixMeat[index] = modelMatrixPersonaje;
 	//modelMatrixMeat = glm::translate(modelMatrixMeat, glm::vec3(modelMatrixPersonaje[3]));
-	modelMatrixMeat[0][3].y = terrain.getHeightTerrain(modelMatrixMeat[0][3].x, modelMatrixMeat[0][3].z) + 2.5;
-	modelMatrixMeat[0] = glm::scale(modelMatrixMeat[0], glm::vec3(0.25f, 0.25f, 0.25f));
+	modelMatrixMeat[index][3].y = terrain.getHeightTerrain(modelMatrixMeat[index][3].x, modelMatrixMeat[index][3].z) + 2.5;
+	modelMatrixMeat[index] = glm::scale(modelMatrixMeat[index], glm::vec3(0.25f, 0.25f, 0.25f));
+}
+
+void addMatrix() {
+	modelMatrixMeat.insert(modelMatrixMeat.end(), glm::mat4(1.0f));
 }
 
 void applicationLoop() {
@@ -2179,7 +2190,7 @@ void applicationLoop() {
 	//modelMatrixMeat = glm::translate(modelMatrixMeat, glm::vec3(modelMatrixPersonaje[3]));
 	//modelMatrixMeat[3][1] = terrain.getHeightTerrain(modelMatrixMeat[3][0], modelMatrixMeat[3][2]) + 2.0;
 	//modelMatrixMeat = glm::scale(modelMatrixMeat, glm::vec3(0.25f, 0.25f, 0.25f));
-	updateMatrix();
+	//updateMatrix(modelMatrixMeat.size() - 1);
 
 	lastTime = TimeManager::Instance().GetTime();
 
@@ -2374,6 +2385,15 @@ void applicationLoop() {
 			shaderTerrain.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0);
 			shaderTerrain.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.09);
 			shaderTerrain.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.02);
+		}
+
+
+		if (meatLaunch) {
+			if (actUnVezMeat) {
+				addMatrix();
+				updateMatrix(modelMatrixMeat.size() - 1);
+				actUnVezMeat = false;
+			}
 		}
 
 		/*******************************************
@@ -2608,7 +2628,7 @@ void applicationLoop() {
 		}
 		
 		// Collider Meat
-		if (meatLaunch) {
+		//if (meatLaunch){
 			for (int i = 0; i < modelMatrixMeat.size(); i++) {
 				AbstractModel::SBB meatCollider;
 				glm::mat4 modelMatrixColliderMeat = glm::mat4(modelMatrixMeat[i]);
@@ -2619,7 +2639,7 @@ void applicationLoop() {
 				addOrUpdateColliders(collidersSBB, "meat-" + std::to_string(i), meatCollider, modelMatrixMeat[i]);
 			}
 			
-		}
+		//}
 		
 
 		/*******************************************
@@ -2945,8 +2965,9 @@ void applicationLoop() {
 		
 
 		//StateMachine for Meat launched
-
-		meatLauncher();
+		
+		if(modelMatrixMeat.size() >= 1)
+			meatLauncher(modelMatrixMeat.size() - 1);
 		
 		//Delimiter
 		if (modelMatrixPersonaje[3].x >= 99)
@@ -3282,22 +3303,18 @@ void renderScene(bool renderParticles) {
 	glEnable(GL_CULL_FACE);
 
 	//Meat
-	if (meatLaunch) {
-		glDisable(GL_CULL_FACE);
-		for (int i = 0; i < modelMatrixMeat.size(); i++) {
-			if (actUnVezMeat) {
-				updateMatrix();
-				actUnVezMeat = false;
-			}
-			glm::mat4 modelMatrixMeatBody = glm::mat4(1.0f);
-			modelMatrixMeatBody = modelMatrixMeat[i];
-			//modelMatrixMeatBody = glm::translate(modelMatrixMeatBody, glm::vec3(modelMatrixMeat[3]));
-			//modelMatrixMeatBody = glm::scale(modelMatrixMeatBody, glm::vec3(0.25, 0.25, 0.25));
-			modelMeat.render(modelMatrixMeatBody);
-			
-		}
-		glEnable(GL_CULL_FACE);
+	glDisable(GL_CULL_FACE);
+	for (int i = 0; i < modelMatrixMeat.size(); i++) {
+		
+		glm::mat4 modelMatrixMeatBody = glm::mat4(1.0f);
+		modelMatrixMeatBody = modelMatrixMeat[i];
+		//modelMatrixMeatBody = glm::translate(modelMatrixMeatBody, glm::vec3(modelMatrixMeat[3]));
+		//modelMatrixMeatBody = glm::scale(modelMatrixMeatBody, glm::vec3(0.25, 0.25, 0.25));
+		modelMeat.render(modelMatrixMeatBody);
+
 	}
+	glEnable(GL_CULL_FACE);
+	
 	
 
 	/*******************************************
