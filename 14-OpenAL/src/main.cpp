@@ -150,7 +150,7 @@ Model tRexModelAnimate;
 Model dinoraurLakeModelAnimate;
 
 // Terrain model instance
-Terrain terrain(-1, -1, 200, 16, "../Textures/terrenoJurassic2.png");
+Terrain terrain(-1, -1, 200, 16, "../Textures/terrenoJurassic.png");
 
 GLuint textureCespedID;
 GLuint textureTerrainBackgroundID, textureTerrainRID, textureTerrainGID, textureTerrainBID, textureTerrainBlendMapID;
