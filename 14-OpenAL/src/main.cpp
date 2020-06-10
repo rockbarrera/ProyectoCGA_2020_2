@@ -228,6 +228,8 @@ float vInit = 10.0;
 float theta = 45;
 float gravity = 30.81;
 float timeMeat = 0.0;
+float zMov = 0.0;
+float yMov = 0.0;
 bool actUnVezMeat = true;
 
 //Posición del ángulo de la cámara fotográgica
@@ -2125,14 +2127,16 @@ void meatLauncher(int index) {
 														, modelMatrixMeat[index][3].z) + 0.9) {
 				meatLaunch = false;
 				timeMeat = 0.0;
+				zMov = 0.0;
+				yMov = 0.0;
 				actUnVezMeat = true;
 				//animationIndex = 0;
 			}
 			else {
-				timeMeat += deltaTime;
-				float zMov = vInit * cos(glm::radians(theta)) * timeMeat;
-				float yMov = vInit * sin(glm::radians(theta)) * timeMeat - 0.5 * gravity * timeMeat * timeMeat;
 				modelMatrixMeat[index] = glm::translate(modelMatrixMeat[index], glm::vec3(0.0, yMov, zMov));
+				timeMeat += deltaTime;
+				zMov = vInit * cos(glm::radians(theta)) * timeMeat;
+				yMov = vInit * sin(glm::radians(theta)) * timeMeat - 0.5 * gravity * timeMeat * timeMeat;
 			}
 		}
 }
@@ -2763,8 +2767,6 @@ void applicationLoop() {
 				else {
 					if (jt->first.compare("mayow") == 0)
 						modelMatrixPersonaje = std::get<1>(jt->second);
-					/*if (jt->first.compare("dart") == 0)
-						modelMatrixDart = std::get<1>(jt->second);*/
 				}
 			}
 		}
