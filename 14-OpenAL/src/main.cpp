@@ -655,7 +655,9 @@ double currTimeParticlesAnimationFire, lastTimeParticlesAnimationFire;
 
 // Colliders
 std::map<std::string, std::tuple<AbstractModel::OBB, glm::mat4, glm::mat4> > collidersOBB;
+std::map<std::string, std::tuple<AbstractModel::OBB, glm::mat4, glm::mat4> > collidersDinoOBB;
 std::map<std::string, std::tuple<AbstractModel::SBB, glm::mat4, glm::mat4> > collidersSBB;
+std::map<std::string, std::tuple<AbstractModel::SBB, glm::mat4, glm::mat4> > collidersMeatSBB;
 
 // Framesbuffers
 GLuint depthMap, depthMapFBO;
@@ -2661,7 +2663,7 @@ void applicationLoop() {
 				modelMatrixColliderMeat = glm::translate(modelMatrixColliderMeat, modelMeat.getSbb().c);
 				meatCollider.c = glm::vec3(modelMatrixColliderMeat[3]);
 				meatCollider.ratio = modelMeat.getSbb().ratio * 0.25;
-				addOrUpdateColliders(collidersSBB, "meat-" + std::to_string(i), meatCollider, modelMatrixMeat[i]);
+				addOrUpdateColliders(collidersMeatSBB, "meat-" + std::to_string(i), meatCollider, modelMatrixMeat[i]);
 			}
 			
 		//}
@@ -2687,6 +2689,16 @@ void applicationLoop() {
 			matrixCollider = glm::translate(matrixCollider, std::get<0>(it->second).c);
 			matrixCollider = glm::scale(matrixCollider, glm::vec3(std::get<0>(it->second).ratio * 2.0f));
 			sphereCollider.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
+			sphereCollider.enableWireMode();
+			sphereCollider.render(matrixCollider);
+		}
+
+		for (std::map<std::string, std::tuple<AbstractModel::SBB, glm::mat4, glm::mat4> >::iterator it =
+				collidersMeatSBB.begin(); it != collidersMeatSBB.end(); it++) {
+			glm::mat4 matrixCollider = glm::mat4(1.0);
+			matrixCollider = glm::translate(matrixCollider, std::get<0>(it->second).c);
+			matrixCollider = glm::scale(matrixCollider, glm::vec3(std::get<0>(it->second).ratio * 2.0f));
+			sphereCollider.setColor(glm::vec4(1.0, 0.0, 0.0, 1.0));
 			sphereCollider.enableWireMode();
 			sphereCollider.render(matrixCollider);
 		}
@@ -2764,10 +2776,31 @@ void applicationLoop() {
 							<< jt->first << std::endl;
 					isCollision = true;
 					addOrUpdateCollisionDetection(collisionDetection, jt->first, isCollision);
-					stopTranslateDinosaur(jt->first);
+					//stopTranslateDinosaur(jt->first);
 				}
 			}
 			addOrUpdateCollisionDetection(collisionDetection, it->first, isCollision);
+		}
+
+		//Test Collider Meat With dinosaur
+
+		for (std::map<std::string,
+			std::tuple<AbstractModel::SBB, glm::mat4, glm::mat4 >>::iterator it =
+			collidersMeatSBB.begin(); it != collidersMeatSBB.end(); it++) {
+			bool isCollision = false;
+			std::map< std::string,
+				std::tuple<AbstractModel::OBB, glm::mat4, glm::mat4 >>::iterator jt =
+				collidersOBB.begin();
+			for (; jt != collidersOBB.end(); jt++) {
+				if (testSphereOBox(std::get<0>(it->second),
+									std::get<0>(jt->second))) {
+					std::cout << "Colision " << it->first << " with "
+						<< jt->first << std::endl;
+					isCollision = true;
+					addOrUpdateCollisionDetection(collisionDetection, jt->first, isCollision);
+					//stopTranslateDinosaur(jt->first);
+				}
+			}
 		}
 
 		std::map<std::string, bool>::iterator colIt;
@@ -2777,21 +2810,31 @@ void applicationLoop() {
 					std::tuple<AbstractModel::SBB, glm::mat4, glm::mat4> >::iterator it =
 					collidersSBB.find(colIt->first);
 			std::map<std::string,
-					std::tuple<AbstractModel::OBB, glm::mat4, glm::mat4> >::iterator jt =
+				std::tuple<AbstractModel::SBB, glm::mat4, glm::mat4> >::iterator jt =
+				collidersMeatSBB.find(colIt->first);
+			std::map<std::string,
+					std::tuple<AbstractModel::OBB, glm::mat4, glm::mat4> >::iterator kt =
 					collidersOBB.find(colIt->first);
 			if (it != collidersSBB.end()) {
 				if (!colIt->second)
 					addOrUpdateColliders(collidersSBB, it->first);
 			}
-			if (jt != collidersOBB.end()) {
+			if (jt != collidersSBB.end()) {
 				if (!colIt->second)
-					addOrUpdateColliders(collidersOBB, jt->first);
+					addOrUpdateColliders(collidersMeatSBB, jt->first);
+			}
+			if (kt != collidersOBB.end()) {
+				if (!colIt->second)
+					addOrUpdateColliders(collidersOBB, kt->first);
 				else {
-					if (jt->first.compare("mayow") == 0)
-						modelMatrixPersonaje = std::get<1>(jt->second);
+					if (kt->first.compare("personajeMain") == 0)
+						modelMatrixPersonaje = std::get<1>(kt->second);
+					if(kt->first.compare("triceratop") == 0)
+						stopTranslateDinosaur(kt->first);
 				}
 			}
 		}
+
 
 		/*******************************************
 		 * Interpolation key frames with disconect objects
@@ -2864,11 +2907,11 @@ void applicationLoop() {
 			}
 		}
 		else {
-			/*timeStopTriceratops += deltaTime;
+			timeStopTriceratops += deltaTime;
 			if (timeStopTriceratops >= 10.0) {
 				animTriceratops = true;
 				timeStopTriceratops = 0.0;
-			}*/
+			}
 		}
 		
 
@@ -2980,6 +3023,9 @@ void applicationLoop() {
 				break;
 			}
 		}
+		else {
+			
+		}
 		
 
 		//StateMachine for dinosaur Lake
@@ -2991,15 +3037,17 @@ void applicationLoop() {
 				, glm::vec3(aDinosaurLake * glm::radians(cos(angleDinosaurLake))
 					, 0.0
 					, aDinosaurLake * glm::radians(sin(angleDinosaurLake))));
-			modelMatrixDinosaurLake = glm::rotate(modelMatrixDinosaurLake
+			/*modelMatrixDinosaurLake = glm::rotate(modelMatrixDinosaurLake
 					, glm::radians((-1) * angleDinosaurLake)
-					, glm::vec3(0, 1, 0));
+					, glm::vec3(0, 1, 0));*/
 			if (angleDinosaurLake >= 360.0f) {
 				angleDinosaurLake = 0.0f;
 			}
 		
 		}
-		
+		else {
+
+		}
 
 		//StateMachine for Meat launched
 		
