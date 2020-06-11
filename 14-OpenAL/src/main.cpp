@@ -240,6 +240,9 @@ float zMov = 0.0;
 float yMov = 0.0;
 bool actUnVezMeat = true;
 
+//Tiempo de vida de la carne
+std::map<int, std::tuple<std::string, float> > lifeTimeMeat;
+
 //Posición del ángulo de la cámara fotográgica
 glm::vec3 axisCamPersonaje = glm::vec3(0.0, 0.0, 0.0);
 float angleCamPersonaje = 0.0;
@@ -2794,8 +2797,8 @@ void applicationLoop() {
 			for (; jt != collidersOBB.end(); jt++) {
 				if (testSphereOBox(std::get<0>(it->second),
 									std::get<0>(jt->second))) {
-					std::cout << "Colision " << it->first << " with "
-						<< jt->first << std::endl;
+					/*std::cout << "Colision " << it->first << " with "
+						<< jt->first << std::endl;*/
 					isCollision = true;
 					addOrUpdateCollisionDetection(collisionDetection, jt->first, isCollision);
 					//stopTranslateDinosaur(jt->first);
@@ -2909,6 +2912,7 @@ void applicationLoop() {
 		else {
 			timeStopTriceratops += deltaTime;
 			if (timeStopTriceratops >= 10.0) {
+				//std::cout << "Reset" << std::endl;
 				animTriceratops = true;
 				timeStopTriceratops = 0.0;
 			}
