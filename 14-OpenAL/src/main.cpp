@@ -196,6 +196,14 @@ bool enableCountSelected = true;
 bool enableCountSelectedGamePad = true;
 bool inputMethod = false;
 
+//Control de animaciones de los dinosaurios
+bool animDinoLake = true;
+bool animTriceratops = true;
+bool animTRex = true;
+float timeStopDinoLake = 0.0;
+float timeStopTriceratops = 0.0;
+float timeStopTRex = 0.0;
+
 //Movimientos del triceratop
 int stateTriceratops = 0;
 float advanceCountTriceratops = 0.0;
@@ -2153,6 +2161,19 @@ void addMatrix() {
 	modelMatrixMeat.insert(modelMatrixMeat.end(), glm::mat4(1.0f));
 }
 
+void stopTranslateDinosaur(std::string dinosaur) {
+
+	if (dinosaur == "dinolake") {
+		animDinoLake = false;
+	}
+	else if (dinosaur == "trex") {
+		animTRex = false;
+	}
+	else if (dinosaur == "triceratop") {
+		animTriceratops = false;
+	}
+}
+
 void applicationLoop() {
 	bool psi = true;
 
@@ -2477,7 +2498,7 @@ void applicationLoop() {
 		 * IMPORTANT do this before interpolations
 		 *******************************************/
 
-		// Collider de mayow
+		// Collider de mainJurassic
 		AbstractModel::OBB mayowCollider;
 		glm::mat4 modelmatrixColliderMayow = glm::mat4(modelMatrixPersonaje);
 		//modelmatrixColliderMayow = glm::rotate(modelmatrixColliderMayow,
@@ -2491,7 +2512,7 @@ void applicationLoop() {
 						personajeModelAnimate.getObb().c.z));
 		mayowCollider.e = personajeModelAnimate.getObb().e * glm::vec3(1.0, 1.0, 1.0) * glm::vec3(0.787401574, 0.787401574, 0.787401574);
 		mayowCollider.c = glm::vec3(modelmatrixColliderMayow[3]);
-		addOrUpdateColliders(collidersOBB, "mayow", mayowCollider, modelMatrixPersonaje);
+		addOrUpdateColliders(collidersOBB, "personajeMain", mayowCollider, modelMatrixPersonaje);
 
 		// Collider Triceratop
 		AbstractModel::OBB triceratopCollider;
@@ -2743,6 +2764,7 @@ void applicationLoop() {
 							<< jt->first << std::endl;
 					isCollision = true;
 					addOrUpdateCollisionDetection(collisionDetection, jt->first, isCollision);
+					stopTranslateDinosaur(jt->first);
 				}
 			}
 			addOrUpdateCollisionDetection(collisionDetection, it->first, isCollision);
@@ -2781,175 +2803,188 @@ void applicationLoop() {
 		 *******************************************/
 
 		 // State machine for Triceratop
-		switch (stateTriceratops) {//Solo es 0,1,2 y 3
-		case 0:
-			switch (numberAdvanceTriceratops)
-			{
+		if (animTriceratops) {
+			switch (stateTriceratops) {//Solo es 0,1,2 y 3
 			case 0:
-				maxAdvanceTriceratops = 10.38;
-				maxRotTriceratops = 68.75;
+				switch (numberAdvanceTriceratops)
+				{
+				case 0:
+					maxAdvanceTriceratops = 10.38;
+					maxRotTriceratops = 68.75;
+					break;
+				case 1:
+					maxAdvanceTriceratops = 22.44;
+					maxRotTriceratops = 91.10;
+					break;
+				case 2:
+					maxAdvanceTriceratops = 11.37;
+					maxRotTriceratops = 1.18;
+					break;
+				case 3:
+					maxAdvanceTriceratops = 13.36;
+					maxRotTriceratops = 33.08;
+					break;
+				case 4:
+					maxAdvanceTriceratops = 14.0;
+					maxRotTriceratops = 32.66;
+					break;
+				case 5:
+					maxAdvanceTriceratops = 13.43;
+					maxRotTriceratops = 103.58;
+					break;
+				case 6:
+					maxAdvanceTriceratops = 32.9;
+					maxRotTriceratops = 31.98;
+					break;
+				}
+				stateTriceratops = 1;
+				break;
+			case 1: //Avanzar
+				modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(0.0, 0.0, 0.1));
+				advanceCountTriceratops += 0.1;
+				rotTriceratop += 0.05;
+				if (advanceCountTriceratops > maxAdvanceTriceratops) {
+					advanceCountTriceratops = 0;
+					stateTriceratops = 2;
+				}
+				break;
+			case 2: //Girar
+				//modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(0.0, 0.0, 0.025));
+				modelMatrixTriceratop = glm::rotate(modelMatrixTriceratop, glm::radians(0.5f), glm::vec3(0, 1, 0));
+				rotCountTriceratops += 0.5f;
+				rotTriceratop += 0.05;
+				if (rotCountTriceratops >= maxRotTriceratops) {
+					rotCountTriceratops = 0;
+					stateTriceratops = 0;
+					numberAdvanceTriceratops++;
+					if (numberAdvanceTriceratops > 6)
+						numberAdvanceTriceratops = 0;
+				}
+				break;
+			}
+		}
+		else {
+			/*timeStopTriceratops += deltaTime;
+			if (timeStopTriceratops >= 10.0) {
+				animTriceratops = true;
+				timeStopTriceratops = 0.0;
+			}*/
+		}
+		
+
+		//StateMachine for TRex
+		
+		if (animTRex) {
+			switch (stateTRex) {
+			case 0:
+				switch (numberAdvanceTRex) {
+				case 0:
+					maxAdvanceTRex = 28.5043;
+					maxRotTRex = 66.6655;
+					derechaTRex = true;
+					break;
+				case 1:
+					maxAdvanceTRex = 20.7062;
+					maxRotTRex = 95.4201;
+					derechaTRex = false;
+					break;
+				case 2:
+					maxAdvanceTRex = 6.7194;
+					maxRotTRex = 16.2537;
+					derechaTRex = false;
+					break;
+				case 3:
+					maxAdvanceTRex = 11.7676;
+					maxRotTRex = 44.8614;
+					derechaTRex = true;
+					break;
+				case 4:
+					maxAdvanceTRex = 12.5960;
+					maxRotTRex = 53.3841;
+					derechaTRex = false;
+					break;
+				case 5:
+					maxAdvanceTRex = 4.8013;
+					maxRotTRex = 180.0 - 91.8541;
+					derechaTRex = false;
+					break;
+				case 6:
+					maxAdvanceTRex = 18.5990;
+					maxRotTRex = 16.0912;
+					derechaTRex = false;
+					break;
+				case 7:
+					maxAdvanceTRex = 17.0186;
+					maxRotTRex = 21.1585;
+					derechaTRex = true;
+					break;
+				case 8:
+					maxAdvanceTRex = 14.3271;
+					maxRotTRex = 55.1172;
+					derechaTRex = false;
+					break;
+				case 9:
+					maxAdvanceTRex = 7.0427;
+					maxRotTRex = 7.8819;
+					derechaTRex = false;
+					break;
+				case 10:
+					maxAdvanceTRex = 21.0506;
+					maxRotTRex = 77.7678;
+					derechaTRex = false;
+					break;
+				case 11:
+					maxAdvanceTRex = 11.5647;
+					maxRotTRex = 78.9149;
+					derechaTRex = false;
+					break;
+				}
+
+				stateTRex = 1;
 				break;
 			case 1:
-				maxAdvanceTriceratops = 22.44;
-				maxRotTriceratops = 91.10;
+				modelMatrixTRex = glm::translate(modelMatrixTRex, glm::vec3(0.0, 0.0, 0.1));
+				advanceCountTRex += 0.1;
+				rotTRex += 0.05;
+				if (advanceCountTRex > maxAdvanceTRex) {
+					advanceCountTRex = 0;
+					stateTRex = 2;
+				}
 				break;
 			case 2:
-				maxAdvanceTriceratops = 11.37;
-				maxRotTriceratops = 1.18;
-				break;
-			case 3:
-				maxAdvanceTriceratops = 13.36;
-				maxRotTriceratops = 33.08;
-				break;
-			case 4:
-				maxAdvanceTriceratops = 14.0;
-				maxRotTriceratops = 32.66;
-				break;
-			case 5:
-				maxAdvanceTriceratops = 13.43;
-				maxRotTriceratops = 103.58;
-				break;
-			case 6:
-				maxAdvanceTriceratops = 32.9;
-				maxRotTriceratops = 31.98;
-				break;
-			}
-			stateTriceratops = 1;
-			break;
-		case 1: //Avanzar
-			modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(0.0, 0.0, 0.1));
-			advanceCountTriceratops += 0.1;
-			rotTriceratop += 0.05;
-			if (advanceCountTriceratops > maxAdvanceTriceratops) {
-				advanceCountTriceratops = 0;
-				stateTriceratops = 2;
-			}
-			break;
-		case 2: //Girar
-			//modelMatrixTriceratop = glm::translate(modelMatrixTriceratop, glm::vec3(0.0, 0.0, 0.025));
-			modelMatrixTriceratop = glm::rotate(modelMatrixTriceratop, glm::radians(0.5f), glm::vec3(0, 1, 0));
-			rotCountTriceratops += 0.5f;
-			rotTriceratop += 0.05;
-			if (rotCountTriceratops >= maxRotTriceratops) {
-				rotCountTriceratops = 0;
-				stateTriceratops = 0;
-				numberAdvanceTriceratops++;
-				if (numberAdvanceTriceratops > 6)
-					numberAdvanceTriceratops = 0;
-			}
-			break;
-		}
-
-		//StateMachine fro TRex
-
-		switch (stateTRex) {
-		case 0:
-			switch (numberAdvanceTRex) {
-			case 0:
-				maxAdvanceTRex = 28.5043;
-				maxRotTRex = 66.6655;
-				derechaTRex = true;
-				break;
-			case 1:
-				maxAdvanceTRex = 20.7062;
-				maxRotTRex = 95.4201;
-				derechaTRex = false;
-				break;
-			case 2:
-				maxAdvanceTRex = 6.7194;
-				maxRotTRex = 16.2537;
-				derechaTRex = false;
-				break;
-			case 3:
-				maxAdvanceTRex = 11.7676;
-				maxRotTRex = 44.8614;
-				derechaTRex = true;
-				break;
-			case 4:
-				maxAdvanceTRex = 12.5960;
-				maxRotTRex = 53.3841;
-				derechaTRex = false;
-				break;
-			case 5:
-				maxAdvanceTRex = 4.8013;
-				maxRotTRex = 180.0 - 91.8541;
-				derechaTRex = false;
-				break;
-			case 6:
-				maxAdvanceTRex = 18.5990;
-				maxRotTRex = 16.0912;
-				derechaTRex = false;
-				break;
-			case 7:
-				maxAdvanceTRex = 17.0186;
-				maxRotTRex = 21.1585;
-				derechaTRex = true;
-				break;
-			case 8:
-				maxAdvanceTRex = 14.3271;
-				maxRotTRex = 55.1172;
-				derechaTRex = false;
-				break;
-			case 9:
-				maxAdvanceTRex = 7.0427;
-				maxRotTRex = 7.8819;
-				derechaTRex = false;
-				break;
-			case 10:
-				maxAdvanceTRex = 21.0506;
-				maxRotTRex = 77.7678;
-				derechaTRex = false;
-				break;
-			case 11:
-				maxAdvanceTRex = 11.5647;
-				maxRotTRex = 78.9149;
-				derechaTRex = false;
-				break;
-			}
-
-			stateTRex = 1;
-			break;
-		case 1:
-			modelMatrixTRex = glm::translate(modelMatrixTRex, glm::vec3(0.0, 0.0, 0.1));
-			advanceCountTRex += 0.1;
-			rotTRex += 0.05;
-			if (advanceCountTRex > maxAdvanceTRex) {
-				advanceCountTRex = 0;
-				stateTRex = 2;
-			}
-			break;
-		case 2:
-			//modelMatrixTRex = glm::rotate(modelMatrixTRex, glm::radians(0.5f), glm::vec3(0, 1, 0));
-			//rotCountTRex += 0.5f;
-			rotTRex += 0.05;
-			if (!derechaTRex) {
-				modelMatrixTRex = glm::rotate(modelMatrixTRex, glm::radians(0.5f), glm::vec3(0, 1, 0));
-				rotCountTRex += 0.5f;
-				if (rotCountTRex >= maxRotTRex) {
-					rotCountTRex = 0;
-					stateTRex = 0;
-					numberAdvanceTRex++;
-					if (numberAdvanceTRex > 11)
-						numberAdvanceTRex = 0;
+				//modelMatrixTRex = glm::rotate(modelMatrixTRex, glm::radians(0.5f), glm::vec3(0, 1, 0));
+				//rotCountTRex += 0.5f;
+				rotTRex += 0.05;
+				if (!derechaTRex) {
+					modelMatrixTRex = glm::rotate(modelMatrixTRex, glm::radians(0.5f), glm::vec3(0, 1, 0));
+					rotCountTRex += 0.5f;
+					if (rotCountTRex >= maxRotTRex) {
+						rotCountTRex = 0;
+						stateTRex = 0;
+						numberAdvanceTRex++;
+						if (numberAdvanceTRex > 11)
+							numberAdvanceTRex = 0;
+					}
 				}
-			}
-			else {
-				modelMatrixTRex = glm::rotate(modelMatrixTRex, glm::radians(-0.5f), glm::vec3(0, 1, 0));
-				rotCountTRex -= 0.5f;
-				if (rotCountTRex <= maxRotTRex*(-1)) {
-					rotCountTRex = 0;
-					stateTRex = 0;
-					numberAdvanceTRex++;
-					if (numberAdvanceTRex > 11)
-						numberAdvanceTRex = 0;
+				else {
+					modelMatrixTRex = glm::rotate(modelMatrixTRex, glm::radians(-0.5f), glm::vec3(0, 1, 0));
+					rotCountTRex -= 0.5f;
+					if (rotCountTRex <= maxRotTRex * (-1)) {
+						rotCountTRex = 0;
+						stateTRex = 0;
+						numberAdvanceTRex++;
+						if (numberAdvanceTRex > 11)
+							numberAdvanceTRex = 0;
+					}
 				}
+				break;
 			}
-			break;
 		}
+		
 
 		//StateMachine for dinosaur Lake
 
-		if (activar) {
+		if (animDinoLake) {
 			angleDinosaurLake += 0.01;
 			rotDinisaurLake += 0.005;
 			modelMatrixDinosaurLake = glm::translate(modelMatrixDinosaurLake
