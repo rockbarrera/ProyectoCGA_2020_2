@@ -3,9 +3,9 @@
 
 ![Jurassic Snap](Textures/Title.png)
 
- Repositorio de **Computación gráfica avanzada** para el semestre **2020-2** en el apartado de la documentación, **UNAM-2020**.
+ Repositorio de **Computación gráfica avanzada** para el semestre **2020-2** en el apartado del código de proyecto, **UNAM-2020**.
 
-En este repositorio se encuentran los archivos de la documentación del proyecto final, al cual se le denominó 'Jurassic Snap'. Éste documento también contiene los lineamientos del proyecto.
+En este repositorio se encuentran los archivos del código del proyecto final, al cual se le denominó 'Jurassic Snap'. Éste documento también contiene los lineamientos del proyecto.
 
 **Profesor de la asignatura:**
 
@@ -13,24 +13,31 @@ Reynaldo Martell Ávila [(GITHUB)](https://github.com/rmartella)
 
 **Integrantes del Proyecto:**
 
--Barrera Bernal Rodrigo Adalberto [(GITHUB)](https://github.com/Leor8a)
+-Barrera Bernal Rodrigo Adalberto [(GITHUB)](https://github.com/rockbarrera)
 
 -Ochoa Ríos Luis Ernesto [(GITHUB)](https://github.com/Leor8a)
-
 
 Resumen de la estructura de archivos:
 
 
 ```bash
 
-├── DOCS - Carpeta que contiene la documentación del proyecto 'Jurassic Snap'.
-│   ├── Images - Carpeta que contiene las imágenes de los archivos MD del repositorio.
-│   ├── ReporteProyectoFinal.md - Este archivo contiene el reporte que se nos pidió como documento para la 
-│   ├── entrega del proyecto.
-│   ├── ReporteProyectoFinal.pdf - Renderizado pdf del archivo MD anterior.
-│   ├── InstructionsBooklet.pdf - Manual de instrucciones para el usuario final, se describe en detalle 
-│   ├── los controles del programa. (Versión en Español) *Ver si alcanza tiempo para una vers. en Inglés.
+├── ProyectoCGA_2020_2 - Repositorio del código para el proyecto 'Jurassic Snap'.
+│   ├── 14-OpenAL - Contiene el main del programa, por lo geeneral todos los cambios importantes se dieron en éste archivo.
+│   ├── CGALib - Es el core de la aplicación en éste proyecto se genera una biblioteca dinámica para que el main pueda utilizar las  
+|   |   clases y por ende podamos hacer instancias de modelos, llamar a cargar texturas, manejar el tiempo en la aplicación , étc.
+│   ├── Jurassic_Photos - Carpeta que alberga las fotos que se toman dentro del juego.
+│   ├── Shaders - Fragment Shaders y Vertex Shaders están contenidos en esta carpeta.
+│   ├── Textures - Texturas para el piso y algunas otras cosas, también para las partículas.
+│   ├── animaciones - Animaciones //Ver si se elimina
+│   ├── dlls - Todas las bibliotecas dinámicas del proyecto.
+│   ├── external - Son los archivos necesarios para la integración del proyecto, bibliotecas de terceros.
+│   ├── models - Los modelos y animaciones de modelos usados en el proyecto.
+│   └── sounds - Sonidos del proyecto.
 │   └── README.md - Archivo que contiene indicaciones para la instalación del programa.
+├── .gitignore - Limpieza de carpetas y archivos del repositorio 
+├── ComputacionGraficaAvanzada.sln - Archivo solución del proyecto para Microsoft Visual Studio 2017/2019
+├── MapadeLocalizaciones.jpeg - Despliegue de elementos en el escenario tridimensional / Boceto
 ├── README.md **(Archivo que ahora observas)
 └── .gitignore
 
