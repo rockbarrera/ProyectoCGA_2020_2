@@ -23,23 +23,24 @@ Resumen de la estructura de archivos:
 ```bash
 
 ├── ProyectoCGA_2020_2 - Repositorio del código para el proyecto 'Jurassic Snap'.
-│   ├── 14-OpenAL - Contiene el main del programa, por lo geeneral todos los cambios importantes se dieron en éste archivo.
-│   ├── CGALib - Es el core de la aplicación en éste proyecto se genera una biblioteca dinámica para que el main pueda utilizar las  
-|   |   clases y por ende podamos hacer instancias de modelos, llamar a cargar texturas, manejar el tiempo en la aplicación , étc.
+│   ├── 14-OpenAL - Contiene el main del programa, por lo general todos los cambios importantes 
+|   |   se dieron en éste archivo.
+│   ├── CGALib - Es el core de la aplicación, en éste proyecto se genera una biblioteca dinámica 
+|   |   para que el main pueda utilizar las clases y por ende podamos hacer instancias de Modelos, 
+|   |   llamar a cargar texturas, manejar el tiempo en la aplicación , étc.
 │   ├── Jurassic_Photos - Carpeta que alberga las fotos que se toman dentro del juego.
 │   ├── Shaders - Fragment Shaders y Vertex Shaders están contenidos en esta carpeta.
-│   ├── Textures - Texturas para el piso y algunas otras cosas, también para las partículas.
-│   ├── animaciones - Animaciones //Ver si se elimina
+│   ├── Textures - Texturas para el suelo y algunas otras cosas, también para las partículas.
+│   ├── animaciones - Animación por keyframes //Ver si se elimina
 │   ├── dlls - Todas las bibliotecas dinámicas del proyecto.
 │   ├── external - Son los archivos necesarios para la integración del proyecto, bibliotecas de terceros.
 │   ├── models - Los modelos y animaciones de modelos usados en el proyecto.
 │   └── sounds - Sonidos del proyecto.
 │   └── README.md - Archivo que contiene indicaciones para la instalación del programa.
-├── .gitignore - Limpieza de carpetas y archivos del repositorio 
 ├── ComputacionGraficaAvanzada.sln - Archivo solución del proyecto para Microsoft Visual Studio 2017/2019
 ├── MapadeLocalizaciones.jpeg - Despliegue de elementos en el escenario tridimensional / Boceto
 ├── README.md **(Archivo que ahora observas)
-└── .gitignore
+└── .gitignore - Limpieza de carpetas y archivos del repositorio 
 
 ```
 
