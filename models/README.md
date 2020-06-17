@@ -16,7 +16,6 @@ Proyecto para el **Ing. Reynaldo Martell Ávila**
 * Terminar modelado de personaje principal
 * Tener animación de Brachiosaurio, lista. 
 * Tener 2 dinosuarios, más modelados.
-* Texturizar todo lo anterior.
-* Terminar en breve.
+* No se tuvo del todo acabado =(, hoy hago un dino más.
 
 ```
