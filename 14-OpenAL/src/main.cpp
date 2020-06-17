@@ -139,6 +139,7 @@ Model modelWall;
 //Waterfall
 Model modelWaterfall;
 
+
 //Jeep
 //Model modelJeep;
 
@@ -610,6 +611,19 @@ std::vector<float> wallOrientarion{
 	90.0, 90.0, 90.0, 90.0, 90.0, 90.0,
 };
 
+// Tree
+std::vector<glm::vec3> treePositions{
+	glm::vec3(0.0, 0.0, -5.0),
+	glm::vec3(65.01, 0.0, -14.81),
+	glm::vec3(-19.25, 0.0, -18.09),
+	glm::vec3(-2.62, 0.0, -56.11),
+	glm::vec3(-33.21, 0.0, -83.76),
+	glm::vec3(10.77, 0.0, -56.42),
+	glm::vec3(-17.53, 0.0, 81.85), 
+	glm::vec3(-15.18, 0.0, 72.23),
+	glm::vec3(-18.36, 0.0, 51.53),
+};
+
 // Blending model unsorted
 std::map<std::string, glm::vec3> blendingUnsorted = {
 		{"geiser0", geiserPositions[0]},
@@ -1056,6 +1070,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	//Jeep
 	//modelJeep.loadModel("../models/JEEP/JEEP.obj");
 	//modelJeep.setShader(&shaderMulLighting);
+
+	//Tree
+	modelTree.loadModel("../models/TREE/TREE.fbx");
+	modelTree.setShader(&shaderMulLighting);
 
 	camera->setPosition(glm::vec3(0.0, 0.0, 10.0));
 	camera->setDistanceFromTarget(distanceFromTarget);
@@ -2288,10 +2306,10 @@ void applicationLoop() {
 	//modelMatrixMeat = glm::scale(modelMatrixMeat, glm::vec3(0.25f, 0.25f, 0.25f));
 	//updateMatrix(modelMatrixMeat.size() - 1);
 
-	modelMatrixWaterfall = glm::translate(modelMatrixWaterfall, glm::vec3(50.0, 0.0, -20.0));
+	modelMatrixWaterfall = glm::translate(modelMatrixWaterfall, glm::vec3(70.0, 0.0, -75.0));
 	modelMatrixWaterfall[3].y = terrain.getHeightTerrain(modelMatrixWaterfall[3].x, modelMatrixWaterfall[3].z);
 	modelMatrixWaterfall = glm::rotate(modelMatrixWaterfall, glm::radians(180.0f), glm::vec3(0, 1, 0));
-	modelMatrixWaterfall = glm::scale(modelMatrixWaterfall, glm::vec3(0.35f, 0.35f, 0.35f));
+	modelMatrixWaterfall = glm::scale(modelMatrixWaterfall, glm::vec3(0.45f, 0.45f, 0.45f));
 
 	/*modelMatrixJeep = glm::translate(modelMatrixJeep, glm::vec3(0.0, 0.0, 0.0));
 	modelMatrixJeep[3].y = terrain.getHeightTerrain(modelMatrixJeep[3].x, modelMatrixJeep[3].z);
@@ -2757,18 +2775,35 @@ void applicationLoop() {
 				addOrUpdateColliders(collidersMeatSBB, "meat-" + std::to_string(i), meatCollider, modelMatrixMeat[i]);
 			}*/
 
-			for (std::map<std::string, std::tuple<glm::mat4, float> >::iterator it =
-				lifeTimeMeat.begin(); it != lifeTimeMeat.end(); it++) {
-				AbstractModel::SBB meatCollider;
-				glm::mat4 modelMatrixColliderMeat = std::get<0>(it->second);
-				modelMatrixColliderMeat = glm::scale(modelMatrixColliderMeat, glm::vec3(0.25, 0.25, 0.25));
-				modelMatrixColliderMeat = glm::translate(modelMatrixColliderMeat, modelMeat.getSbb().c);
-				meatCollider.c = glm::vec3(modelMatrixColliderMeat[3]);
-				meatCollider.ratio = modelMeat.getSbb().ratio * 0.25;
-				addOrUpdateColliders(collidersMeatSBB, it->first, meatCollider, std::get<0>(it->second));
-			}
+		for (std::map<std::string, std::tuple<glm::mat4, float> >::iterator it =
+			lifeTimeMeat.begin(); it != lifeTimeMeat.end(); it++) {
+			AbstractModel::SBB meatCollider;
+			glm::mat4 modelMatrixColliderMeat = std::get<0>(it->second);
+			modelMatrixColliderMeat = glm::scale(modelMatrixColliderMeat, glm::vec3(0.25, 0.25, 0.25));
+			modelMatrixColliderMeat = glm::translate(modelMatrixColliderMeat, modelMeat.getSbb().c);
+			meatCollider.c = glm::vec3(modelMatrixColliderMeat[3]);
+			meatCollider.ratio = modelMeat.getSbb().ratio * 0.25;
+			addOrUpdateColliders(collidersMeatSBB, it->first, meatCollider, std::get<0>(it->second));
+		}
 			
 		//}
+
+		//Collider Tree
+		for (int i = 0; i < treePositions.size(); i++) {
+			AbstractModel::OBB treeCollider;
+			glm::mat4 modelMatrixColliderTree = glm::mat4(1.0f);
+			modelMatrixColliderTree = glm::translate(modelMatrixColliderTree, treePositions[i]);
+			modelMatrixColliderTree = glm::rotate(modelMatrixColliderTree, glm::radians(-90.0f),
+				glm::vec3(1, 0, 0));
+			addOrUpdateColliders(collidersOBB, "tree-" + std::to_string(i), treeCollider, modelMatrixColliderTree);
+			// Set the orientation of collider before doing the scale
+			treeCollider.u = glm::quat_cast(modelMatrixColliderTree);
+			modelMatrixColliderTree = glm::scale(modelMatrixColliderTree, glm::vec3(0.3, 0.3, 0.3));
+			modelMatrixColliderTree = glm::translate(modelMatrixColliderTree, modelTree.getObb().c);
+			treeCollider.c = glm::vec3(modelMatrixColliderTree[3]);
+			treeCollider.e = modelTree.getObb().e * glm::vec3(0.3, 0.3, 0.3);
+			std::get<0>(collidersOBB.find("tree-" + std::to_string(i))->second) = treeCollider;
+		}
 		
 
 		/*******************************************
@@ -3350,6 +3385,9 @@ void prepareScene(){
 
 	//Jeep
 	//modelJeep.setShader(&shaderMulLighting);
+
+	//Tree
+	modelTree.setShader(&shaderMulLighting);
 }
 
 void prepareDepthScene(){
@@ -3402,6 +3440,9 @@ void prepareDepthScene(){
 
 	//Jeep
 	//modelJeep.setShader(&shaderDepth);
+
+	//Tree
+	modelTree.setShader(&shaderDepth);
 }
 
 void renderScene(bool renderParticles) {
@@ -3512,10 +3553,21 @@ void renderScene(bool renderParticles) {
 	}
 	glEnable(GL_CULL_FACE);
 
+	//Tree
+	glDisable(GL_CULL_FACE);
+	for (int i = 0; i < treePositions.size(); i++) {
+		treePositions[i].y = terrain.getHeightTerrain(treePositions[i].x, treePositions[i].z);
+		modelTree.setPosition(treePositions[i]);
+		modelTree.setOrientation(glm::vec3(-90.0, 0.0, 0.0));
+		modelTree.setScale(glm::vec3(0.3, 0.3, 0.3));
+		modelTree.render();
+	}
+	glDisable(GL_CULL_FACE);
+
 	//Door
 	glDisable(GL_CULL_FACE);
 	modelDoor.render(modelMatrixDoor);
-	glEnable(GL_CULL_FACE);
+	glDisable(GL_CULL_FACE);
 
 	//Mountanin
 	glDisable(GL_CULL_FACE);
