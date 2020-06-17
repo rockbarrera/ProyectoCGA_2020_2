@@ -136,6 +136,12 @@ Model modelRock;
 //Wall
 Model modelWall;
 
+//Waterfall
+Model modelWaterfall;
+
+//Jeep
+//Model modelJeep;
+
 // Model animate instance
 // Personaje
 Model personajeModelAnimate;
@@ -186,6 +192,8 @@ glm::mat4 modelMatrixMountain = glm::mat4(1.0f);
 glm::mat4 modelMatrixTriceratop = glm::mat4(1.0f);
 glm::mat4 modelMatrixTRex = glm::mat4(1.0f);
 glm::mat4 modelMatrixDinosaurLake = glm::mat4(1.0f);
+glm::mat4 modelMatrixWaterfall = glm::mat4(1.0f);
+glm::mat4 modelMatrixJeep = glm::mat4(1.0f);
 
 std::vector<glm::mat4> modelMatrixMeat = {};
 
@@ -232,6 +240,9 @@ float rotDinisaurLake = 0.0f;
 
 //Lanzamiento de la carne (Meat)
 bool meatLaunch = false;
+bool stateMeatLaunched = true;
+int stateMeatLaunch = 0;
+float timeLaunchMeat = 0.0;
 float vInit = 10.0;
 float theta = 45;
 float gravity = 30.81;
@@ -270,7 +281,7 @@ std::vector<glm::vec3> palmPositions = {
 	glm::vec3(-87.14f, 0.0f, 13.78f),
 	glm::vec3(-86.55f, 0.0f, -1.52f),
 	glm::vec3(-91.65f, 0.0f, -12.28f),
-	glm::vec3(-84.72f, 0.0f, -25.61f),
+	glm::vec3(-84.72f, 0.0f, -29.61f),
 	glm::vec3(-81.41f, 0.0f, -46.27f),
 	glm::vec3(-90.62f, 0.0f, -50.78f),
 	glm::vec3(-76.66f, 0.0f, -74.02f),
@@ -1038,6 +1049,14 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelWall.loadModel("../models/WALL/Wall.obj");
 	modelWall.setShader(&shaderMulLighting);
 
+	//Waterfall
+	modelWaterfall.loadModel("../models/Waterfall/Waterfall.obj");
+	modelWaterfall.setShader(&shaderMulLighting);
+
+	//Jeep
+	//modelJeep.loadModel("../models/JEEP/JEEP.obj");
+	//modelJeep.setShader(&shaderMulLighting);
+
 	camera->setPosition(glm::vec3(0.0, 0.0, 10.0));
 	camera->setDistanceFromTarget(distanceFromTarget);
 	camera->setSensitivity(1.0);
@@ -1659,7 +1678,7 @@ bool processInput(bool continueApplication) {
 		if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
 			stateCamera = 3;
 			cameraFPSpersonaje->setPosition(glm::vec3(modelMatrixPersonaje[3])
-				+ glm::vec3(0.0, 2.0, 0.3));
+				+ glm::vec3(0.0, 4.5, 0.3));
 		}
 		//Fin de selección de cámara TPS ó FPS
 
@@ -1750,7 +1769,7 @@ bool processInput(bool continueApplication) {
 				//Lanzar la carne
 				if (stateCamera == 1) {
 					meatLaunch = true;
-					animationIndex = 1;
+					//animationIndex = 1;
 				}
 			}
 			else if (glfwGetKey(window, GLFW_KEY_M) == GLFW_RELEASE) {
@@ -2154,25 +2173,47 @@ void savePhoto() {
 
 void meatLauncher() {
 	if (meatLaunch) {
-		std::map<std::string, std::tuple<glm::mat4, float> >::iterator it = lifeTimeMeat.find(last);
-		glm::mat4 aux = std::get<0>(it->second);
-		if (aux[3].y < terrain.getHeightTerrain(aux[3].x
-			, aux[3].z) + 0.9) {
-			meatLaunch = false;
-			timeMeat = 0.0;
-			zMov = 0.0;
-			yMov = 0.0;
-			actUnVezMeat = true;
-			//animationIndex = 0;
-		}
-		else {
-			aux = glm::translate(aux, glm::vec3(0.0, yMov, zMov));
-			timeMeat += deltaTime;
-			zMov = vInit * cos(glm::radians(theta)) * timeMeat;
-			yMov = vInit * sin(glm::radians(theta)) * timeMeat - 0.5 * gravity * timeMeat * timeMeat;
-			std::get<0>(it->second) = aux;
-			//lifeTimeMeat.insert(it);
-		}
+		//switch (stateMeatLaunch) {
+		//case 0:
+		//	if (stateMeatLaunched) {
+		//		//animationIndex = 1;
+		//		stateMeatLaunched = false;
+		//	}
+		//	timeLaunchMeat += deltaTime;
+		//	if (timeLaunchMeat >= 1.34) {
+		//		stateMeatLaunch = 1;
+		//		timeLaunchMeat = 0.0;
+		//		stateMeatLaunched = true;
+		//		animationIndex = 0;
+		//	}
+				
+
+		//	break;
+		//case 1:
+			std::map<std::string, std::tuple<glm::mat4, float> >::iterator it = lifeTimeMeat.find(last);
+			glm::mat4 aux = std::get<0>(it->second);
+			if (aux[3].y < terrain.getHeightTerrain(aux[3].x
+				, aux[3].z) + 0.9) {
+				meatLaunch = false;
+				timeMeat = 0.0;
+				zMov = 0.0;
+				yMov = 0.0;
+				actUnVezMeat = true;
+				//animationIndex = 0;
+				stateMeatLaunch = 0;
+			}
+			else {
+				aux = glm::translate(aux, glm::vec3(0.0, yMov, zMov));
+				timeMeat += deltaTime;
+				zMov = vInit * cos(glm::radians(theta)) * timeMeat;
+				yMov = vInit * sin(glm::radians(theta)) * timeMeat - 0.5 * gravity * timeMeat * timeMeat;
+				std::get<0>(it->second) = aux;
+				//lifeTimeMeat.insert(it);
+			}
+		//	break;
+		//}
+		
+		
 	}
 }
 
@@ -2247,6 +2288,15 @@ void applicationLoop() {
 	//modelMatrixMeat = glm::scale(modelMatrixMeat, glm::vec3(0.25f, 0.25f, 0.25f));
 	//updateMatrix(modelMatrixMeat.size() - 1);
 
+	modelMatrixWaterfall = glm::translate(modelMatrixWaterfall, glm::vec3(50.0, 0.0, -20.0));
+	modelMatrixWaterfall[3].y = terrain.getHeightTerrain(modelMatrixWaterfall[3].x, modelMatrixWaterfall[3].z);
+	modelMatrixWaterfall = glm::rotate(modelMatrixWaterfall, glm::radians(180.0f), glm::vec3(0, 1, 0));
+	modelMatrixWaterfall = glm::scale(modelMatrixWaterfall, glm::vec3(0.35f, 0.35f, 0.35f));
+
+	/*modelMatrixJeep = glm::translate(modelMatrixJeep, glm::vec3(0.0, 0.0, 0.0));
+	modelMatrixJeep[3].y = terrain.getHeightTerrain(modelMatrixJeep[3].x, modelMatrixJeep[3].z);
+	modelMatrixJeep = glm::scale(modelMatrixJeep, glm::vec3(0.1, 0.1, 0.1));*/
+
 	lastTime = TimeManager::Instance().GetTime();
 
 	// Time for the particles animation
@@ -2272,7 +2322,7 @@ void applicationLoop() {
 		//std::cout << deltaTime << std::endl;
 		psi = processInput(true);
 
-		std::map<std::string, bool> collisionDetection;
+		std::map<std::string, std::tuple<bool, std::string>> collisionDetection;
 
 		// Variables donde se guardan las matrices de cada articulacion por 1 frame
 		std::vector<float> matrixDartJoints;
@@ -2430,14 +2480,14 @@ void applicationLoop() {
 			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
 			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.specular", glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
 			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].position", glm::value_ptr(firePosition));
-			shaderMulLighting.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0);
+			shaderMulLighting.setFloat("pointLights[" + std::to_string(i) + "].constant", 0.2);
 			shaderMulLighting.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.09);
 			shaderMulLighting.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.01);
 			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.ambient", glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
 			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
 			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.specular", glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
 			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].position", glm::value_ptr(firePosition));
-			shaderTerrain.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0);
+			shaderTerrain.setFloat("pointLights[" + std::to_string(i) + "].constant", 0.2);
 			shaderTerrain.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.09);
 			shaderTerrain.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.02);
 		}
@@ -2793,7 +2843,7 @@ void applicationLoop() {
 					isCollision = true;
 				}
 			}
-			addOrUpdateCollisionDetection(collisionDetection, it->first, isCollision);
+			addOrUpdateCollisionDetection(collisionDetection, it->first, isCollision, "");
 		}
 
 		for (std::map<std::string,
@@ -2811,7 +2861,7 @@ void applicationLoop() {
 					isCollision = true;
 				}
 			}
-			addOrUpdateCollisionDetection(collisionDetection, it->first, isCollision);
+			addOrUpdateCollisionDetection(collisionDetection, it->first, isCollision, "");
 		}
 
 		for (std::map<std::string,
@@ -2827,11 +2877,11 @@ void applicationLoop() {
 					std::cout << "Colision " << it->first << " with "
 							<< jt->first << std::endl;
 					isCollision = true;
-					addOrUpdateCollisionDetection(collisionDetection, jt->first, isCollision);
+					addOrUpdateCollisionDetection(collisionDetection, jt->first, isCollision, it->first);
 					//stopTranslateDinosaur(jt->first);
 				}
 			}
-			addOrUpdateCollisionDetection(collisionDetection, it->first, isCollision);
+			addOrUpdateCollisionDetection(collisionDetection, it->first, isCollision, "");
 		}
 
 		//Test Collider Meat With dinosaur
@@ -2849,13 +2899,13 @@ void applicationLoop() {
 					/*std::cout << "Colision " << it->first << " with "
 						<< jt->first << std::endl;*/
 					isCollision = true;
-					addOrUpdateCollisionDetection(collisionDetection, jt->first, isCollision);
+					addOrUpdateCollisionDetection(collisionDetection, jt->first, isCollision, it->first);
 					//stopTranslateDinosaur(jt->first);
 				}
 			}
 		}
 
-		std::map<std::string, bool>::iterator colIt;
+		std::map<std::string, std::tuple <bool, std::string>>::iterator colIt;
 		for (colIt = collisionDetection.begin(); colIt != collisionDetection.end();
 				colIt++) {
 			std::map<std::string,
@@ -2868,25 +2918,28 @@ void applicationLoop() {
 					std::tuple<AbstractModel::OBB, glm::mat4, glm::mat4> >::iterator kt =
 					collidersOBB.find(colIt->first);
 			if (it != collidersSBB.end()) {
-				if (!colIt->second)
+				if (!std::get<0>(colIt->second))
 					addOrUpdateColliders(collidersSBB, it->first);
 			}
 			if (jt != collidersSBB.end()) {
-				if (!colIt->second)
+				if (!std::get<0>(colIt->second))
 					addOrUpdateColliders(collidersMeatSBB, jt->first);
 			}
 			if (kt != collidersOBB.end()) {
-				if (!colIt->second)
+				if (!std::get<0>(colIt->second))
 					addOrUpdateColliders(collidersOBB, kt->first);
 				else {
 					if (kt->first.compare("personajeMain") == 0)
 						modelMatrixPersonaje = std::get<1>(kt->second);
-					if(kt->first.compare("triceratop") == 0)
-						stopTranslateDinosaur(kt->first);
-					/*if (kt->first.compare("trex") == 0)
-						stopTranslateDinosaur(kt->first);*/
-					if (kt->first.compare("dinolake") == 0)
-						stopTranslateDinosaur(kt->first);
+					
+					if (std::get<1>(colIt->second).find("meat") != std::string::npos) {
+						if (kt->first.compare("triceratop") == 0)
+							stopTranslateDinosaur(kt->first);
+						if (kt->first.compare("trex") == 0)
+							stopTranslateDinosaur(kt->first);
+						if (kt->first.compare("dinolake") == 0)
+							stopTranslateDinosaur(kt->first);
+					}	
 				}
 			}
 		}
@@ -3291,6 +3344,12 @@ void prepareScene(){
 
 	//Wall
 	modelWall.setShader(&shaderMulLighting);
+
+	//Waterfall
+	modelWaterfall.setShader(&shaderMulLighting);
+
+	//Jeep
+	//modelJeep.setShader(&shaderMulLighting);
 }
 
 void prepareDepthScene(){
@@ -3337,6 +3396,12 @@ void prepareDepthScene(){
 
 	//Wall
 	modelWall.setShader(&shaderDepth);
+
+	//Waterfall
+	modelWaterfall.setShader(&shaderDepth);
+
+	//Jeep
+	//modelJeep.setShader(&shaderDepth);
 }
 
 void renderScene(bool renderParticles) {
@@ -3457,6 +3522,20 @@ void renderScene(bool renderParticles) {
 	modelMountain.render(modelMatrixMountain);
 	glEnable(GL_CULL_FACE);
 
+	//Waterfall
+	glDisable(GL_CULL_FACE);
+	//modelWaterfall.setPosition(glm::vec3(0.0, 0.0, -20.0));
+	//modelWaterfall.setScale(glm::vec3(0.1, 0.1, 0.1));
+	modelWaterfall.render(modelMatrixWaterfall);
+	glEnable(GL_CULL_FACE);
+
+	//Jeep
+	/*glDisable(GL_CULL_FACE);
+	//modelWaterfall.setPosition(glm::vec3(0.0, 0.0, -20.0));
+	//modelWaterfall.setScale(glm::vec3(0.1, 0.1, 0.1));
+	modelJeep.render(modelMatrixJeep);
+	glEnable(GL_CULL_FACE);*/
+
 	//Meat
 	glDisable(GL_CULL_FACE);
 	/*for (int i = 0; i < modelMatrixMeat.size(); i++) {
@@ -3506,8 +3585,8 @@ void renderScene(bool renderParticles) {
 
 	modelMatrixDinosaurLake[3][1] = terrain.getHeightTerrain(modelMatrixDinosaurLake[3].x, modelMatrixDinosaurLake[3].z);
 	glm::mat4 modelMatrixDinoraurLakeBody = glm::mat4(modelMatrixDinosaurLake);
-	modelMatrixDinoraurLakeBody = glm::translate(modelMatrixDinoraurLakeBody, glm::vec3(0.7298, 0.0, 0.9299));
-	modelMatrixDinoraurLakeBody = glm::translate(modelMatrixDinoraurLakeBody, glm::vec3(-0.7298, 0.0, 0.9299));
+	modelMatrixDinoraurLakeBody = glm::translate(modelMatrixDinoraurLakeBody, glm::vec3(0.0574, 0.02296, -1.379));
+	//modelMatrixDinoraurLakeBody = glm::translate(modelMatrixDinoraurLakeBody, glm::vec3(-0.7298, 0.0, 0.9299));
 	modelMatrixDinoraurLakeBody = glm::rotate(modelMatrixDinoraurLakeBody, (-1)* rotDinisaurLake, glm::vec3(0, 1, 0));
 	modelMatrixDinoraurLakeBody = glm::scale(modelMatrixDinoraurLakeBody, glm::vec3(0.01, 0.01, 0.01));
 	dinoraurLakeModelAnimate.setAnimationIndex(1);

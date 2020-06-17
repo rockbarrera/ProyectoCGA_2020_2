@@ -57,14 +57,16 @@ void addOrUpdateColliders(
 		std::get<1>(it->second) = std::get<2>(it->second);
 }
 
-void addOrUpdateCollisionDetection(std::map<std::string, bool> &collisionDetector,
-		std::string name, bool isCollision) {
-	std::map<std::string, bool>::iterator colIt = collisionDetector.find(name);
+void addOrUpdateCollisionDetection(std::map<std::string, std::tuple<bool, std::string>> &collisionDetector,
+		std::string name, bool isCollision, std::string collided) {
+	std::map<std::string, std::tuple<bool, std::string>>::iterator colIt = collisionDetector.find(name);
 	if(colIt != collisionDetector.end()){
-		if(!colIt->second)
-			colIt->second = isCollision;
+		if(!std::get<0>(colIt-> second)){
+			std::get<0>(colIt->second) = isCollision;
+			std::get<1>(colIt->second) = collided;
+		}
 	}else
-		collisionDetector[name] = isCollision;
+		collisionDetector[name] = std::make_tuple(isCollision, collided);
 }
 
 bool raySphereIntersect(glm::vec3 orig, glm::vec3 dest, glm::vec3 dir, AbstractModel::SBB sbb, float &t) {
