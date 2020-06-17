@@ -139,7 +139,8 @@ Model modelWall;
 //Waterfall
 Model modelWaterfall;
 
-
+//Jeep
+//Model modelJeep;
 
 // Model animate instance
 // Personaje
@@ -192,6 +193,7 @@ glm::mat4 modelMatrixTriceratop = glm::mat4(1.0f);
 glm::mat4 modelMatrixTRex = glm::mat4(1.0f);
 glm::mat4 modelMatrixDinosaurLake = glm::mat4(1.0f);
 glm::mat4 modelMatrixWaterfall = glm::mat4(1.0f);
+glm::mat4 modelMatrixJeep = glm::mat4(1.0f);
 
 std::vector<glm::mat4> modelMatrixMeat = {};
 
@@ -1050,6 +1052,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	//Waterfall
 	modelWaterfall.loadModel("../models/Waterfall/Waterfall.obj");
 	modelWaterfall.setShader(&shaderMulLighting);
+
+	//Jeep
+	//modelJeep.loadModel("../models/JEEP/JEEP.obj");
+	//modelJeep.setShader(&shaderMulLighting);
 
 	camera->setPosition(glm::vec3(0.0, 0.0, 10.0));
 	camera->setDistanceFromTarget(distanceFromTarget);
@@ -2282,10 +2288,14 @@ void applicationLoop() {
 	//modelMatrixMeat = glm::scale(modelMatrixMeat, glm::vec3(0.25f, 0.25f, 0.25f));
 	//updateMatrix(modelMatrixMeat.size() - 1);
 
-	modelMatrixWaterfall = glm::translate(modelMatrixWaterfall, glm::vec3(0.0, 0.0, -20.0));
+	modelMatrixWaterfall = glm::translate(modelMatrixWaterfall, glm::vec3(50.0, 0.0, -20.0));
 	modelMatrixWaterfall[3].y = terrain.getHeightTerrain(modelMatrixWaterfall[3].x, modelMatrixWaterfall[3].z);
 	modelMatrixWaterfall = glm::rotate(modelMatrixWaterfall, glm::radians(180.0f), glm::vec3(0, 1, 0));
-	modelMatrixWaterfall = glm::scale(modelMatrixWaterfall, glm::vec3(0.25f, 0.25f, 0.25f));
+	modelMatrixWaterfall = glm::scale(modelMatrixWaterfall, glm::vec3(0.35f, 0.35f, 0.35f));
+
+	/*modelMatrixJeep = glm::translate(modelMatrixJeep, glm::vec3(0.0, 0.0, 0.0));
+	modelMatrixJeep[3].y = terrain.getHeightTerrain(modelMatrixJeep[3].x, modelMatrixJeep[3].z);
+	modelMatrixJeep = glm::scale(modelMatrixJeep, glm::vec3(0.1, 0.1, 0.1));*/
 
 	lastTime = TimeManager::Instance().GetTime();
 
@@ -3337,6 +3347,9 @@ void prepareScene(){
 
 	//Waterfall
 	modelWaterfall.setShader(&shaderMulLighting);
+
+	//Jeep
+	//modelJeep.setShader(&shaderMulLighting);
 }
 
 void prepareDepthScene(){
@@ -3386,6 +3399,9 @@ void prepareDepthScene(){
 
 	//Waterfall
 	modelWaterfall.setShader(&shaderDepth);
+
+	//Jeep
+	//modelJeep.setShader(&shaderDepth);
 }
 
 void renderScene(bool renderParticles) {
@@ -3512,6 +3528,13 @@ void renderScene(bool renderParticles) {
 	//modelWaterfall.setScale(glm::vec3(0.1, 0.1, 0.1));
 	modelWaterfall.render(modelMatrixWaterfall);
 	glEnable(GL_CULL_FACE);
+
+	//Jeep
+	/*glDisable(GL_CULL_FACE);
+	//modelWaterfall.setPosition(glm::vec3(0.0, 0.0, -20.0));
+	//modelWaterfall.setScale(glm::vec3(0.1, 0.1, 0.1));
+	modelJeep.render(modelMatrixJeep);
+	glEnable(GL_CULL_FACE);*/
 
 	//Meat
 	glDisable(GL_CULL_FACE);
