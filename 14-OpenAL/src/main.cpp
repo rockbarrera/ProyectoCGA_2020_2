@@ -750,7 +750,7 @@ ALenum format;
 ALvoid *data;
 int ch;
 ALboolean loop;
-std::vector<bool> sourcesPlay = {false, true, true, false, false, true, true, true, true};
+std::vector<bool> sourcesPlay = {false, true, true, true, false, true, true, true, true};
 
 // Se definen todos las funciones.
 void reshapeCallback(GLFWwindow *Window, int widthRes, int heightRes);
@@ -1461,7 +1461,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 		printf("init - no errors after alGenSources\n");
 	}
 	alSourcef(source[0], AL_PITCH, 1.0f);
-	alSourcef(source[0], AL_GAIN, 0.3f);
+	alSourcef(source[0], AL_GAIN, 0.1f);
 	alSourcefv(source[0], AL_POSITION, source0Pos);
 	alSourcefv(source[0], AL_VELOCITY, source0Vel);
 	alSourcei(source[0], AL_BUFFER, buffer[0]);
@@ -2815,7 +2815,7 @@ void applicationLoop() {
 			matrixCollider = glm::translate(matrixCollider, std::get<0>(it->second).c);
 			matrixCollider = matrixCollider * glm::mat4(std::get<0>(it->second).u);
 			matrixCollider = glm::scale(matrixCollider, std::get<0>(it->second).e * 2.0f);
-			boxCollider.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
+			boxCollider.setColor(glm::vec4(0.0, 0.0, 0.0, 0.0));
 			boxCollider.enableWireMode();
 			boxCollider.render(matrixCollider);
 		}
@@ -2825,7 +2825,7 @@ void applicationLoop() {
 			glm::mat4 matrixCollider = glm::mat4(1.0);
 			matrixCollider = glm::translate(matrixCollider, std::get<0>(it->second).c);
 			matrixCollider = glm::scale(matrixCollider, glm::vec3(std::get<0>(it->second).ratio * 2.0f));
-			sphereCollider.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
+			sphereCollider.setColor(glm::vec4(0.0, 0.0, 0.0, 0.0));
 			sphereCollider.enableWireMode();
 			sphereCollider.render(matrixCollider);
 		}
@@ -2835,7 +2835,7 @@ void applicationLoop() {
 			glm::mat4 matrixCollider = glm::mat4(1.0);
 			matrixCollider = glm::translate(matrixCollider, std::get<0>(it->second).c);
 			matrixCollider = glm::scale(matrixCollider, glm::vec3(std::get<0>(it->second).ratio * 2.0f));
-			sphereCollider.setColor(glm::vec4(1.0, 0.0, 0.0, 1.0));
+			sphereCollider.setColor(glm::vec4(0.0, 0.0, 0.0, 0.0));
 			sphereCollider.enableWireMode();
 			sphereCollider.render(matrixCollider);
 		}
